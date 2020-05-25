@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 
 public class Listener extends ListenerAdapter {
     final Logger Logger = LoggerFactory.getLogger(Listener.class);
-    private final commandManager Manager = new commandManager();
+    private final CommandManager Manager = new CommandManager();
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
@@ -22,17 +22,18 @@ public class Listener extends ListenerAdapter {
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
         User user = event.getAuthor();
 
-        if(event.getJDA().getSelfUser().getAsTag().equals("HansiPlaysBotDev#1196")) {
+        if (event.getJDA().getSelfUser().getAsTag().equals("HansiPlaysBotDev#1196")) {
             String prefix = "dk!";
             String raw = event.getMessage().getContentRaw();
             if (raw.startsWith(prefix)) {
+                //Here we send the command so we can handle it.
                 Manager.handle(event);
             }
-        }
-        else {
+        } else {
             String prefix = "k!";
             String raw = event.getMessage().getContentRaw();
-            if(raw.startsWith(prefix)){
+            if (raw.startsWith(prefix)) {
+                //Here we send the command so we can handle it.
                 Manager.handle(event);
             }
         }

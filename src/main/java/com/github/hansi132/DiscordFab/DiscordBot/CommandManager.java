@@ -11,13 +11,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class commandManager {
+public class CommandManager {
     private final List<ICommand> Commands = new ArrayList<>();
-    public commandManager() {
+
+    public CommandManager() {
         addCommand(new IpCommand());
     }
 
-    private void addCommand(ICommand cmd){
+    private void addCommand(ICommand cmd) {
         boolean nameFound = this.Commands.stream().anyMatch((it) -> it.getName().equalsIgnoreCase(cmd.getName()));
         if (nameFound) {
             throw new IllegalArgumentException("A command with this name is already present");
@@ -25,14 +26,15 @@ public class commandManager {
         Commands.add(cmd);
     }
 
-    public List<ICommand> getCommands(){
+    public List<ICommand> getCommands() {
         return Commands;
     }
 
     public ICommand getCommand(String search) {
         String searchLower = search.toLowerCase();
+
         for (ICommand cmd : this.Commands) {
-            if (cmd.getName().equals(searchLower) || cmd.getAliases().contains(searchLower)){
+            if (cmd.getName().equals(searchLower) || cmd.getAliases().contains(searchLower)) {
                 return cmd;
             }
         }
@@ -40,32 +42,34 @@ public class commandManager {
     }
 
     void handle(GuildMessageReceivedEvent event) {
-        if(event.getJDA().getSelfUser().getAsTag().equals("HansiPlaysBotDev#1196")){
-
-            String[] split = event.getMessage().getContentRaw()
+        //Check if the user is the dev bot
+        if (event.getJDA().getSelfUser().getAsTag().equals("HansiPlaysBotDev#1196")) {
+            //Remove the prefix, split on space.
+            String[] command = event.getMessage().getContentRaw()
                     .replaceFirst("(?i)" + Pattern.quote("dk!"), "")
                     .split("\\s+");
 
-            String invoke = split[0].toLowerCase();
-            ICommand cmd = this.getCommand(invoke);
+            //Setting cmd to
+            ICommand cmd = this.getCommand(command[0]);
 
-            if (cmd != null){
+            if (cmd != null) {
                 event.getChannel().sendTyping().queue();
-                List<String> args = Arrays.asList(split).subList(1, split.length);
+                List<String> args = Arrays.asList(command).subList(1, command.length);
                 CommandContext ctx = new CommandContext(event, args);
                 cmd.handle(ctx);
             }
-        } else {
-            String[] split = event.getMessage().getContentRaw()
+
+        } //Else use the normal prefix
+        else {
+            String[] command = event.getMessage().getContentRaw()
                     .replaceFirst("(?i)" + Pattern.quote("k!"), "")
                     .split("\\s+");
 
-            String invoke = split[0].toLowerCase();
-            ICommand cmd = this.getCommand(invoke);
+            ICommand cmd = this.getCommand(command[0]);
 
-            if (cmd != null){
+            if (cmd != null) {
                 event.getChannel().sendTyping().queue();
-                List<String> args = Arrays.asList(split).subList(1, split.length);
+                List<String> args = Arrays.asList(command).subList(1, command.length);
                 CommandContext ctx = new CommandContext(event, args);
                 cmd.handle(ctx);
             }
