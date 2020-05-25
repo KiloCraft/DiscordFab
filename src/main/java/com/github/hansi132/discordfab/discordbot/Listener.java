@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 
 public class Listener extends ListenerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
-    private final CommandManagerOLD Manager = new CommandManagerOLD();
+    private final CommandManager Manager = new CommandManager();
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
