@@ -6,19 +6,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
-import java.io.IOException;
 
 public class DiscordFab implements DedicatedServerModInitializer {
-    final Logger logger = LoggerFactory.getLogger(DiscordFab.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordFab.class);
 
     @Override
     public void onInitializeServer() {
         try {
             new BotMain();
         } catch (LoginException e) {
-            logger.warn(String.valueOf(e));
+            LOGGER.warn(String.valueOf(e));
         }
+    }
 
-
+    public static Logger getLogger() {
+        return LOGGER;
     }
 }
