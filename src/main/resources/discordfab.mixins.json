@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.github.hansi132.DiscordFab.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+
+  ],
+  "client": [
+
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,69 @@
+plugins {
+    id('fabric-loom').version('0.2.7-SNAPSHOT')
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+version "1.0-BETA"
+group "com.github.hansi132.DiscordFab"
+
+minecraft { }
+
+repositories {
+    jcenter()
+    maven { url 'https://jitpack.io' }
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+
+    maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:20w21a"
+    mappings "net.fabricmc:yarn:20w21a+build.15:v2"
+    modImplementation "net.fabricmc:fabric-loader:0.8.4+build.198"
+
+    //Fabric api
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.10.10+build.347-1.16"
+
+    modImplementation 'com.github.OnBlock:Thimble-Permissions:0.2.4-20w21a'
+    modImplementation 'com.github.KiloCraft:KiloEssentials:1.9.8.4'
+
+    compile group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
+    compile group: 'com.jagrosh', name: 'jda-utilities', version: '3.0.3'
+    compile 'io.github.cdimascio:java-dotenv:5.2.1'
+    implementation group: 'me.duncte123', name: 'botCommons', version: '1.0.83'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
+
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "fabric.mod.json.ft"
+        expand "version": project.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "fabric.mod.json.ft"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+}
+
+jar {
+    from "LICENSE"
+}
