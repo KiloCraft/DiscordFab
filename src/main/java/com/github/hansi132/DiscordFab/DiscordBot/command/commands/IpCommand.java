@@ -4,6 +4,8 @@ package com.github.hansi132.DiscordFab.DiscordBot.command.commands;
 import com.github.hansi132.DiscordFab.DiscordBot.command.CommandContext;
 import com.github.hansi132.DiscordFab.DiscordBot.command.ICommand;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.chat.ServerChat;
+import org.kilocraft.essentials.user.setting.Settings;
 
 public class IpCommand implements ICommand {
 
