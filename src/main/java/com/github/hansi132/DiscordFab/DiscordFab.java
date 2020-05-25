@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
+import java.io.IOException;
 
 public class DiscordFab implements DedicatedServerModInitializer {
     final Logger logger = LoggerFactory.getLogger(DiscordFab.class);
@@ -17,5 +18,7 @@ public class DiscordFab implements DedicatedServerModInitializer {
         } catch (LoginException e) {
             logger.warn(String.valueOf(e));
         }
+
+
     }
 }
