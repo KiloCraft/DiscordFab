@@ -1,4 +1,4 @@
-package com.github.hansi132.DiscordFab.DiscordBot;
+package com.github.hansi132.discordfab.discordbot;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 
 public class Listener extends ListenerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
-    private final CommandManager Manager = new CommandManager();
+    private final CommandManagerOLD Manager = new CommandManagerOLD();
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {

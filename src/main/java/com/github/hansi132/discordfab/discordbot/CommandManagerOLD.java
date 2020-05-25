@@ -1,9 +1,9 @@
-package com.github.hansi132.DiscordFab.DiscordBot;
+package com.github.hansi132.discordfab.discordbot;
 
 
-import com.github.hansi132.DiscordFab.DiscordBot.command.CommandContext;
-import com.github.hansi132.DiscordFab.DiscordBot.command.ICommand;
-import com.github.hansi132.DiscordFab.DiscordBot.command.commands.IpCommand;
+import com.github.hansi132.discordfab.discordbot.commands.CommandContext;
+import com.github.hansi132.discordfab.discordbot.commands.ICommand;
+import com.github.hansi132.discordfab.discordbot.commands.commands.IpCommand;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.ArrayList;
@@ -11,10 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class CommandManager {
+public class CommandManagerOLD {
     private final List<ICommand> Commands = new ArrayList<>();
 
-    public CommandManager() {
+    public CommandManagerOLD() {
         addCommand(new IpCommand());
     }
 

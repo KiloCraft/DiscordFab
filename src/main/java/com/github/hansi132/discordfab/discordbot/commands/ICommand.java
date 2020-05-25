@@ -1,4 +1,4 @@
-package com.github.hansi132.DiscordFab.DiscordBot.command;
+package com.github.hansi132.discordfab.discordbot.commands;
 
 import java.util.Arrays;
 import java.util.List;

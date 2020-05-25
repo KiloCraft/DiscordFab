@@ -1,6 +1,6 @@
-package com.github.hansi132.DiscordFab;
+package com.github.hansi132.discordfab;
 
-import com.github.hansi132.DiscordFab.DiscordBot.BotMain;
+import com.github.hansi132.discordfab.discordbot.BotMain;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
