@@ -57,10 +57,10 @@ public class CommandManager {
             try {
                 index = (byte) this.dispatcher.execute(reader, executor);
             } catch (BotCommandException e) {
-                executor.sendError(e.getMessage());
+                executor.sendError(e.getMessage()).queue();
                 return index;
             } catch (CommandSyntaxException e) {
-                executor.sendError(e.getMessage());
+                executor.sendError(e.getMessage()).queue();
             }
         } catch (Exception e) {
             MessageBuilder message = new MessageBuilder(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
@@ -73,11 +73,11 @@ public class CommandManager {
                             .append(":").append(String.valueOf(element.getLineNumber()));
                 }
 
-                executor.sendError(Messages.getInnermostMessage(e));
+                executor.sendError(Messages.getInnermostMessage(e)).queue();
                 LOGGER.error("'{}' threw an exception", input, e);
             }
 
-            executor.sendError(message.build());
+            executor.sendError(message.build()).queue();
             return -1;
         }
 
