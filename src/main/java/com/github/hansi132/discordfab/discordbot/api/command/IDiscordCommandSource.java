@@ -1,5 +1,6 @@
 package com.github.hansi132.discordfab.discordbot.api.command;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -34,6 +35,8 @@ public interface IDiscordCommandSource {
     MessageAction sendFeedback(@NotNull final MessageEmbed embed);
 
     MessageAction sendError(@NotNull final CharSequence sequence);
+
+    MessageAction sendError(@NotNull final EmbedBuilder builder);
 
     MessageAction sendError(@NotNull final String string, @Nullable Object... objects);
 

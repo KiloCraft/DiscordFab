@@ -1,16 +1,18 @@
 package com.github.hansi132.discordfab.discordbot.api.text;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 
 public class Messages {
-    public static Message exceptionToMessage(@NotNull final Exception e) {
+    public static Message exceptionToMessage(@NotNull final Exception e, final int maxStackTraceElements) {
         MessageBuilder message = new MessageBuilder(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
         StackTraceElement[] elements = e.getStackTrace();
-        for (int i = 0; i < Math.min(elements.length, 3); i++) {
+        for (int i = 0; i < Math.min(elements.length, maxStackTraceElements); i++) {
             final StackTraceElement element = elements[i];
-            message.append("\n\n")
+            message.append("\n")
                     .append(element.getMethodName())
                     .append("\n ")
                     .append(element.getFileName())
@@ -27,4 +29,5 @@ public class Messages {
                         throwable.toString() : throwable.getMessage() :
                 getInnermostMessage(throwable.getCause());
     }
+
 }

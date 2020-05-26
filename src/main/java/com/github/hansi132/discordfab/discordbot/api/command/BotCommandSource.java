@@ -1,5 +1,6 @@
 package com.github.hansi132.discordfab.discordbot.api.command;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -7,6 +8,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.List;
 
 public class BotCommandSource implements IDiscordCommandSource {
@@ -97,6 +99,11 @@ public class BotCommandSource implements IDiscordCommandSource {
     @Override
     public MessageAction sendError(@NotNull CharSequence sequence) {
         return this.sendFeedback(sequence);
+    }
+
+    @Override
+    public MessageAction sendError(@NotNull EmbedBuilder builder) {
+        return this.channel.sendMessage(builder.setColor(Color.RED).build());
     }
 
     @Override

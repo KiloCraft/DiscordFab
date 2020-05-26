@@ -10,12 +10,15 @@ import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.Locale;
 import java.util.Map;
 
@@ -63,21 +66,19 @@ public class CommandManager {
                 executor.sendError(e.getMessage()).queue();
             }
         } catch (Exception e) {
-            MessageBuilder message = new MessageBuilder(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
-            if (isDevelopment) {
-                LOGGER.error("Command exception {}", input, e);
-                StackTraceElement[] elements = e.getStackTrace();
-                for (int i = 0; i < Math.min(elements.length, 3); i++) {
-                    final StackTraceElement element = elements[i];
-                    message.append("\n\n").append(element.getMethodName()).append("\n ").append(element.getFileName())
-                            .append(":").append(String.valueOf(element.getLineNumber()));
-                }
+            EmbedBuilder builder = new EmbedBuilder()
+                    .setTitle("An unexpected error occurred while trying to execute that command")
+                    .setDescription(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
 
+            if (isDevelopment) {
+                builder.appendDescription("\n" + Messages.exceptionToMessage(e, 6));
+                LOGGER.error("Command exception {}", input, e);
                 executor.sendError(Messages.getInnermostMessage(e)).queue();
+            } else {
                 LOGGER.error("'{}' threw an exception", input, e);
             }
 
-            executor.sendError(message.build()).queue();
+            executor.sendError(builder).queue();
             return -1;
         }
 
