@@ -14,12 +14,12 @@ public class DiscordFabBot {
     private static final Logger LOGGER = LogManager.getLogger();
     private final ShardManager shardManager;
 
-    public <E extends EventListener> DiscordFabBot(@NotNull String token,
-                                                   @NotNull E eventListener) throws LoginException {
+    public <E extends EventListener> DiscordFabBot(@NotNull String token, @NotNull E eventListener) throws LoginException {
         this.shardManager = DefaultShardManagerBuilder.create(
                 token,
-                GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS)
-        ).addEventListeners(eventListener).build();
+                GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
+                .addEventListeners(eventListener)
+                .build();
     }
 
     public ShardManager getShardManager() {
