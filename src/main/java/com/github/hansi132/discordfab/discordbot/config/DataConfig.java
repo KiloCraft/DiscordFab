@@ -1,11 +1,9 @@
 package com.github.hansi132.discordfab.discordbot.config;
 
-import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.util.Variables;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Properties;
@@ -13,7 +11,7 @@ import java.util.Properties;
 public class DataConfig {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Properties properties = new Properties();
-    private final File FILE = Variables.WORKING_PATH.resolve("data.properties").toFile();
+    private final File FILE = Variables.CONFIG_PATH.resolve("tokens.properties").toFile();
 
     public DataConfig() {
         if (FILE.exists()) {

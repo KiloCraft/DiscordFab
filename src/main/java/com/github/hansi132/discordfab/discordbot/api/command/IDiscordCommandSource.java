@@ -1,5 +1,7 @@
 package com.github.hansi132.discordfab.discordbot.api.command;
 
+import com.github.hansi132.discordfab.discordbot.api.text.Messages;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -33,7 +35,13 @@ public interface IDiscordCommandSource {
 
     MessageAction sendFeedback(@NotNull final MessageEmbed embed);
 
+    MessageAction sendFeedback(@NotNull final Messages.Builder builder);
+
     MessageAction sendError(@NotNull final CharSequence sequence);
+
+    MessageAction sendError(@NotNull final EmbedBuilder builder);
+
+    MessageAction sendError(@NotNull final Messages.Builder builder);
 
     MessageAction sendError(@NotNull final String string, @Nullable Object... objects);
 
