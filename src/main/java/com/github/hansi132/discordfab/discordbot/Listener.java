@@ -1,4 +1,4 @@
-package com.github.hansi132.DiscordFab.discordbot;
+package com.github.hansi132.discordfab.discordbot;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;

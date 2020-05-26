@@ -1,9 +1,9 @@
-package com.github.hansi132.DiscordFab.discordbot;
+package com.github.hansi132.discordfab.discordbot;
 
 
-import com.github.hansi132.DiscordFab.discordbot.commands.CommandContext;
-import com.github.hansi132.DiscordFab.discordbot.commands.ICommand;
-import com.github.hansi132.DiscordFab.discordbot.commands.commands.IpCommand;
+import com.github.hansi132.discordfab.discordbot.commands.CommandContext;
+import com.github.hansi132.discordfab.discordbot.commands.ICommand;
+import com.github.hansi132.discordfab.discordbot.commands.commands.IpCommand;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.ArrayList;

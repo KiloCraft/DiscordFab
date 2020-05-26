@@ -1,4 +1,4 @@
-package com.github.hansi132.DiscordFab.discordbot;
+package com.github.hansi132.discordfab.discordbot;
 
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.requests.GatewayIntent;

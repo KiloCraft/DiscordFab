@@ -1,8 +1,8 @@
-package com.github.hansi132.DiscordFab;
+package com.github.hansi132.discordfab;
 
-import com.github.hansi132.DiscordFab.discordbot.DiscordFabBot;
-import com.github.hansi132.DiscordFab.discordbot.Listener;
-import com.github.hansi132.DiscordFab.discordbot.config.DataConfig;
+import com.github.hansi132.discordfab.discordbot.DiscordFabBot;
+import com.github.hansi132.discordfab.discordbot.Listener;
+import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.logging.log4j.LogManager;
