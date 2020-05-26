@@ -5,6 +5,7 @@ import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.api.command.exception.BotCommandException;
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
+import com.github.hansi132.discordfab.discordbot.commands.IpCommand;
 import com.github.hansi132.discordfab.discordbot.commands.PingCommand;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
@@ -31,6 +32,7 @@ public class CommandManager {
         this.dispatcher = new CommandDispatcher<>();
 
         this.register(new PingCommand());
+        this.register(new IpCommand());
     }
 
     public <C extends DiscordFabCommand> void register(C command) {
