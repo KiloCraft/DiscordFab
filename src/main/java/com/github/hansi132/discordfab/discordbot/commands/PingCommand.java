@@ -4,7 +4,6 @@ import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.api.text.Format;
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 
 public class PingCommand extends DiscordFabCommand {
