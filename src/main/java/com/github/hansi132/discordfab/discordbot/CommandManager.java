@@ -63,13 +63,12 @@ public class CommandManager {
                 executor.sendError(e.getJDAMessage()).queue();
                 return index;
             } catch (CommandSyntaxException e) {
-                executor.sendError(e.getMessage()).queue();
+                executor.sendError(new EmbedBuilder().setDescription(e.getMessage())).queue();
+                return index;
             }
         } catch (Exception e) {
             EmbedBuilder builder = new EmbedBuilder()
-                    .setTitle("An unexpected error occurred while trying to execute that command")
-                    .setDescription(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
-
+                    .setTitle("An unexpected error occurred while trying to execute that command");
             builder.addField("Exception message", Messages.getInnermostMessage(e), false);
 
             if (isDevelopment) {

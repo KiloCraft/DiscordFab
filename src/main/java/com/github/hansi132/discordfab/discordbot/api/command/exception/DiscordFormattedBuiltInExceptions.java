@@ -18,49 +18,49 @@ public class DiscordFormattedBuiltInExceptions implements BuiltInExceptionProvid
     @Override
     public Dynamic2CommandExceptionType doubleTooHigh() {
         return new Dynamic2CommandExceptionType((found, max) ->
-                new Messages.Builder("Double must not be more than ").append(Format.BOLD, max).append(", found").append(Format.BOLD, found)
+                new Messages.Builder("Double must not be more than ").append(Format.BOLD, max).append(", found ").append(Format.BOLD, found)
         );
     }
 
     @Override
     public Dynamic2CommandExceptionType floatTooLow() {
         return new Dynamic2CommandExceptionType((found, min) ->
-                new Messages.Builder("Float must not be less than ").append(Format.BOLD, min).append(", found").append(Format.BOLD, found)
+                new Messages.Builder("Float must not be less than ").append(Format.BOLD, min).append(", found ").append(Format.BOLD, found)
         );
     }
 
     @Override
     public Dynamic2CommandExceptionType floatTooHigh() {
         return new Dynamic2CommandExceptionType((found, max) ->
-                new Messages.Builder("Float must not be more than ").append(Format.BOLD, max).append(", found").append(Format.BOLD, found)
+                new Messages.Builder("Float must not be more than ").append(Format.BOLD, max).append(", found ").append(Format.BOLD, found)
         );
     }
 
     @Override
     public Dynamic2CommandExceptionType integerTooLow() {
         return new Dynamic2CommandExceptionType((found, min) ->
-                new Messages.Builder("Integer must not be less than ").append(Format.BOLD, min).append(", found").append(Format.BOLD, found)
+                new Messages.Builder("Integer must not be less than ").append(Format.BOLD, min).append(", found ").append(Format.BOLD, found)
         );
     }
 
     @Override
     public Dynamic2CommandExceptionType integerTooHigh() {
         return new Dynamic2CommandExceptionType((found, max) ->
-                new Messages.Builder("Integer must not be more than ").append(Format.BOLD, max).append(", found").append(Format.BOLD, found)
+                new Messages.Builder("Integer must not be more than ").append(Format.BOLD, max).append(", found ").append(Format.BOLD, found)
         );
     }
 
     @Override
     public Dynamic2CommandExceptionType longTooLow() {
         return new Dynamic2CommandExceptionType((found, min) ->
-                new Messages.Builder("Long must not be less than ").append(Format.BOLD, min).append(", found").append(Format.BOLD, found)
+                new Messages.Builder("Long must not be less than ").append(Format.BOLD, min).append(", found ").append(Format.BOLD, found)
         );
     }
 
     @Override
     public Dynamic2CommandExceptionType longTooHigh() {
         return new Dynamic2CommandExceptionType((found, max) ->
-                new Messages.Builder("Long must not be more than ").append(Format.BOLD, max).append(", found").append(Format.BOLD, found)
+                new Messages.Builder("Long must not be more than ").append(Format.BOLD, max).append(", found ").append(Format.BOLD, found)
         );
     }
 
