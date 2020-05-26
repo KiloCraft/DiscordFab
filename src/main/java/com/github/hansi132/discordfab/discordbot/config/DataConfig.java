@@ -2,16 +2,16 @@ package com.github.hansi132.discordfab.discordbot.config;
 
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.util.Variables;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.Date;
 import java.util.Properties;
 
 public class DataConfig {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordFab.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     private final Properties properties = new Properties();
     private final File FILE = Variables.WORKING_PATH.resolve("data.properties").toFile();
 
@@ -24,6 +24,7 @@ public class DataConfig {
             }
         } else {
             properties.put("token", "*paste bot token here*");
+            properties.put("webhook_url", "*paste webhook_url here*");
             try {
                 this.saveProperties();
             } catch (IOException e) {
@@ -39,7 +40,7 @@ public class DataConfig {
 
     public void saveProperties() throws IOException {
         final OutputStream out = new FileOutputStream(FILE);
-        properties.store(out,  "DiscordFab tokens properties");
+        properties.store(out, "DiscordFab tokens properties");
     }
 
     public Properties getProperties() {
