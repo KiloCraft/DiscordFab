@@ -1,6 +1,6 @@
 package com.github.hansi132.discordfab.discordbot;
 
-import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import com.github.hansi132.discordfab.discordbot.webhooks.WebhookMessageHandler;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -24,11 +24,7 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         if (event.isFromType(ChannelType.PRIVATE)) {
-            WebhookMessageBuilder builder = new WebhookMessageBuilder()
-                    .setUsername(event.getAuthor().getName())
-                    .setAvatarUrl(event.getAuthor().getEffectiveAvatarUrl().replaceFirst("gif", "png" + "?size=512"))
-                    .setContent(event.getMessage().getContentRaw());
-            new Webhook(builder);
+            new WebhookMessageHandler(event);
         }
     }
 
