@@ -1,6 +1,7 @@
 package com.github.hansi132.discordfab.discordbot.api.command;
 
 import com.github.hansi132.discordfab.DiscordFab;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -37,5 +38,15 @@ public abstract class DiscordFabCommand {
     public static <T> RequiredArgumentBuilder<BotCommandSource, T> argument(@NotNull final String label,
                                                                             @NotNull final ArgumentType<T> type) {
         return RequiredArgumentBuilder.argument(label, type);
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    public DiscordFabCommand register(@NotNull final CommandDispatcher<BotCommandSource> dispatcher) {
+        dispatcher.register(argBuilder);
+        dispatcher.getRoot().addChild(cmdNode);
+        return this;
     }
 }

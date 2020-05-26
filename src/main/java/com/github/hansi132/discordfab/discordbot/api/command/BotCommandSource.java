@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class BotCommandSource implements IDiscordCommandSource {
                             @NotNull final Guild guild,
                             @NotNull final TextChannel channel,
                             @NotNull final User user,
-                            @NotNull final Member member,
+                            @Nullable final Member member,
                             @NotNull final GuildMessageReceivedEvent event) {
         this.api = api;
         this.name = name;
@@ -58,9 +59,14 @@ public class BotCommandSource implements IDiscordCommandSource {
         return this.user;
     }
 
+    @Nullable
     @Override
     public Member getMember() {
         return this.member;
+    }
+
+    public boolean isWebhookMessage() {
+        return this.event.isWebhookMessage();
     }
 
     @Override
