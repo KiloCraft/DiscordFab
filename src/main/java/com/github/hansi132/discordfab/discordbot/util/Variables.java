@@ -1,6 +1,5 @@
 package com.github.hansi132.discordfab.discordbot.util;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 

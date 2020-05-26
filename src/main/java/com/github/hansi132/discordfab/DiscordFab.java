@@ -1,25 +1,56 @@
 package com.github.hansi132.discordfab;
 
-import com.github.hansi132.discordfab.discordbot.BotMain;
-import net.fabricmc.api.DedicatedServerModInitializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.github.hansi132.discordfab.discordbot.DiscordFabBot;
+import com.github.hansi132.discordfab.discordbot.Listener;
+import com.github.hansi132.discordfab.discordbot.config.DataConfig;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.sharding.ShardManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
 
-public class DiscordFab implements DedicatedServerModInitializer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordFab.class);
+public class DiscordFab {
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static DiscordFab INSTANCE;
+    private static ShardManager bot;
+    private boolean isDevelopment = false;
+    private final DataConfig dataConfig;
 
-    @Override
-    public void onInitializeServer() {
+    DiscordFab(@NotNull final DataConfig dataConfig) {
+        this.dataConfig = dataConfig;
+        this.isDevelopment = this.dataConfig.getProperties().containsKey("debug");
+
         try {
-            new BotMain();
+            bot = new DiscordFabBot(
+                    dataConfig.getToken(),
+                    new Listener()
+            ).getShardManager();
+
+            if (isDevelopment) {
+                LOGGER.info("**** DiscordFab IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
+                bot.setActivity(Activity.playing("Debugging"));
+            }
         } catch (LoginException e) {
-            LOGGER.warn(String.valueOf(e));
+            LOGGER.fatal("Can not log into the bot!", e);
+        } finally {
+            LOGGER.info("Successfully logged in");
         }
+
+
+        INSTANCE = this;
     }
 
-    public static Logger getLogger() {
-        return LOGGER;
+    public boolean isDevelopment() {
+        return this.isDevelopment;
+    }
+
+    public static DiscordFab getInstance() {
+        if (INSTANCE == null) {
+            throw new RuntimeException("Its too early to get a static instance of DiscordFab!");
+        }
+
+        return INSTANCE;
     }
 }
