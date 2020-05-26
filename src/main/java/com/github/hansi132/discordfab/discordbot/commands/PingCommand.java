@@ -24,6 +24,7 @@ public class PingCommand extends DiscordFabCommand {
         );
 
         return (int) ping;
+
     }
 
 }

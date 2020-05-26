@@ -6,6 +6,7 @@ import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.api.command.exception.BotCommandException;
 import com.github.hansi132.discordfab.discordbot.api.command.exception.DiscordFormattedBuiltInExceptions;
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
+import com.github.hansi132.discordfab.discordbot.commands.IpCommand;
 import com.github.hansi132.discordfab.discordbot.commands.PingCommand;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
@@ -34,6 +35,7 @@ public class CommandManager {
         CommandSyntaxException.BUILT_IN_EXCEPTIONS = new DiscordFormattedBuiltInExceptions();
 
         this.register(new PingCommand());
+        this.register(new IpCommand());
     }
 
     public <C extends DiscordFabCommand> void register(C command) {
