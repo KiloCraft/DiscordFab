@@ -13,7 +13,7 @@ import java.util.Properties;
 public class DataConfig {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Properties properties = new Properties();
-    private final File FILE = Variables.WORKING_PATH.resolve("data.properties").toFile();
+    private final File FILE = Variables.CONFIG_PATH.resolve("data.properties").toFile();
 
     public DataConfig() {
         if (FILE.exists()) {
