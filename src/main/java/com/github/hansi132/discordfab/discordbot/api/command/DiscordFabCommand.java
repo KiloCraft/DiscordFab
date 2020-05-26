@@ -9,6 +9,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class DiscordFabCommand {
     protected static final transient int SUCCESS = 1;
@@ -23,12 +24,14 @@ public abstract class DiscordFabCommand {
     protected transient LiteralCommandNode<BotCommandSource> cmdNode;
 
     public DiscordFabCommand(@NotNull final String label) {
-        this.label = label;
+        this(label, (String[]) null);
     }
 
-    public DiscordFabCommand(@NotNull final String label, @NotNull final String... alias) {
+    public DiscordFabCommand(@NotNull final String label, @Nullable final String... alias) {
         this.label = label;
         this.alias = alias;
+        this.argBuilder = literal(label);
+        this.cmdNode = this.argBuilder.build();
     }
 
     public static LiteralArgumentBuilder<BotCommandSource> literal(@NotNull final String label) {
