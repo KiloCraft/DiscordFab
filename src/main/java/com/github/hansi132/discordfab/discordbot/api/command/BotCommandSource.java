@@ -80,7 +80,7 @@ public class BotCommandSource implements IDiscordCommandSource {
     }
 
     @Override
-    public MessageAction sendFeedback(@NotNull String string, Object... objects) {
+    public MessageAction sendFeedback(@NotNull String string, @Nullable Object... objects) {
         return this.channel.sendMessageFormat(string, objects);
     }
 
@@ -92,6 +92,21 @@ public class BotCommandSource implements IDiscordCommandSource {
     @Override
     public MessageAction sendFeedback(@NotNull MessageEmbed embed) {
         return this.channel.sendMessage(embed);
+    }
+
+    @Override
+    public MessageAction sendError(@NotNull CharSequence sequence) {
+        return this.sendFeedback(sequence);
+    }
+
+    @Override
+    public MessageAction sendError(@NotNull String string, @Nullable Object... objects) {
+        return this.sendFeedback(string, objects);
+    }
+
+    @Override
+    public MessageAction sendError(@NotNull Message message) {
+        return this.sendFeedback(message);
     }
 
     @Override

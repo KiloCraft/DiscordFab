@@ -27,11 +27,17 @@ public interface IDiscordCommandSource {
 
     MessageAction sendFeedback(@NotNull final CharSequence sequence);
 
-    MessageAction sendFeedback(@NotNull final String string, Object... objects);
+    MessageAction sendFeedback(@NotNull final String string, @Nullable Object... objects);
 
     MessageAction sendFeedback(@NotNull final Message message);
 
     MessageAction sendFeedback(@NotNull final MessageEmbed embed);
+
+    MessageAction sendError(@NotNull final CharSequence sequence);
+
+    MessageAction sendError(@NotNull final String string, @Nullable Object... objects);
+
+    MessageAction sendError(@NotNull final Message message);
 
     GuildMessageReceivedEvent getEvent();
 
