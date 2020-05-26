@@ -4,6 +4,7 @@ import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.api.command.exception.BotCommandException;
+import com.github.hansi132.discordfab.discordbot.api.command.exception.DiscordFormattedBuiltInExceptions;
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
 import com.github.hansi132.discordfab.discordbot.commands.PingCommand;
 import com.google.common.collect.Maps;
@@ -12,18 +13,16 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.Locale;
 import java.util.Map;
 
 public class CommandManager {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(DiscordFab.class);
     private static boolean isDevelopment;
     private final Map<String, DiscordFabCommand> commands;
     private final CommandDispatcher<BotCommandSource> dispatcher;
@@ -32,6 +31,7 @@ public class CommandManager {
         isDevelopment = discordFab.isDevelopment();
         this.commands = Maps.newHashMap();
         this.dispatcher = new CommandDispatcher<>();
+        CommandSyntaxException.BUILT_IN_EXCEPTIONS = new DiscordFormattedBuiltInExceptions();
 
         this.register(new PingCommand());
     }
@@ -60,7 +60,7 @@ public class CommandManager {
             try {
                 index = (byte) this.dispatcher.execute(reader, executor);
             } catch (BotCommandException e) {
-                executor.sendError(e.getMessage()).queue();
+                executor.sendError(e.getJDAMessage()).queue();
                 return index;
             } catch (CommandSyntaxException e) {
                 executor.sendError(e.getMessage()).queue();
@@ -70,10 +70,20 @@ public class CommandManager {
                     .setTitle("An unexpected error occurred while trying to execute that command")
                     .setDescription(e.getMessage() == null ? e.getClass().getName() : e.getMessage());
 
+            builder.addField("Exception message", Messages.getInnermostMessage(e), false);
+
             if (isDevelopment) {
-                builder.appendDescription("\n" + Messages.exceptionToMessage(e, 6));
+                StringBuilder stringBuilder = new StringBuilder();
+                StackTraceElement[] elements = e.getStackTrace();
+                for (int i = 0; i < Math.min(elements.length, 3); i++) {
+                    final StackTraceElement element = elements[i];
+                    stringBuilder.append("\n")
+                            .append(element.getMethodName()).append("\n ").append(element.getFileName()).append(":")
+                            .append(element.getLineNumber());
+                }
+
+                builder.addField("Stack trace", stringBuilder.toString(), false);
                 LOGGER.error("Command exception {}", input, e);
-                executor.sendError(Messages.getInnermostMessage(e)).queue();
             } else {
                 LOGGER.error("'{}' threw an exception", input, e);
             }

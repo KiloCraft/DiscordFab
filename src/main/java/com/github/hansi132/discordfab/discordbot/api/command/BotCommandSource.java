@@ -103,7 +103,7 @@ public class BotCommandSource implements IDiscordCommandSource {
 
     @Override
     public MessageAction sendError(@NotNull EmbedBuilder builder) {
-        return this.channel.sendMessage(builder.setColor(Color.RED).build());
+        return this.sendFeedback(builder.setColor(Color.RED).build());
     }
 
     @Override

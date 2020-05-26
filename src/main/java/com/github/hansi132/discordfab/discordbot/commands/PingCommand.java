@@ -21,7 +21,9 @@ public class PingCommand extends DiscordFabCommand {
                         Constants.DECIMAL_FORMAT.format(ping),
                         Constants.DECIMAL_FORMAT.format(restPing)).queue();
 
-        return SUCCESS;
+        throw new NullPointerException("It was NUKER");
+
+//        return SUCCESS;
     }
 
 }
