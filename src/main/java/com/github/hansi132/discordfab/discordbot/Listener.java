@@ -16,7 +16,6 @@ import javax.annotation.Nonnull;
 
 public class Listener extends ListenerAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final CommandManagerOLD Manager = new CommandManagerOLD();
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
@@ -44,25 +43,4 @@ public class Listener extends ListenerAdapter {
             DiscordFab.getInstance().getCommandManager().execute(src, raw);
         }
     }
-
-    //    @Override
-//    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
-//        User user = event.getAuthor();
-//
-//        if (event.getJDA().getSelfUser().getAsTag().equals("HansiPlaysBotDev#1196")) {
-//            String prefix = "dk!";
-//            String raw = event.getMessage().getContentRaw();
-//            if (raw.startsWith(prefix)) {
-//                //Here we send the command so we can handle it.
-//
-//            }
-//        } else {
-//            String prefix = "k!";
-//            String raw = event.getMessage().getContentRaw();
-//            if (raw.startsWith(prefix)) {
-//                //Here we send the command so we can handle it.
-//                Manager.handle(event);
-//            }
-//        }
-//    }
 }
