@@ -19,7 +19,7 @@ public class PingCommand extends DiscordFabCommand {
         src.sendFeedback("Pong! ")
                 .appendFormat("The Gateway latency is %s and the REST API latency is %s",
                         Constants.DECIMAL_FORMAT.format(ping),
-                        Constants.DECIMAL_FORMAT.format(restPing));
+                        Constants.DECIMAL_FORMAT.format(restPing)).queue();
 
         return SUCCESS;
     }
