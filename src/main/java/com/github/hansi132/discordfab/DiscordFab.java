@@ -19,6 +19,7 @@ public class DiscordFab {
     private final DataConfig dataConfig;
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
+        INSTANCE = this;
         this.dataConfig = dataConfig;
         this.isDevelopment = this.dataConfig.getProperties().containsKey("debug");
 
@@ -38,8 +39,6 @@ public class DiscordFab {
             LOGGER.info("Successfully logged in");
         }
 
-
-        INSTANCE = this;
     }
 
     public boolean isDevelopment() {

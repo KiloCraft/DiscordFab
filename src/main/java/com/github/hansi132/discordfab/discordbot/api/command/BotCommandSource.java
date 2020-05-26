@@ -69,8 +69,8 @@ public class BotCommandSource implements IDiscordCommandSource {
     }
 
     @Override
-    public MessageAction sendFeedback(@NotNull CharSequence sequence) {
-        return this.channel.sendMessage(sequence);
+    public MessageAction sendFeedback(@NotNull CharSequence charSequence) {
+        return this.channel.sendMessage(charSequence);
     }
 
     @Override
