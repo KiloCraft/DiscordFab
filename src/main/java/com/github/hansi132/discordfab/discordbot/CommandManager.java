@@ -49,13 +49,13 @@ public class CommandManager {
     public int execute(@NotNull final BotCommandSource executor, @NotNull final String input) {
         final StringReader reader = new StringReader(input);
         if (reader.canRead() && reader.getString().startsWith("k!")) {
-            reader.skip();
+            reader.setCursor(2);
         }
 
         byte index = 0;
         try {
             try {
-                return this.dispatcher.execute(reader, executor);
+                index = (byte) this.dispatcher.execute(reader, executor);
             } catch (BotCommandException e) {
                 executor.sendError(e.getMessage());
                 return index;
@@ -78,7 +78,7 @@ public class CommandManager {
             }
 
             executor.sendError(message.build());
-            return 0;
+            return -1;
         }
 
         return index;
