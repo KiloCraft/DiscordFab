@@ -35,12 +35,13 @@ public class Listener extends ListenerAdapter {
 
         String prefix = "k!";
         String raw = event.getMessage().getContentRaw();
+
         if (raw.startsWith(prefix)) {
             BotCommandSource src = new BotCommandSource(
                     event.getJDA(), user.getName(), event.getGuild(), event.getChannel(), user, event.getMember(), event
             );
 
-            DiscordFab.getInstance().getCommandManager().execute(src, raw);
+            DiscordFab.getInstance().getCommandManager().execute(src, raw.replaceFirst("k!", ""));
         }
     }
 }

@@ -49,7 +49,7 @@ public class CommandManager {
     public int execute(@NotNull final BotCommandSource executor, @NotNull final String input) {
         final StringReader reader = new StringReader(input);
         if (reader.canRead() && reader.getString().startsWith("k!")) {
-            reader.skip();
+            reader.setCursor(2);
         }
 
         byte index = 0;
