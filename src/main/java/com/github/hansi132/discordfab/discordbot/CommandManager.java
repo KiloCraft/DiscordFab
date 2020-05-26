@@ -5,6 +5,7 @@ import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.api.command.exception.BotCommandException;
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
+import com.github.hansi132.discordfab.discordbot.commands.PingCommand;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
@@ -28,6 +29,8 @@ public class CommandManager {
         isDevelopment = discordFab.isDevelopment();
         this.commands = Maps.newHashMap();
         this.dispatcher = new CommandDispatcher<>();
+
+        this.register(new PingCommand());
     }
 
     public <C extends DiscordFabCommand> void register(C command) {
@@ -52,7 +55,7 @@ public class CommandManager {
         byte index = 0;
         try {
             try {
-                return this.dispatcher.execute(reader, executor);
+                index = (byte) this.dispatcher.execute(reader, executor);
             } catch (BotCommandException e) {
                 executor.sendError(e.getMessage());
                 return index;
@@ -75,7 +78,7 @@ public class CommandManager {
             }
 
             executor.sendError(message.build());
-            return 0;
+            return -1;
         }
 
         return index;
