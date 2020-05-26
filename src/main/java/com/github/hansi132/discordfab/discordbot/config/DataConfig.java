@@ -40,7 +40,7 @@ public class DataConfig {
 
     public void saveProperties() throws IOException {
         final OutputStream out = new FileOutputStream(FILE);
-        properties.store(out, "DiscordFab tokens properties");
+        properties.store(out, "DiscordFab data properties");
     }
 
     public Properties getProperties() {
