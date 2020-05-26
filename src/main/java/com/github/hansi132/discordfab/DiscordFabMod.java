@@ -1,6 +1,6 @@
-package com.github.hansi132.discordfab;
+package com.github.hansi132.DiscordFab;
 
-import com.github.hansi132.discordfab.discordbot.config.DataConfig;
+import com.github.hansi132.DiscordFab.discordbot.config.DataConfig;
 import net.fabricmc.api.DedicatedServerModInitializer;
 
 public class DiscordFabMod implements DedicatedServerModInitializer {

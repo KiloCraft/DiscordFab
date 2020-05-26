@@ -1,7 +1,5 @@
-package com.github.hansi132.discordfab.discordbot;
+package com.github.hansi132.DiscordFab.discordbot;
 
-import com.github.hansi132.discordfab.DiscordFab;
-import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;

@@ -1,13 +1,12 @@
-package com.github.hansi132.discordfab.discordbot.config;
+package com.github.hansi132.DiscordFab.discordbot.config;
 
-import com.github.hansi132.discordfab.DiscordFab;
-import com.github.hansi132.discordfab.discordbot.util.Variables;
+import com.github.hansi132.DiscordFab.DiscordFab;
+import com.github.hansi132.DiscordFab.discordbot.util.Variables;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.Date;
 import java.util.Properties;
 
 public class DataConfig {
@@ -39,7 +38,7 @@ public class DataConfig {
 
     public void saveProperties() throws IOException {
         final OutputStream out = new FileOutputStream(FILE);
-        properties.store(out,  "DiscordFab tokens properties");
+        properties.store(out, "DiscordFab tokens properties");
     }
 
     public Properties getProperties() {

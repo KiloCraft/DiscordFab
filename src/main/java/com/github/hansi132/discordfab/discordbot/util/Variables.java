@@ -1,4 +1,4 @@
-package com.github.hansi132.discordfab.discordbot.util;
+package com.github.hansi132.DiscordFab.discordbot.util;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
