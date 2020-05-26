@@ -47,6 +47,19 @@ public abstract class DiscordFabCommand {
     public DiscordFabCommand register(@NotNull final CommandDispatcher<BotCommandSource> dispatcher) {
         dispatcher.register(argBuilder);
         dispatcher.getRoot().addChild(cmdNode);
+
+        if (this.alias != null) {
+            for (String s : this.alias) {
+                LiteralArgumentBuilder<BotCommandSource> builder = literal(s).requires(this.argBuilder.getRequirement());
+
+                if (this.argBuilder.getCommand() != null) {
+                    builder.executes(this.argBuilder.getCommand());
+                }
+
+                dispatcher.register(builder);
+            }
+        }
+
         return this;
     }
 }
