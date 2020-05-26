@@ -36,6 +36,7 @@ public class Listener extends ListenerAdapter {
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
         User user = event.getAuthor();
 
+
         if (event.getJDA().getSelfUser().getAsTag().equals("HansiPlaysBotDev#1196")) {
             String prefix = "dk!";
             String raw = event.getMessage().getContentRaw();
