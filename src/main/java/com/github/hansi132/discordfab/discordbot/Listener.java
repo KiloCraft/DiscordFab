@@ -1,7 +1,5 @@
-package com.github.hansi132.DiscordFab.DiscordBot;
+package com.github.hansi132.discordfab.discordbot;
 
-import club.minnced.discord.webhook.WebhookClient;
-import club.minnced.discord.webhook.WebhookClientBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.User;
@@ -9,24 +7,23 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.kilocraft.essentials.api.KiloEssentials;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 
 public class Listener extends ListenerAdapter {
-    final Logger Logger = LoggerFactory.getLogger(Listener.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     private final CommandManager Manager = new CommandManager();
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
-        Logger.info("{} is ready", event.getJDA().getSelfUser().getAsTag());
+        LOGGER.info("{} is ready", event.getJDA().getSelfUser().getAsTag());
     }
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-        if(event.isFromType(ChannelType.PRIVATE)) {
+        if (event.isFromType(ChannelType.PRIVATE)) {
             WebhookMessageBuilder builder = new WebhookMessageBuilder()
                     .setUsername(event.getAuthor().getName())
                     .setAvatarUrl(event.getAuthor().getEffectiveAvatarUrl().replaceFirst("gif", "png" + "?size=512"))

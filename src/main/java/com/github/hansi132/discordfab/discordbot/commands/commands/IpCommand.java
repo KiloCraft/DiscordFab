@@ -1,11 +1,9 @@
-package com.github.hansi132.DiscordFab.DiscordBot.command.commands;
+package com.github.hansi132.discordfab.discordbot.commands.commands;
 
 
-import com.github.hansi132.DiscordFab.DiscordBot.command.CommandContext;
-import com.github.hansi132.DiscordFab.DiscordBot.command.ICommand;
+import com.github.hansi132.discordfab.discordbot.commands.CommandContext;
+import com.github.hansi132.discordfab.discordbot.commands.ICommand;
 import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.user.setting.Settings;
 
 public class IpCommand implements ICommand {
 

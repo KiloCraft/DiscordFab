@@ -1,8 +1,7 @@
-package com.github.hansi132.DiscordFab.DiscordBot;
+package com.github.hansi132.discordfab.discordbot;
 
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.WebhookClientBuilder;
-import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 
 public class Webhook {
