@@ -1,5 +1,6 @@
 package com.github.hansi132.discordfab;
 
+import com.github.hansi132.discordfab.discordbot.CommandManager;
 import com.github.hansi132.discordfab.discordbot.DiscordFabBot;
 import com.github.hansi132.discordfab.discordbot.Listener;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
@@ -17,10 +18,14 @@ public class DiscordFab {
     private static ShardManager bot;
     private boolean isDevelopment = false;
     private final DataConfig dataConfig;
+    private final CommandManager commandManager;
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
+        INSTANCE = this;
         this.dataConfig = dataConfig;
         this.isDevelopment = this.dataConfig.getProperties().containsKey("debug");
+
+        this.commandManager = new CommandManager(this);
 
         try {
             bot = new DiscordFabBot(
@@ -38,8 +43,6 @@ public class DiscordFab {
             LOGGER.info("Successfully logged in");
         }
 
-
-        INSTANCE = this;
     }
 
     public boolean isDevelopment() {
@@ -52,5 +55,9 @@ public class DiscordFab {
         }
 
         return INSTANCE;
+    }
+
+    public CommandManager getCommandManager() {
+        return this.commandManager;
     }
 }
