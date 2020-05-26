@@ -11,20 +11,6 @@ public class PingCommand extends DiscordFabCommand {
     public PingCommand() {
         super("ping");
         this.argBuilder.executes(this::execute);
-
-        this.argBuilder.then(
-                argument("something", IntegerArgumentType.integer(0, 3))
-                        .executes((ctx) -> {
-                            ctx.getSource().sendFeedback(
-                                    new Messages.Builder("You've entered ")
-                                            .append(Format.BOLD, IntegerArgumentType.getInteger(ctx, "something"))
-                                            .append("! owo").append('\n')
-                                            .append("Format Test", Format.BOLD, Format.ITALIC, Format.UNDER_LINE).toJDAMessage()
-                            ).queue();
-
-                            return SUCCESS;
-                        })
-        );
     }
 
     private int execute(final CommandContext<BotCommandSource> ctx) {
