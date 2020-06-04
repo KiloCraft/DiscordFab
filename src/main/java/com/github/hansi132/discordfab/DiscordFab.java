@@ -4,7 +4,6 @@ import com.github.hansi132.discordfab.discordbot.CommandManager;
 import com.github.hansi132.discordfab.discordbot.DiscordFabBot;
 import com.github.hansi132.discordfab.discordbot.Listener;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
-import com.github.hansi132.discordfab.discordbot.util.Variables;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.logging.log4j.LogManager;
@@ -12,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
-import java.io.File;
 
 public class DiscordFab {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -34,11 +32,13 @@ public class DiscordFab {
                     dataConfig.getToken(),
                     new Listener()
             ).getShardManager();
+            bot.setActivity(Activity.playing("50kilo.org"));
 
             if (isDevelopment) {
                 LOGGER.info("**** DiscordFab IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
                 bot.setActivity(Activity.playing("Debugging"));
             }
+
         } catch (LoginException e) {
             LOGGER.fatal("Can not log into the bot!", e);
         } finally {
