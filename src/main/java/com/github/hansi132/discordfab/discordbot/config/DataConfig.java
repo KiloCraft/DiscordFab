@@ -23,6 +23,8 @@ public class DataConfig {
         } else {
             properties.put("token", "*paste bot token here*");
             properties.put("webhook_url", "*paste webhook_url here*");
+            properties.put("broadcast", "*Need new name, (Channel id of the broadcast channel.)*");
+            properties.put("broadcastEnable", "*True or false*");
             try {
                 this.saveProperties();
             } catch (IOException e) {

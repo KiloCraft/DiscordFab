@@ -13,8 +13,6 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.TextMessage;
 
 import javax.annotation.Nonnull;
 
@@ -43,9 +41,9 @@ public class Listener extends ListenerAdapter {
         User user = event.getAuthor();
         if (!user.isBot()) {
             //Basic broadcast function to send messages discord->MC
-            if (event.getChannel().getId().equals(new DataConfig().getProperty("broadcast"))) {
-                TextMessage text = new TextMessage(event.getAuthor().getAsTag() + ": " + event.getMessage().getContentDisplay());
-                KiloChat.broadCast(text);
+
+            if (new DataConfig().getProperty("broadcastEnable").equals("true")) {
+                new mcBroadcaster(event);
             }
 
             String prefix = "k!";
