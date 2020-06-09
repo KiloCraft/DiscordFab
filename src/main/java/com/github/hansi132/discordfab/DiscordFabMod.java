@@ -17,5 +17,6 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
         new DiscordFab(
                 new DataConfig()
         );
+
     }
 }

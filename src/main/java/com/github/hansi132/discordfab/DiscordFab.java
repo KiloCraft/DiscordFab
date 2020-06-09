@@ -62,4 +62,8 @@ public class DiscordFab {
     public CommandManager getCommandManager() {
         return this.commandManager;
     }
+
+    public static ShardManager getBot() {
+        return DiscordFab.bot;
+    }
 }

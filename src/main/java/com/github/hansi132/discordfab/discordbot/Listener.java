@@ -41,9 +41,8 @@ public class Listener extends ListenerAdapter {
         User user = event.getAuthor();
         if (!user.isBot()) {
             //Basic broadcast function to send messages discord->MC
-
             if (new DataConfig().getProperty("broadcastEnable").equals("true")) {
-                new mcBroadcaster(event);
+                new McBroadcaster(event);
             }
 
             String prefix = "k!";

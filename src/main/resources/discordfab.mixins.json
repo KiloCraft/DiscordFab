@@ -3,10 +3,8 @@
   "package": "com.github.hansi132.discordfab.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-
   ],
   "client": [
-
   ],
   "injectors": {
     "defaultRequire": 1
