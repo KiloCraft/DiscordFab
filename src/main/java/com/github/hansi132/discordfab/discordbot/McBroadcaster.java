@@ -10,7 +10,7 @@ import java.util.Objects;
 public class McBroadcaster {
 
     public McBroadcaster(GuildMessageReceivedEvent event) {
-        if (event.getChannel().getId().equals(new DataConfig().getProperty("broadcast"))) {
+        if (event.getChannel().getId().equals(new DataConfig().getProperty("broadcastChannel"))) {
             String colorPrefix = "&7";
             String prefix = "Guest";
 
@@ -40,6 +40,10 @@ public class McBroadcaster {
                     colorPrefix = "&a";
                     prefix = "B";
                     break;
+                case "Kilocrafter+":
+                    colorPrefix = "&6";
+                    prefix = "KC+";
+                    break;
                 case "Kilocrafter":
                     colorPrefix = "&6";
                     prefix = "KC";
@@ -52,9 +56,13 @@ public class McBroadcaster {
                     colorPrefix = "&b";
                     prefix = "M";
                     break;
-                case "[+]":
+                case "Player+":
                     colorPrefix = "&3";
                     prefix = "P+";
+                    break;
+                case "Player":
+                    colorPrefix = "&3";
+                    prefix = "P";
                     break;
                 case "Donator":
                     colorPrefix = "&5";

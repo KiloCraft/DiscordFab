@@ -23,8 +23,10 @@ public class DataConfig {
         } else {
             properties.put("token", "*paste bot token here*");
             properties.put("webhook_url", "*paste webhook_url here*");
-            properties.put("broadcast", "*Need new name, (Channel id of the broadcast channel.)*");
             properties.put("broadcastEnable", "*True or false*");
+            properties.put("broadcastChannel", "*Paste what channel to broadcast to here*");
+            properties.put("discordBroadcaster", "*Webhook url to cast Minecraft chat to*");
+
             try {
                 this.saveProperties();
             } catch (IOException e) {
