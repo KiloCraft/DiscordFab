@@ -1,6 +1,6 @@
 package com.github.hansi132.discordfab;
 
-import com.github.hansi132.discordfab.discordbot.DiscordBroadcaster;
+import com.github.hansi132.discordfab.discordbot.integration.DiscordBroadcaster;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.util.Variables;
 import net.fabricmc.api.DedicatedServerModInitializer;

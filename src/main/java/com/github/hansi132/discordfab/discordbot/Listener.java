@@ -3,6 +3,7 @@ package com.github.hansi132.discordfab.discordbot;
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
+import com.github.hansi132.discordfab.discordbot.integration.McBroadcaster;
 import com.github.hansi132.discordfab.discordbot.webhooks.WebhookMessageHandler;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.User;

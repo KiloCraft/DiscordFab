@@ -1,4 +1,4 @@
-package com.github.hansi132.discordfab.discordbot;
+package com.github.hansi132.discordfab.discordbot.integration;
 
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;

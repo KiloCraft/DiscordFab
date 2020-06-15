@@ -1,4 +1,4 @@
-package com.github.hansi132.discordfab.discordbot;
+package com.github.hansi132.discordfab.discordbot.integration;
 
 
 import club.minnced.discord.webhook.WebhookClient;
@@ -45,7 +45,7 @@ public class DiscordBroadcaster implements EventHandler<PlayerOnChatMessageEvent
         format.add("&m");
         format.add("&k");
         format.add("&r");
-        format.add("@");
+
 
         String content = event.getMessage();
 
@@ -53,6 +53,10 @@ public class DiscordBroadcaster implements EventHandler<PlayerOnChatMessageEvent
             if (event.getMessage().contains(formats)) {
                 content = event.getMessage().replace(formats, "");
             }
+        }
+
+        if (content.contains("@")) {
+            content = content.replace("@", "");
         }
 
         WebhookMessageBuilder messageBuilder = new WebhookMessageBuilder()
