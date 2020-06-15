@@ -17,10 +17,11 @@ public class DiscordBroadcaster implements EventHandler<PlayerOnChatMessageEvent
 
     @Override
     public void handle(@NotNull PlayerOnChatMessageEvent event) {
-        if (event.getMessage().startsWith("/") || event.getMessage().contains("@")) {
+        if (event.getMessage().contains("/")) {
             return;
         }
 
+        //TODO Move this into a file, much code less efficient.
         Set<String> format = new HashSet<>();
         format.add("&0");
         format.add("&1");
@@ -44,6 +45,7 @@ public class DiscordBroadcaster implements EventHandler<PlayerOnChatMessageEvent
         format.add("&m");
         format.add("&k");
         format.add("&r");
+        format.add("@");
 
         String content = event.getMessage();
 
@@ -54,6 +56,7 @@ public class DiscordBroadcaster implements EventHandler<PlayerOnChatMessageEvent
         }
 
         WebhookMessageBuilder messageBuilder = new WebhookMessageBuilder()
+                .setAvatarUrl(new DataConfig().getProperty("embedPicture"))
                 .setUsername(event.getUser().getName())
                 .setContent(content);
         WebhookMessage message = messageBuilder.build();
@@ -68,7 +71,5 @@ public class DiscordBroadcaster implements EventHandler<PlayerOnChatMessageEvent
         WebhookClient client = clientBuilder.build();
 
         client.send(message);
-
-        //Objects.requireNonNull(DiscordFab.getBot().getTextChannelById("710847688068825178")).sendMessage(event.getMessage()).queue();
     }
 }

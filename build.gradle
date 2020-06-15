@@ -1,8 +1,10 @@
 plugins {
     id('fabric-loom').version('0.2.7-SNAPSHOT')
     id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id 'java'
 }
 
+apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -30,16 +32,16 @@ shadowJar {
 }
 
 dependencies {
-    minecraft 'com.mojang:minecraft:1.16-pre2'
-    mappings "net.fabricmc:yarn:1.16-pre2+build.29:v2"
+    minecraft "com.mojang:minecraft:1.16-pre3"
+    mappings "net.fabricmc:yarn:1.16-pre3+build.4:v2"
     modImplementation "net.fabricmc:fabric-loader:0.8.7+build.201"
 
     //Fabric api
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.11.7+build.356-1.16"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.12.1+build.361-1.16"
 
-    modImplementation 'com.github.OnBlock:Thimble-Permissions:0.2.4-1.16-pre2'
-    shadow 'com.github.OnBlock:Thimble-Permissions:0.2.4-1.16-pre2'
-    modImplementation 'com.github.KiloCraft:KiloEssentials:1.9.8.42'
+    modCompile 'com.github.OnBlock:Thimble-Permissions:0.2.4-1.16-pre2'
+    modImplementation 'com.github.KiloCraft:KiloEssentials:1.9.8.43'
+    include 'com.github.KiloCraft:KiloEssentials:1.9.8.43'
 
     compile group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
     shadow group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'

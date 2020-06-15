@@ -26,6 +26,7 @@ public class DataConfig {
             properties.put("broadcastEnable", "*True or false*");
             properties.put("broadcastChannel", "*Paste what channel to broadcast to here*");
             properties.put("discordBroadcaster", "*Webhook url to cast Minecraft chat to*");
+            properties.put("embedPicture", "Image link to use in the embeds.");
 
             try {
                 this.saveProperties();
