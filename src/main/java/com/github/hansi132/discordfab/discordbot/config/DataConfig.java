@@ -27,6 +27,7 @@ public class DataConfig {
             properties.put("broadcastChannel", "*Paste what channel to broadcast to here*");
             properties.put("discordBroadcaster", "*Webhook url to cast Minecraft chat to*");
             properties.put("embedPicture", "Image link to use in the embeds.");
+            properties.put("commandSpyBroadcaster", "*Webhook url to cast Minecraft commands to*");
 
             try {
                 this.saveProperties();

@@ -32,16 +32,16 @@ shadowJar {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:1.16-pre3"
-    mappings "net.fabricmc:yarn:1.16-pre3+build.4:v2"
+    minecraft "com.mojang:minecraft:1.16-pre7"
+    mappings "net.fabricmc:yarn:1.16-pre7+build.1:v2"
     modImplementation "net.fabricmc:fabric-loader:0.8.7+build.201"
 
     //Fabric api
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.12.1+build.361-1.16"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.12.4+build.365-1.16"
 
     modCompile 'com.github.OnBlock:Thimble-Permissions:0.2.4-1.16-pre2'
-    modImplementation 'com.github.KiloCraft:KiloEssentials:1.9.8.43'
-    include 'com.github.KiloCraft:KiloEssentials:1.9.8.43'
+    modImplementation 'com.github.KiloCraft:KiloEssentials:1.9.8.44'
+    include 'com.github.KiloCraft:KiloEssentials:1.9.8.44'
 
     compile group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
     shadow group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
