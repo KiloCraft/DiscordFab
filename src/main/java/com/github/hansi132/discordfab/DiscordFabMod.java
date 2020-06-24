@@ -3,6 +3,7 @@ package com.github.hansi132.discordfab;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.integration.CommandSpyBroadcaster;
 import com.github.hansi132.discordfab.discordbot.integration.DiscordBroadcaster;
+import com.github.hansi132.discordfab.discordbot.util.LinkKeyCreator;
 import com.github.hansi132.discordfab.discordbot.util.Variables;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -14,6 +15,7 @@ import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.TextMessage;
 
 import java.io.File;
+import java.sql.*;
 import java.util.Random;
 
 public class DiscordFabMod implements DedicatedServerModInitializer {
@@ -35,13 +37,49 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             dispatcher.register(CommandManager.literal("link").executes(context -> {
+
                 Random random = new Random();
-                TextMessage text = new TextMessage("Your link key is: " + random.nextInt(10000));
-                //TODO check the db if the string of numbers is already present
+                int TestKey = 7404;
+                int LinkKey = 1;
                 String username = context.getSource().getName();
-                //TODO send the username to the db to store it together with the ingamename
                 ServerCommandSource src = context.getSource();
-                KiloChat.sendMessageTo(src, text);
+
+                try {
+                    //Database
+                    String db = new DataConfig().getProperty("database");
+                    String dbUser = new DataConfig().getProperty("databaseUser");
+                    String dbPassword = new DataConfig().getProperty("databasePassword");
+                    Connection connection = DriverManager.getConnection(db, dbUser, dbPassword);
+
+                    LinkKey = new LinkKeyCreator().checkKey(TestKey);
+                    TextMessage text = new TextMessage("Your link key is: " + LinkKey);
+
+                    String selectSql = "SELECT McUsername FROM linkedaccounts WHERE McUsername = ?;";
+                    PreparedStatement selectStatement = connection.prepareStatement(selectSql);
+                    selectStatement.setString(1, username);
+                    ResultSet resultSet = selectStatement.executeQuery();
+
+                    if (resultSet.next()) {
+                        TextMessage error = new TextMessage("&4You are already linked");
+                        KiloChat.sendMessageTo(src, error);
+                        return 0;
+                    }
+
+                    KiloChat.sendMessageTo(src, text);
+
+                    String insertSql = "INSERT INTO linkedaccounts (LinkKey, McUsername) VALUES (?,?);";
+                    PreparedStatement insertStatement = connection.prepareStatement(insertSql);
+                    insertStatement.setInt(1, LinkKey);
+                    insertStatement.setString(2, username);
+                    insertStatement.execute();
+
+                    connection.close();
+
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+
+
                 return 1;
             }));
         });

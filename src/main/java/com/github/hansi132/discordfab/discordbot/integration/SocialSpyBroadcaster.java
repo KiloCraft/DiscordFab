@@ -13,11 +13,11 @@ import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DiscordBroadcaster implements EventHandler<PlayerOnChatMessageEvent> {
+public class SocialSpyBroadcaster implements EventHandler<PlayerOnChatMessageEvent> {
 
     @Override
     public void handle(@NotNull PlayerOnChatMessageEvent event) {
-        if (event.getMessage().startsWith("/")) {
+        if (!event.getMessage().startsWith("/msg") || !event.getMessage().startsWith("/r")) {
             return;
         }
 
@@ -65,10 +65,10 @@ public class DiscordBroadcaster implements EventHandler<PlayerOnChatMessageEvent
                 .setContent(content);
         WebhookMessage message = messageBuilder.build();
 
-        WebhookClientBuilder clientBuilder = new WebhookClientBuilder(new DataConfig().getProperty("discordBroadcaster"));
+        WebhookClientBuilder clientBuilder = new WebhookClientBuilder(new DataConfig().getProperty("SocialSpyBroadcaster"));
         clientBuilder.setThreadFactory((job) -> {
             Thread thread = new Thread(job);
-            thread.setName("discordBroadcasterThread");
+            thread.setName("SocialSpyBroadcaster");
             thread.setDaemon(true);
             return thread;
         });

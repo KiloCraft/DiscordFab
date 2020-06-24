@@ -17,7 +17,7 @@ public class CommandSpyBroadcaster implements EventHandler<PlayerOnChatMessageEv
 
     @Override
     public void handle(@NotNull PlayerOnChatMessageEvent event) {
-        if (!event.getMessage().contains("/")) {
+        if (!event.getMessage().startsWith("/")) {
             return;
         }
 

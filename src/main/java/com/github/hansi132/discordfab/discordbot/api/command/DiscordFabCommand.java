@@ -22,16 +22,18 @@ public abstract class DiscordFabCommand {
     private transient String[] alias;
     protected transient LiteralArgumentBuilder<BotCommandSource> argBuilder;
     protected transient LiteralCommandNode<BotCommandSource> cmdNode;
+    private final transient String help;
 
-    public DiscordFabCommand(@NotNull final String label) {
-        this(label, (String[]) null);
+    public DiscordFabCommand(@NotNull final String label, final String help) {
+        this(label, help, (String[]) null);
     }
 
-    public DiscordFabCommand(@NotNull final String label, @Nullable final String... alias) {
+    public DiscordFabCommand(@NotNull final String label, @Nullable String help, @Nullable final String... alias) {
         this.label = label;
         this.alias = alias;
         this.argBuilder = literal(label);
         this.cmdNode = this.argBuilder.build();
+        this.help = help;
     }
 
     public static LiteralArgumentBuilder<BotCommandSource> literal(@NotNull final String label) {
@@ -45,6 +47,10 @@ public abstract class DiscordFabCommand {
 
     public String getLabel() {
         return this.label;
+    }
+
+    public String getHelp() {
+        return this.help;
     }
 
     public DiscordFabCommand register(@NotNull final CommandDispatcher<BotCommandSource> dispatcher) {
