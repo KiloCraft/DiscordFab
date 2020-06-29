@@ -3,6 +3,7 @@ package com.github.hansi132.discordfab.discordbot;
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
+import com.github.hansi132.discordfab.discordbot.integration.AssignNick;
 import com.github.hansi132.discordfab.discordbot.integration.McBroadcaster;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.User;
@@ -33,8 +34,9 @@ public class Listener extends ListenerAdapter {
         String dbUser = new DataConfig().getProperty("databaseUser");
         String dbPassword = new DataConfig().getProperty("databasePassword");
         try {
+            Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection(db, dbUser, dbPassword);
-        } catch (SQLException throwables) {
+        } catch (SQLException | ClassNotFoundException throwables) {
             throwables.printStackTrace();
         }
 
@@ -43,7 +45,7 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         if (event.isFromType(ChannelType.PRIVATE) && !event.getAuthor().isBot()) {
-            String selectSql = "SELECT LinkKey, DiscordUsername FROM linkedaccounts WHERE LinkKey = ?";
+            String selectSql = "SELECT LinkKey, DiscordId FROM linkedaccounts WHERE LinkKey = ?";
             try {
                 int message = Integer.parseInt(event.getMessage().getContentRaw());
                 PreparedStatement preparedStatement = connection.prepareStatement(selectSql);
@@ -52,20 +54,21 @@ public class Listener extends ListenerAdapter {
                 ResultSet resultSet = preparedStatement.executeQuery();
                 resultSet.next();
                 int linkKey = resultSet.getInt("LinkKey");
-                String discordUsername = resultSet.getString("DiscordUsername");
+                String DiscordId = resultSet.getString("DiscordId");
 
-                if (message == linkKey && discordUsername == null) {
-                    String updateSql = "UPDATE linkedaccounts SET DiscordUsername = ? WHERE LinkKey = ?;";
+                if (message == linkKey && DiscordId == null) {
+                    String updateSql = "UPDATE linkedaccounts SET DiscordId = ? WHERE LinkKey = ?;";
                     PreparedStatement updateStatement = connection.prepareStatement(updateSql);
-                    updateStatement.setString(1, event.getAuthor().getName());
+                    updateStatement.setString(1, event.getAuthor().getId());
                     updateStatement.setInt(2, linkKey);
                     updateStatement.execute();
 
                     event.getPrivateChannel().sendMessage("You were linked.").queue();
+                    new AssignNick(linkKey);
 
                 }
 
-            } catch (SQLException throwables) {
+            } catch (SQLException | ClassNotFoundException throwables) {
                 throwables.printStackTrace();
             }
 
