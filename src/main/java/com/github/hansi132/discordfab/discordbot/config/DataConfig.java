@@ -32,6 +32,8 @@ public class DataConfig {
             properties.put("databaseUser", "*Specify the user of the database*");
             properties.put("databasePassword", "*Specify the password of the database*");
             properties.put("database", "*Specify the database to be used*");
+            properties.put("guild", "*Specify the guild id");
+            properties.put("role", "*Specify what the linked role should be");
 
             try {
                 this.saveProperties();
