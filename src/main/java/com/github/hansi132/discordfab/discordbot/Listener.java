@@ -17,7 +17,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Listener extends ListenerAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -62,7 +65,6 @@ public class Listener extends ListenerAdapter {
 
                     event.getPrivateChannel().sendMessage("You were linked.").queue();
                     new AssignNick(linkKey);
-
                 }
 
             } catch (SQLException | ClassNotFoundException throwables) {

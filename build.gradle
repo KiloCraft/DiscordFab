@@ -42,6 +42,8 @@ dependencies {
     modImplementation 'com.github.KiloCraft:KiloEssentials:1.9.8.45'
     include 'com.github.KiloCraft:KiloEssentials:1.9.8.44'
 
+    compile "net.luckperms:api:5.0"
+
     compile group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
     shadow group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
     compile group: 'com.jagrosh', name: 'jda-utilities', version: '3.0.3'

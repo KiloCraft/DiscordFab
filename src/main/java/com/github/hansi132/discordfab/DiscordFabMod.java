@@ -1,14 +1,14 @@
 package com.github.hansi132.discordfab;
 
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
-import com.github.hansi132.discordfab.discordbot.integration.CommandSpyBroadcaster;
-import com.github.hansi132.discordfab.discordbot.integration.DiscordBroadcaster;
-import com.github.hansi132.discordfab.discordbot.integration.SocialSpyBroadcaster;
+import com.github.hansi132.discordfab.discordbot.integration.*;
 import com.github.hansi132.discordfab.discordbot.util.LinkKeyCreator;
 import com.github.hansi132.discordfab.discordbot.util.Variables;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.kilocraft.essentials.api.KiloServer;
@@ -35,6 +35,8 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
             KiloServer.getServer().registerEvent(new DiscordBroadcaster());
             KiloServer.getServer().registerEvent(new CommandSpyBroadcaster());
             KiloServer.getServer().registerEvent(new SocialSpyBroadcaster());
+            KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
+            KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
         }));
 
 
@@ -67,6 +69,9 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
                     }
 
                     KiloChat.sendMessageTo(src, text);
+                    LuckPerms api = LuckPermsProvider.get();
+
+                    System.out.println(api.getUserManager().getUser(username).getPrimaryGroup());
 
                     String insertSql = "INSERT INTO linkedaccounts (LinkKey, McUUID, McUsername) VALUES (?,?,?);";
                     PreparedStatement insertStatement = connection.prepareStatement(insertSql);
