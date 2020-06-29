@@ -1,5 +1,6 @@
 package com.github.hansi132.discordfab.discordbot.integration;
 
+import com.github.hansi132.discordfab.DatabaseConnection;
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import net.dv8tion.jda.api.entities.Guild;
@@ -11,12 +12,7 @@ import java.util.List;
 
 public class AssignNick {
     public AssignNick(int linkKey) throws SQLException, ClassNotFoundException {
-        //Database
-        String db = new DataConfig().getProperty("database");
-        String dbUser = new DataConfig().getProperty("databaseUser");
-        String dbPassword = new DataConfig().getProperty("databasePassword");
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection connection = DriverManager.getConnection(db, dbUser, dbPassword);
+        Connection connection = new DatabaseConnection().getConnection();
 
         String selectSql = "SELECT DiscordId, McUsername FROM linkedaccounts WHERE LinkKey = ?;";
         PreparedStatement selectStmt = connection.prepareStatement(selectSql);

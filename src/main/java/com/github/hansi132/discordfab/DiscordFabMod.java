@@ -50,11 +50,7 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
 
                 try {
                     //Database
-                    Class.forName("com.mysql.jdbc.Driver");
-                    String db = new DataConfig().getProperty("database");
-                    String dbUser = new DataConfig().getProperty("databaseUser");
-                    String dbPassword = new DataConfig().getProperty("databasePassword");
-                    Connection connection = DriverManager.getConnection(db, dbUser, dbPassword);
+                    Connection connection = new DatabaseConnection().getConnection();
 
                     LinkKey = new LinkKeyCreator().checkKey(TestKey);
                     TextMessage text = new TextMessage("Your link key is: " + LinkKey);

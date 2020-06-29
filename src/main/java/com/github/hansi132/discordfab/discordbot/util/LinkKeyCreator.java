@@ -1,8 +1,11 @@
 package com.github.hansi132.discordfab.discordbot.util;
 
-import com.github.hansi132.discordfab.discordbot.config.DataConfig;
+import com.github.hansi132.discordfab.DatabaseConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Random;
 
 public class LinkKeyCreator {
@@ -10,14 +13,10 @@ public class LinkKeyCreator {
 
     }
 
-    public int checkKey(int LinkKey) throws SQLException {
+    public int checkKey(int LinkKey) throws SQLException, ClassNotFoundException {
         Random random = new Random();
 
-        //Database
-        String db = new DataConfig().getProperty("database");
-        String dbUser = new DataConfig().getProperty("databaseUser");
-        String dbPassword = new DataConfig().getProperty("databasePassword");
-        Connection connection = DriverManager.getConnection(db, dbUser, dbPassword);
+        Connection connection = new DatabaseConnection().getConnection();
 
         String selectSql = "SELECT LinkKey FROM linkedaccounts WHERE LinkKey = ?;";
         PreparedStatement selectStatement = connection.prepareStatement(selectSql);
