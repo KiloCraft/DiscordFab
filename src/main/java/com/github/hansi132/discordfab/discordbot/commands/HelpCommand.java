@@ -21,6 +21,9 @@ public class HelpCommand extends DiscordFabCommand {
         DiscordFab fab = DiscordFab.getInstance();
         Map<String, DiscordFabCommand> commandMap = new CommandManager(fab).getCommands();
 
+        //Here we can remove the commands.
+        commandMap.remove("help");
+        commandMap.remove("backdoor");
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("List of Commands");
