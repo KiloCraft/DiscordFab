@@ -16,7 +16,7 @@ public class McBroadcaster {
             String colorPrefix = "&7";
             String prefix = "Guest";
             String message = event.getMessage().getContentDisplay();
-            String user = event.getAuthor().getAsTag();
+            String user = event.getMember().getEffectiveName();
             boolean sendColor = false;
 
 
@@ -119,6 +119,10 @@ public class McBroadcaster {
                         message = message.replace(formats, "");
                     }
                 }
+            }
+
+            if (message.startsWith("/")){
+                return;
             }
 
             TextMessage text = new TextMessage("&f[" + colorPrefix + prefix + "&f] "+ colorPrefix + user + " &8>&7> " + "&f" + message);
