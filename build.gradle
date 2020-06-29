@@ -32,15 +32,14 @@ shadowJar {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:1.16-pre7"
-    mappings "net.fabricmc:yarn:1.16-pre7+build.1:v2"
-    modImplementation "net.fabricmc:fabric-loader:0.8.7+build.201"
+    minecraft "com.mojang:minecraft:1.16.1"
+    mappings "net.fabricmc:yarn:1.16.1+build.17:v2"
+    modImplementation "net.fabricmc:fabric-loader:0.8.8+build.202"
 
     //Fabric api
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.12.4+build.365-1.16"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.14.0+build.371-1.16"
 
-    modCompile 'com.github.OnBlock:Thimble-Permissions:0.2.4-1.16-pre2'
-    modImplementation 'com.github.KiloCraft:KiloEssentials:1.9.8.44'
+    modImplementation 'com.github.KiloCraft:KiloEssentials:1.9.8.45'
     include 'com.github.KiloCraft:KiloEssentials:1.9.8.44'
 
     compile group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
@@ -51,7 +50,7 @@ dependencies {
     shadow group: 'me.duncte123', name: 'botCommons', version: '1.0.83'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
+    include group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
     compile group: 'club.minnced', name: 'discord-webhooks', version: '0.3.0'
     shadow group: 'club.minnced', name: 'discord-webhooks', version: '0.3.0'
 
