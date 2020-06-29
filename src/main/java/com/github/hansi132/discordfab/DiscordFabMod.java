@@ -31,14 +31,15 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
                 new DataConfig()
         );
 
-        ServerLifecycleEvents.SERVER_STARTED.register((server -> {
-            KiloServer.getServer().registerEvent(new DiscordBroadcaster());
-            KiloServer.getServer().registerEvent(new CommandSpyBroadcaster());
-            KiloServer.getServer().registerEvent(new SocialSpyBroadcaster());
-            KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
-            KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
-        }));
-
+        if (new DataConfig().getProperty("broadcastEnable").equals("true")) {
+            ServerLifecycleEvents.SERVER_STARTED.register((server -> {
+                KiloServer.getServer().registerEvent(new DiscordBroadcaster());
+                KiloServer.getServer().registerEvent(new CommandSpyBroadcaster());
+                KiloServer.getServer().registerEvent(new SocialSpyBroadcaster());
+                KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
+                KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
+            }));
+        }
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             dispatcher.register(CommandManager.literal("link").executes(context -> {
