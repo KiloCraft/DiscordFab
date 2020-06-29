@@ -83,7 +83,7 @@ public class Listener extends ListenerAdapter {
                 new McBroadcaster(event);
             }
 
-            String prefix = "k!";
+            String prefix = new DataConfig().getProperty("prefix");
             String raw = event.getMessage().getContentRaw();
 
             if (raw.startsWith(prefix)) {

@@ -34,6 +34,7 @@ public class DataConfig {
             properties.put("database", "*Specify the database to be used*");
             properties.put("guild", "*Specify the guild id");
             properties.put("role", "*Specify what the linked role should be");
+            properties.put("prefix", "k!");
 
             try {
                 this.saveProperties();
