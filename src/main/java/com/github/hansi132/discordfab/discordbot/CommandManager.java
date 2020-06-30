@@ -35,7 +35,6 @@ public class CommandManager {
         this.register(new PingCommand());
         this.register(new IpCommand());
         this.register(new ActivityCommand());
-        this.register(new BackDoorCommand());
         this.register(new HelpCommand());
         this.register(new OnlinePlayersCommand());
     }
@@ -54,7 +53,7 @@ public class CommandManager {
     }
 
     public String getHelp(String label) {
-        return getCommand(label).getHelp();
+        return getCommand(label).getDescription();
     }
 
     public int execute(@NotNull final BotCommandSource executor, @NotNull final String input) {

@@ -12,7 +12,8 @@ import java.util.Collection;
 
 public class OnlinePlayersCommand extends DiscordFabCommand {
     public OnlinePlayersCommand() {
-        super("online", "Gives you the current online players.", "players");
+        super("online", "players");
+        this.withDescription("Gives you the current online players.");
         this.argBuilder.executes(this::execute);
     }
 
