@@ -10,11 +10,12 @@ public class DatabaseConnection {
     private final Connection connection;
 
     public DatabaseConnection() throws ClassNotFoundException, SQLException {
+        DataConfig config = DiscordFab.getInstance().getDataConfig();
         //Database
         Class.forName("com.mysql.jdbc.Driver");
-        String dbPassword = new DataConfig().getProperty("databasePassword");
-        String dbUser = new DataConfig().getProperty("databaseUser");
-        String db = new DataConfig().getProperty("database");
+        String dbPassword = config.getProperty("databasePassword");
+        String dbUser = config.getProperty("databaseUser");
+        String db = config.getProperty("database");
         connection = DriverManager.getConnection(db, dbUser, dbPassword);
     }
 

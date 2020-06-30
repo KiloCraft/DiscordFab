@@ -22,8 +22,8 @@ public class DiscordFab {
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
         INSTANCE = this;
-        this.dataConfig = dataConfig;
-        this.isDevelopment = this.dataConfig.getProperties().containsKey("debug");
+        this.dataConfig = dataConfig.init();
+        this.isDevelopment = this.dataConfig.getPROPERTIES().containsKey("debug");
 
         this.commandManager = new CommandManager(this);
 
@@ -61,6 +61,10 @@ public class DiscordFab {
 
     public CommandManager getCommandManager() {
         return this.commandManager;
+    }
+
+    public DataConfig getDataConfig() {
+        return this.dataConfig;
     }
 
     public static ShardManager getBot() {

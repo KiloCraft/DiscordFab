@@ -24,7 +24,7 @@ public abstract class DiscordFabCommand {
     protected transient LiteralCommandNode<BotCommandSource> cmdNode;
     private @Nullable transient String description;
 
-    public DiscordFabCommand(@NotNull final String label, final String help) {
+    public DiscordFabCommand(@NotNull final String label) {
         this(label, (String[]) null);
     }
 
@@ -48,13 +48,13 @@ public abstract class DiscordFabCommand {
         return this.label;
     }
 
+    @Nullable
     public String getDescription() {
         return this.description;
     }
 
-    protected DiscordFabCommand withDescription(@Nullable final String description) {
+    protected void withDescription(@Nullable final String description) {
         this.description = description;
-        return this;
     }
 
     public DiscordFabCommand register(@NotNull final CommandDispatcher<BotCommandSource> dispatcher) {

@@ -8,7 +8,8 @@ import com.mojang.brigadier.context.CommandContext;
 
 public class PingCommand extends DiscordFabCommand {
     public PingCommand() {
-        super("ping", "Gives you the ping.");
+        super("ping");
+        this.withDescription("Gives you the ping between the bot and discord servers.");
         this.argBuilder.executes(this::execute);
     }
 
