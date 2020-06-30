@@ -23,6 +23,19 @@ public class DataConfig {
         } else {
             properties.put("token", "*paste bot token here*");
             properties.put("webhook_url", "*paste webhook_url here*");
+            properties.put("broadcastEnable", "*True or false*");
+            properties.put("broadcastChannel", "*Paste what channel to broadcast to here*");
+            properties.put("discordBroadcaster", "*Webhook url to cast Minecraft chat to*");
+            properties.put("embedPicture", "Image link to use in the embeds.");
+            properties.put("commandSpyBroadcaster", "*Webhook url to cast Minecraft commands to*");
+            properties.put("SocialSpyBroadcaster", "Webhook url to cast msg/r commands to");
+            properties.put("databaseUser", "*Specify the user of the database*");
+            properties.put("databasePassword", "*Specify the password of the database*");
+            properties.put("database", "*Specify the database to be used*");
+            properties.put("guild", "*Specify the guild id");
+            properties.put("role", "*Specify what the linked role should be");
+            properties.put("prefix", "k!");
+
             try {
                 this.saveProperties();
             } catch (IOException e) {

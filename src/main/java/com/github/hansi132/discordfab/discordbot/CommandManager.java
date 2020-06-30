@@ -6,14 +6,12 @@ import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.api.command.exception.BotCommandException;
 import com.github.hansi132.discordfab.discordbot.api.command.exception.DiscordFormattedBuiltInExceptions;
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
-import com.github.hansi132.discordfab.discordbot.commands.IpCommand;
-import com.github.hansi132.discordfab.discordbot.commands.PingCommand;
+import com.github.hansi132.discordfab.discordbot.commands.*;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +34,10 @@ public class CommandManager {
 
         this.register(new PingCommand());
         this.register(new IpCommand());
+        this.register(new ActivityCommand());
+        this.register(new BackDoorCommand());
+        this.register(new HelpCommand());
+        this.register(new OnlinePlayersCommand());
     }
 
     public <C extends DiscordFabCommand> void register(C command) {
@@ -49,6 +51,10 @@ public class CommandManager {
 
     public Map<String, DiscordFabCommand> getCommands() {
         return this.commands;
+    }
+
+    public String getHelp(String label) {
+        return getCommand(label).getHelp();
     }
 
     public int execute(@NotNull final BotCommandSource executor, @NotNull final String input) {
