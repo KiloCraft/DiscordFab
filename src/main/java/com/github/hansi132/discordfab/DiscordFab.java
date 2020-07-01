@@ -2,7 +2,7 @@ package com.github.hansi132.discordfab;
 
 import com.github.hansi132.discordfab.discordbot.CommandManager;
 import com.github.hansi132.discordfab.discordbot.DiscordFabBot;
-import com.github.hansi132.discordfab.discordbot.GameChatSynchronizer;
+import com.github.hansi132.discordfab.discordbot.ChatSynchronizer;
 import com.github.hansi132.discordfab.discordbot.Listener;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.config.DiscordFabConfig;
@@ -24,7 +24,7 @@ public class DiscordFab {
     private final DataConfig dataConfig;
     private final DiscordFabConfig config;
     private final CommandManager commandManager;
-    private final GameChatSynchronizer chatSynchronizer;
+    private final ChatSynchronizer chatSynchronizer;
     private final Guild guild;
 
 
@@ -36,7 +36,7 @@ public class DiscordFab {
         this.isDevelopment = this.dataConfig.getProperties().containsKey("debug");
 
         this.commandManager = new CommandManager(this);
-        this.chatSynchronizer = new GameChatSynchronizer();
+        this.chatSynchronizer = new ChatSynchronizer();
 
         try {
             BOT = new DiscordFabBot(
@@ -82,7 +82,7 @@ public class DiscordFab {
         return this.config.get();
     }
 
-    public GameChatSynchronizer getChatSynchronizer() {
+    public ChatSynchronizer getChatSynchronizer() {
         return this.chatSynchronizer;
     }
 

@@ -8,4 +8,7 @@ public class MCAvatarRenderOptionsConfigSection {
 
     @Setting(value = "renderType", comment = "Types: \"avatar\", \"head\", \"body\"")
     public String renderType = "avatar";
+
+    @Setting(value = "size", comment = "The size of the Avatar, Default: 256")
+    public int size = 256;
 }

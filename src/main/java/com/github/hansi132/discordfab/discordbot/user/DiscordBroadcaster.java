@@ -26,4 +26,7 @@ public class DiscordBroadcaster {
         this.client.send(message);
     }
 
+    public WebhookClient getClient() {
+        return this.client;
+    }
 }

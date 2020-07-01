@@ -58,7 +58,7 @@ public class CommandManager {
 
     public void execute(@NotNull final BotCommandSource executor, @NotNull final String input) {
         final StringReader reader = new StringReader(input);
-        if (reader.canRead() && reader.getString().startsWith("k!")) {
+        if (reader.canRead() && reader.getString().startsWith(DiscordFab.getInstance().getConfig().prefix)) {
             reader.setCursor(2);
         }
 
