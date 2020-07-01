@@ -24,6 +24,7 @@ import java.sql.SQLException;
 
 public class Listener extends ListenerAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final DiscordFab DISCORD_FAB = DiscordFab.getInstance();
     Connection connection;
 
     @Override
@@ -91,7 +92,7 @@ public class Listener extends ListenerAdapter {
                         event.getJDA(), user.getName(), event.getGuild(), event.getChannel(), user, event.getMember(), event
                 );
 
-                DiscordFab.getInstance().getCommandManager().execute(src, raw.replaceFirst("k!", ""));
+                DISCORD_FAB.getCommandManager().execute(src, raw.replaceFirst("k!", ""));
             }
         }
     }

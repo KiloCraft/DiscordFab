@@ -1,6 +1,5 @@
 package com.github.hansi132.discordfab.discordbot.api.command;
 
-import com.github.hansi132.discordfab.discordbot.api.text.Messages;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
