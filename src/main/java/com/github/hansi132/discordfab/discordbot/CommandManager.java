@@ -30,7 +30,7 @@ public class CommandManager {
         isDevelopment = discordFab.isDevelopment();
         this.commands = Maps.newHashMap();
         this.dispatcher = new CommandDispatcher<>();
-        CommandSyntaxException.BUILT_IN_EXCEPTIONS = new DiscordFormattedBuiltInExceptions();
+//        CommandSyntaxException.BUILT_IN_EXCEPTIONS = new DiscordFormattedBuiltInExceptions();
 
         this.register(new PingCommand());
         this.register(new IpCommand());

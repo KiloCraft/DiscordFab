@@ -22,7 +22,7 @@ public class DiscordFab {
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
         INSTANCE = this;
-        this.dataConfig = dataConfig.init();
+        this.dataConfig = dataConfig;
         this.isDevelopment = this.dataConfig.getPROPERTIES().containsKey("debug");
 
         this.commandManager = new CommandManager(this);

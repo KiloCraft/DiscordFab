@@ -25,9 +25,7 @@ public class DataConfig {
         this.PROPERTIES = new Properties();
         this.FILE = Variables.CONFIG_PATH.resolve("tokens.properties").toFile();
         this.DEFAULTS = defaults;
-    }
 
-    public DataConfig init() {
         if (FILE.exists()) {
             try {
                 this.loadProperties();
@@ -43,8 +41,6 @@ public class DataConfig {
                 LOGGER.error("Could not generate the data properties!", e);
             }
         }
-
-        return this;
     }
 
     public void loadProperties() throws IOException {
