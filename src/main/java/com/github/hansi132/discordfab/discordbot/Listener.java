@@ -80,11 +80,11 @@ public class Listener extends ListenerAdapter {
         User user = event.getAuthor();
         if (!user.isBot()) {
             //Basic broadcast function to send messages discord->MC
-            if (new DataConfig().getProperty("broadcastEnable").equals("true")) {
+            if (DISCORD_FAB.getDataConfig().getProperty("broadcastEnable").equals("true")) {
                 new McBroadcaster(event);
             }
 
-            String prefix = new DataConfig().getProperty("prefix");
+            String prefix = DiscordFab.getInstance().getDataConfig().getProperty("prefix");
             String raw = event.getMessage().getContentRaw();
 
             if (raw.startsWith(prefix)) {

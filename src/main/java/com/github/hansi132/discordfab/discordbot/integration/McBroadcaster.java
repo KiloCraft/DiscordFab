@@ -1,5 +1,6 @@
 package com.github.hansi132.discordfab.discordbot.integration;
 
+import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.kilocraft.essentials.chat.KiloChat;
@@ -12,7 +13,7 @@ import java.util.Set;
 public class McBroadcaster {
 
     public McBroadcaster(GuildMessageReceivedEvent event) {
-        if (event.getChannel().getId().equals(new DataConfig().getProperty("broadcastChannel"))) {
+        if (event.getChannel().getId().equals(DiscordFab.getInstance().getDataConfig().getProperty("broadcastChannel"))) {
             String colorPrefix = "&7";
             String prefix = "Guest";
             String message = event.getMessage().getContentDisplay();

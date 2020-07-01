@@ -22,9 +22,9 @@ public class AssignNick {
         String discordId = resultSet.getString("DiscordId");
         String mcUsername = resultSet.getString("McUsername");
 
-        Guild guild = DiscordFab.getBot().getGuildById(new DataConfig().getProperty("guild"));
+        Guild guild = DiscordFab.getBot().getGuildById(DiscordFab.getInstance().getDataConfig().getProperty("guild"));
         User user = DiscordFab.getBot().getUserById(discordId);
-        List<Role> role = guild.getRolesByName(new DataConfig().getProperty("role"), true);
+        List<Role> role = guild.getRolesByName(DiscordFab.getInstance().getDataConfig().getProperty("role"), true);
         guild.getMember(user).modifyNickname(mcUsername).complete();
         guild.addRoleToMember(guild.getMember(user), role.get(0)).complete();
     }
