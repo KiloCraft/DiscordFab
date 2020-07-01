@@ -35,7 +35,7 @@ public class Listener extends ListenerAdapter {
     public void onReady(@Nonnull ReadyEvent event) {
         LOGGER.info("{} is ready", event.getJDA().getSelfUser().getAsTag());
         try {
-            connection = new DatabaseConnection().getConnection();
+            connection = new DatabaseConnection().connect();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }

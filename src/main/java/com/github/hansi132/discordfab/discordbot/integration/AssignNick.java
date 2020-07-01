@@ -12,7 +12,7 @@ import java.util.List;
 
 public class AssignNick {
     public AssignNick(int linkKey) throws SQLException, ClassNotFoundException {
-        Connection connection = new DatabaseConnection().getConnection();
+        Connection connection = new DatabaseConnection().connect();
 
         String selectSql = "SELECT DiscordId, McUsername FROM linkedaccounts WHERE LinkKey = ?;";
         PreparedStatement selectStmt = connection.prepareStatement(selectSql);

@@ -53,7 +53,7 @@ public class DataConfig {
         PROPERTIES.store(out, "DiscordFab tokens properties");
     }
 
-    public Properties getPROPERTIES() {
+    public Properties getProperties() {
         return this.PROPERTIES;
     }
 

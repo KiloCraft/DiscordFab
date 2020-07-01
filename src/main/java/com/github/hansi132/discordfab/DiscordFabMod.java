@@ -71,7 +71,7 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
 
                 try {
                     //Database
-                    Connection connection = new DatabaseConnection().getConnection();
+                    Connection connection = new DatabaseConnection().connect();
 
                     LinkKey = new LinkKeyCreator().checkKey(TestKey);
                     TextMessage text = new TextMessage("Your link key is: " + LinkKey);

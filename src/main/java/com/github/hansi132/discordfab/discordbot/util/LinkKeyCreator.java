@@ -16,7 +16,7 @@ public class LinkKeyCreator {
     public int checkKey(int LinkKey) throws SQLException, ClassNotFoundException {
         Random random = new Random();
 
-        Connection connection = new DatabaseConnection().getConnection();
+        Connection connection = new DatabaseConnection().connect();
 
         String selectSql = "SELECT LinkKey FROM linkedaccounts WHERE LinkKey = ?;";
         PreparedStatement selectStatement = connection.prepareStatement(selectSql);

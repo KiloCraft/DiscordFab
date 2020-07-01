@@ -7,23 +7,32 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private final Connection connection;
+    private static final DataConfig CONFIG = DiscordFab.getInstance().getDataConfig();
+    private Connection connection;
 
-    public DatabaseConnection() throws ClassNotFoundException, SQLException {
-        DataConfig config = DiscordFab.getInstance().getDataConfig();
-        //Database
+    public DatabaseConnection() throws ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
-        String dbPassword = config.getProperty("databasePassword");
-        String dbUser = config.getProperty("databaseUser");
-        String db = config.getProperty("database");
-        connection = DriverManager.getConnection(db, dbUser, dbPassword);
+    }
+
+    public Connection connect() throws SQLException {
+        this.connection = DriverManager.getConnection(
+                CONFIG.getProperty("databasePassword"),
+                CONFIG.getProperty("databaseUser"),
+                CONFIG.getProperty("database")
+        );
+
+        return this.connection;
     }
 
     public Connection getConnection() {
-        return connection;
+        if (this.connection == null) {
+            throw new IllegalStateException("A connection hasn't been made!");
+        }
+
+        return this.connection;
     }
 
-    public void closeConnection() throws SQLException {
+    public void close() throws SQLException {
         connection.close();
     }
 }
