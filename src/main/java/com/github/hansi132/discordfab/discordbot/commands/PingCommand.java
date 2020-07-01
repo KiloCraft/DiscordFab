@@ -20,7 +20,7 @@ public class PingCommand extends DiscordFabCommand {
         MessageBuilder builder = new MessageBuilder("Pong! The Gateway latency is **" + ping +
                 "ms** and the REST API latency is **" + restPing + "**ms");
 
-        src.sendFeedback(builder.build());
+        src.sendFeedback(builder.build()).queue();
         return (int) ping;
 
     }

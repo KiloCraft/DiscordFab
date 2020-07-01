@@ -4,10 +4,10 @@ import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.mojang.brigadier.context.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
+import java.awt.*;
 import java.util.List;
 
 
@@ -29,7 +29,7 @@ public class OnlinePlayersCommand extends DiscordFabCommand {
         for (int i = 0; i < users.size(); i++) {
             stringBuilder.append(users.get(i).getUsername());
 
-            if (i != users.size()) {
+            if (i + 1 < users.size()) {
                 stringBuilder.append(", ");
             }
         }

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.List;
 
 public class BotCommandSource implements IDiscordCommandSource {
@@ -102,7 +103,7 @@ public class BotCommandSource implements IDiscordCommandSource {
 
     @Override
     public MessageAction sendError(@NotNull EmbedBuilder builder) {
-        return this.sendFeedback(builder.setColor(1536).build());
+        return this.sendFeedback(builder.setColor(Color.decode("#FF0033")).build());
     }
 
     @Override

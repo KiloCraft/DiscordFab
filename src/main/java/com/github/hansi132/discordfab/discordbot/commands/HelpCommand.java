@@ -27,7 +27,7 @@ public class HelpCommand extends DiscordFabCommand {
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("List of Commands");
-        eb.setColor(Color.blue);
+        eb.setColor(Color.GREEN);
 
         for (Map.Entry<String, DiscordFabCommand> entry : commandMap.entrySet()){
             String helpMessage = new CommandManager(fab).getHelp(entry.getKey());

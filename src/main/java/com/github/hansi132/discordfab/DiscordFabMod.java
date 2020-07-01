@@ -39,21 +39,18 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
                 }}
         );
 
-        DiscordFab discordFab = new DiscordFab(config);
+        new DiscordFab(config);
 
-        if (discordFab.getConfig().chatSynchronizer.isEnabled()) {
-            ServerLifecycleEvents.SERVER_STARTED.register((server -> {
-                KiloServer.getServer().registerEvent(new DiscordBroadcaster());
-                KiloServer.getServer().registerEvent(new CommandSpyBroadcaster());
-                KiloServer.getServer().registerEvent(new SocialSpyBroadcaster());
-                KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
-                KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
-            }));
-        }
+        ServerLifecycleEvents.SERVER_STARTED.register((server -> {
+            KiloServer.getServer().registerEvent(new DiscordBroadcaster());
+            KiloServer.getServer().registerEvent(new CommandSpyBroadcaster());
+            KiloServer.getServer().registerEvent(new SocialSpyBroadcaster());
+            KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
+            KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
 
-        KiloEssentials.getInstance().getCommandHandler().register(
-                new EssentialsDiscordLinkCommand("link", new String[]{"discord_link"})
-        );
-
+            KiloEssentials.getInstance().getCommandHandler().register(
+                    new EssentialsDiscordLinkCommand("link", new String[]{"discord_link"})
+            );
+        }));
     }
 }

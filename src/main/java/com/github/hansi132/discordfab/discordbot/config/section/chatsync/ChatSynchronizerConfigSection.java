@@ -1,7 +1,9 @@
 package com.github.hansi132.discordfab.discordbot.config.section.chatsync;
 
 import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+@ConfigSerializable
 public class ChatSynchronizerConfigSection {
 
     @Setting(value = "toDiscord", comment = "Enables chat synchronization to Discord")

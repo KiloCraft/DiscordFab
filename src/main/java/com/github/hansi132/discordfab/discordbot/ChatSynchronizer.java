@@ -36,17 +36,7 @@ public class ChatSynchronizer {
 
     public void onGameChat(@NotNull final User user, @NotNull final String string) {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
-
-        if (DatabaseUtils.isLinked(user.getUuid())) {
-            net.dv8tion.jda.api.entities.User discordUser = this.getJDAUser(user.getUuid());
-            if (discordUser.getAvatarUrl() != null) {
-                builder.setAvatarUrl(discordUser.getAvatarUrl());
-                builder.setUsername(discordUser.getName());
-            }
-        } else {
-            builder.setAvatarUrl(CONFIG.defaultAvatarURL.isEmpty() ? CONFIG.defaultAvatarURL : getMCAvatarURL(user.getUuid()));
-            builder.setUsername(user.getUsername());
-        }
+        setMetaFor(user, builder);
 
         String content = TextFormat.clearColorCodes(string.replaceAll("@", ""));
         builder.setContent(content);
@@ -89,6 +79,33 @@ public class ChatSynchronizer {
 
         return "https://crafatar.com/" + renderType.code + "/" + uuid.toString() + "?size=" + CONFIG.renderOptions.size +
                 (CONFIG.renderOptions.showOverlay ? "&overlay" : "");
+    }
+
+    public void onUserJoin(@NotNull final User user) {
+        WebhookMessageBuilder builder = new WebhookMessageBuilder();
+        setMetaFor(user, builder);
+        builder.setContent(user.getFormattedDisplayName() + " Joined the game.");
+    }
+
+    public void onUserLeave(@NotNull final User user) {
+        WebhookMessageBuilder builder = new WebhookMessageBuilder();
+        setMetaFor(user, builder);
+        builder.setContent(user.getFormattedDisplayName() + " Left the game.");
+
+        this.map.remove(user.getId());
+    }
+
+    public void setMetaFor(@NotNull final User user, @NotNull final WebhookMessageBuilder builder) {
+        if (DatabaseUtils.isLinked(user.getUuid())) {
+            net.dv8tion.jda.api.entities.User discordUser = this.getJDAUser(user.getUuid());
+            if (discordUser.getAvatarUrl() != null) {
+                builder.setAvatarUrl(discordUser.getAvatarUrl());
+                builder.setUsername(discordUser.getName());
+            }
+        } else {
+            builder.setAvatarUrl(CONFIG.defaultAvatarURL.isEmpty() ? CONFIG.defaultAvatarURL : getMCAvatarURL(user.getUuid()));
+            builder.setUsername(user.getUsername());
+        }
     }
 
     private enum AvatarRenderType {

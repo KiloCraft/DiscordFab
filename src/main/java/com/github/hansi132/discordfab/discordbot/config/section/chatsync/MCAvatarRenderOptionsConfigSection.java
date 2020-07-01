@@ -1,7 +1,9 @@
 package com.github.hansi132.discordfab.discordbot.config.section.chatsync;
 
 import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+@ConfigSerializable
 public class MCAvatarRenderOptionsConfigSection {
     @Setting(value = "showOverlay", comment = "If true, the skin overlay will be rendered on top of it")
     public boolean showOverlay = true;
