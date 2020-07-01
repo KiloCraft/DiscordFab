@@ -2,6 +2,7 @@ package com.github.hansi132.discordfab;
 
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.integration.*;
+import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;
 import com.github.hansi132.discordfab.discordbot.util.LinkKeyCreator;
 import com.github.hansi132.discordfab.discordbot.util.Variables;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -11,6 +12,8 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.TextMessage;
@@ -21,6 +24,8 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class DiscordFabMod implements DedicatedServerModInitializer {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     @Override
     public void onInitializeServer() {
         final File CONFIG_FILE = Variables.CONFIG_PATH.toFile();
@@ -51,7 +56,7 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
 
         if (config.getProperty("broadcastEnable").equals("true")) {
             ServerLifecycleEvents.SERVER_STARTED.register((server -> {
-                KiloServer.getServer().registerEvent(new DiscordBroadcaster());
+                KiloServer.getServer().registerEvent(new DiscordBroadcasterOLD());
                 KiloServer.getServer().registerEvent(new CommandSpyBroadcaster());
                 KiloServer.getServer().registerEvent(new SocialSpyBroadcaster());
                 KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
@@ -71,7 +76,7 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
 
                 try {
                     //Database
-                    Connection connection = new DatabaseConnection().connect();
+                    Connection connection = new DatabaseConnection().get();
 
                     LinkKey = new LinkKeyCreator().checkKey(TestKey);
                     TextMessage text = new TextMessage("Your link key is: " + LinkKey);

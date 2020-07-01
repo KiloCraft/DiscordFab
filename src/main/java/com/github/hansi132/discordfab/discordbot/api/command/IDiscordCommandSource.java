@@ -34,13 +34,9 @@ public interface IDiscordCommandSource {
 
     MessageAction sendFeedback(@NotNull final MessageEmbed embed);
 
-    MessageAction sendFeedback(@NotNull final Messages.Builder builder);
-
     MessageAction sendError(@NotNull final CharSequence sequence);
 
     MessageAction sendError(@NotNull final EmbedBuilder builder);
-
-    MessageAction sendError(@NotNull final Messages.Builder builder);
 
     MessageAction sendError(@NotNull final String string, @Nullable Object... objects);
 

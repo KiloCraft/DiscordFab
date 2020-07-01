@@ -96,11 +96,6 @@ public class BotCommandSource implements IDiscordCommandSource {
     }
 
     @Override
-    public MessageAction sendFeedback(Messages.@NotNull Builder builder) {
-        return this.sendFeedback(builder.toJDAMessage());
-    }
-
-    @Override
     public MessageAction sendError(@NotNull CharSequence sequence) {
         return this.sendFeedback(sequence);
     }
@@ -108,11 +103,6 @@ public class BotCommandSource implements IDiscordCommandSource {
     @Override
     public MessageAction sendError(@NotNull EmbedBuilder builder) {
         return this.sendFeedback(builder.setColor(1536).build());
-    }
-
-    @Override
-    public MessageAction sendError(Messages.@NotNull Builder builder) {
-        return this.sendFeedback(builder.toJDAMessage());
     }
 
     @Override

@@ -51,26 +51,24 @@ public class CommandManager {
         return this.commands;
     }
 
+    @Deprecated
     public String getHelp(String label) {
         return getCommand(label).getDescription();
     }
 
-    public int execute(@NotNull final BotCommandSource executor, @NotNull final String input) {
+    public void execute(@NotNull final BotCommandSource executor, @NotNull final String input) {
         final StringReader reader = new StringReader(input);
         if (reader.canRead() && reader.getString().startsWith("k!")) {
             reader.setCursor(2);
         }
 
-        byte index = 0;
         try {
             try {
-                index = (byte) this.dispatcher.execute(reader, executor);
+                this.dispatcher.execute(reader, executor);
             } catch (BotCommandException e) {
                 executor.sendError(e.getJDAMessage()).queue();
-                return index;
             } catch (CommandSyntaxException e) {
                 executor.sendError(new EmbedBuilder().setDescription(e.getMessage())).queue();
-                return index;
             }
         } catch (Exception e) {
             EmbedBuilder builder = new EmbedBuilder()
@@ -94,9 +92,7 @@ public class CommandManager {
             }
 
             executor.sendError(builder).queue();
-            return -1;
         }
 
-        return index;
     }
 }

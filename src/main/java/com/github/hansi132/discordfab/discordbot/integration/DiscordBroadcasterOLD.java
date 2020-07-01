@@ -14,7 +14,7 @@ import org.kilocraft.essentials.api.event.player.PlayerOnChatMessageEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DiscordBroadcaster implements EventHandler<PlayerOnChatMessageEvent> {
+public class DiscordBroadcasterOLD implements EventHandler<PlayerOnChatMessageEvent> {
 
     @Override
     public void handle(@NotNull PlayerOnChatMessageEvent event) {
