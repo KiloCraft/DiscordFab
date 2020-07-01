@@ -1,15 +1,16 @@
 package com.github.hansi132.discordfab.discordbot;
 
-import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.hansi132.discordfab.DiscordFab;
+import com.github.hansi132.discordfab.discordbot.config.MainConfig;
+import com.github.hansi132.discordfab.discordbot.config.section.chatsync.ChatSynchronizerConfigSection;
 import com.github.hansi132.discordfab.discordbot.user.DiscordBroadcaster;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseUtils;
 import com.google.common.collect.Maps;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.user.User;
 
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 public class GameChatSynchronizer {
     private static final DiscordFab DISCORD_FAB = DiscordFab.getInstance();
+    private static final ChatSynchronizerConfigSection CONFIG = DISCORD_FAB.getConfig().chatSynchronizer;
     private static final ShardManager SHARD_MANAGER = DiscordFab.getBot();
     private final Map<UUID, net.dv8tion.jda.api.entities.User> map = Maps.newHashMap();
     private final DiscordBroadcaster discordBroadcaster;
@@ -35,9 +37,13 @@ public class GameChatSynchronizer {
             if (discordUser.getAvatarUrl() != null) {
                 builder.setAvatarUrl(discordUser.getAvatarUrl());
             }
+        } else if (CONFIG.defaultAvatarURL.isEmpty()) {
+            builder.setAvatarUrl(getMCAvatarURL(user.getUuid()));
         } else {
-
+            builder.setAvatarUrl(CONFIG.defaultAvatarURL);
         }
+
+
 
         this.discordBroadcaster.send(builder.build());
     }
@@ -58,6 +64,35 @@ public class GameChatSynchronizer {
     }
 
     private static String getMCAvatarURL(@NotNull final UUID uuid) {
-        return "https://crafatar.com/avatars/" + uuid.toString() + "?size=256&overlay";
+        AvatarRenderType renderType = AvatarRenderType.getByName(CONFIG.renderOptions.renderType);
+        if (renderType == null) {
+            renderType = AvatarRenderType.AVATAR;
+        }
+
+        return "https://crafatar.com/" + renderType.code + uuid.toString() + "?size=256" +
+                (CONFIG.renderOptions.showOverlay ? "&overlay" : "");
+    }
+
+    private enum AvatarRenderType {
+        AVATAR("avatars"),
+        HEAD("renders/head"),
+        BODY("renders/body");
+
+        private final String code;
+
+        AvatarRenderType(final String code) {
+            this.code = code;
+        }
+
+        @Nullable
+        public static AvatarRenderType getByName(@NotNull final String name) {
+            for (AvatarRenderType value : values()) {
+                if (name.equalsIgnoreCase(value.name())) {
+                    return value;
+                }
+            }
+
+            return null;
+        }
     }
 }

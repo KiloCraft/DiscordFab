@@ -5,6 +5,8 @@ import com.github.hansi132.discordfab.discordbot.DiscordFabBot;
 import com.github.hansi132.discordfab.discordbot.GameChatSynchronizer;
 import com.github.hansi132.discordfab.discordbot.Listener;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
+import com.github.hansi132.discordfab.discordbot.config.DiscordFabConfig;
+import com.github.hansi132.discordfab.discordbot.config.MainConfig;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -20,6 +22,7 @@ public class DiscordFab {
     private static ShardManager BOT;
     private boolean isDevelopment = false;
     private final DataConfig dataConfig;
+    private final DiscordFabConfig config;
     private final CommandManager commandManager;
     private final GameChatSynchronizer chatSynchronizer;
     private final Guild guild;
@@ -28,6 +31,8 @@ public class DiscordFab {
     DiscordFab(@NotNull final DataConfig dataConfig) {
         INSTANCE = this;
         this.dataConfig = dataConfig;
+        this.config = new DiscordFabConfig();
+        this.config.load();
         this.isDevelopment = this.dataConfig.getProperties().containsKey("debug");
 
         this.commandManager = new CommandManager(this);
@@ -71,6 +76,10 @@ public class DiscordFab {
 
     public DataConfig getDataConfig() {
         return this.dataConfig;
+    }
+
+    public MainConfig getConfig() {
+        return this.config.get();
     }
 
     public GameChatSynchronizer getChatSynchronizer() {

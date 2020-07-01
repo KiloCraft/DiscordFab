@@ -82,7 +82,7 @@ public class Listener extends ListenerAdapter {
                 new McBroadcaster(event);
             }
 
-            String prefix = DiscordFab.getInstance().getDataConfig().getProperty("prefix");
+            String prefix = DiscordFab.getInstance().getConfig().prefix;
             String raw = event.getMessage().getContentRaw();
 
             if (raw.startsWith(prefix)) {
@@ -90,7 +90,10 @@ public class Listener extends ListenerAdapter {
                         event.getJDA(), user.getName(), event.getGuild(), event.getChannel(), user, event.getMember(), event
                 );
 
-                DISCORD_FAB.getCommandManager().execute(src, raw.replaceFirst("k!", ""));
+                DISCORD_FAB.getCommandManager().execute(
+                        src,
+                        raw.replaceFirst(DiscordFab.getInstance().getConfig().prefix, "")
+                );
             }
         }
     }

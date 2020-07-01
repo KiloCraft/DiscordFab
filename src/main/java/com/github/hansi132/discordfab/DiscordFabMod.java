@@ -48,7 +48,6 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
                     this.put("database", "*Specify the database to be used*");
                     this.put("guild", "*Specify the guild id");
                     this.put("role", "*Specify what the linked role should be");
-                    this.put("prefix", "k!");
                 }}
         );
 
