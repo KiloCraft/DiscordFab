@@ -35,7 +35,7 @@ public class ActivityCommand extends DiscordFabCommand {
 
         src.getJDA().getPresence().setActivity(Activity.of(activityType, string));
 
-        src.sendFeedback("Set Activity to **%s** %s", activityType.toString().toLowerCase(Locale.ROOT), string);
+        src.sendFeedback("Set Activity to **%s** %s", activityType.toString().toLowerCase(Locale.ROOT), string).queue();
         return SUCCESS;
     }
 }
