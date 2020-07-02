@@ -2,6 +2,7 @@ package com.github.hansi132.discordfab.discordbot.api.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -9,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class BotCommandSource implements IDiscordCommandSource {
     private final JDA api;
@@ -65,6 +68,26 @@ public class BotCommandSource implements IDiscordCommandSource {
     @Override
     public Member getMember() {
         return this.member;
+    }
+
+    @Override
+    public boolean isAuthorized(@NotNull Permission permission) {
+        return !this.isWebhookMessage() && Objects.requireNonNull(this.member).hasPermission(permission);
+    }
+
+    @Override
+    public boolean isAuthorized(@NotNull Collection<Permission> permissions) {
+        return !this.isWebhookMessage() && Objects.requireNonNull(this.member).hasPermission(permissions);
+    }
+
+    @Override
+    public boolean isAuthorized(@NotNull GuildChannel channel, @NotNull Permission... permissions) {
+        return !this.isWebhookMessage() && Objects.requireNonNull(this.member).hasPermission(channel, permissions);
+    }
+
+    @Override
+    public boolean isAuthorized(@NotNull GuildChannel channel, @NotNull Collection<Permission> permissions) {
+        return !this.isWebhookMessage() && Objects.requireNonNull(this.member).hasPermission(channel, permissions);
     }
 
     public boolean isWebhookMessage() {

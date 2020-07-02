@@ -14,7 +14,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.string;
 public class ActivityCommand extends DiscordFabCommand {
 
     public ActivityCommand() {
-        super("activity");
+        super("activity", Permission.ADMINISTRATOR);
         this.withDescription("Set the activity of the bot.");
         ArgumentCommandNode<BotCommandSource, String> type = argument("type", string())
                 .build();

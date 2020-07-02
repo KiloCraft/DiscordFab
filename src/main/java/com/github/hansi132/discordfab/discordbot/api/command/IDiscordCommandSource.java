@@ -2,12 +2,14 @@ package com.github.hansi132.discordfab.discordbot.api.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface IDiscordCommandSource {
@@ -23,6 +25,14 @@ public interface IDiscordCommandSource {
 
     @Nullable
     Member getMember();
+
+    boolean isAuthorized(@NotNull final Permission permission);
+
+    boolean isAuthorized(@NotNull final Collection<Permission> permissions);
+
+    boolean isAuthorized(@NotNull final GuildChannel channel, @NotNull final Permission... permissions);
+
+    boolean isAuthorized(@NotNull final GuildChannel channel, @NotNull final Collection<Permission> permissions);
 
     TextChannel getChannel();
 
