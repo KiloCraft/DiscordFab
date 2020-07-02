@@ -1,5 +1,7 @@
 package com.github.hansi132.discordfab.discordbot.api.command;
 
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -11,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 public interface IDiscordCommandSource {
     List<Member> getAllGuildMembers();
@@ -53,5 +57,28 @@ public interface IDiscordCommandSource {
     MessageAction sendError(@NotNull final Message message);
 
     GuildMessageReceivedEvent getEvent();
+
+    static CompletableFuture<Suggestions> suggestMatching(Iterable<String> iterable, SuggestionsBuilder builder) {
+        String string = builder.getRemaining().toLowerCase(Locale.ROOT);
+
+        for (String s : iterable) {
+            if (matches(string, s.toLowerCase(Locale.ROOT))) {
+                builder.suggest(s);
+            }
+        }
+
+        return builder.buildFuture();
+    }
+
+    static boolean matches(String string_1, String string_2) {
+        for (int i = 0; !string_2.startsWith(string_1, i); i++) {
+            i = string_2.indexOf(95, i);
+            if (i > 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
 }
