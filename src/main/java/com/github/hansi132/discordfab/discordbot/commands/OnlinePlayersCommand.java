@@ -4,26 +4,38 @@ import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.mojang.brigadier.context.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.minecraft.entity.player.PlayerEntity;
-import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.user.OnlineUser;
 
 import java.awt.*;
-import java.util.Collection;
+import java.util.List;
+
 
 public class OnlinePlayersCommand extends DiscordFabCommand {
     public OnlinePlayersCommand() {
-        super("online", "Gives you the current online players.", "players");
+        super("online", "players");
+        this.withDescription("Gives you the current online players.");
         this.argBuilder.executes(this::execute);
     }
 
     private int execute(CommandContext<BotCommandSource> ctx) {
         BotCommandSource src = ctx.getSource();
-        Collection<PlayerEntity> playerList = KiloServer.getServer().getPlayerList();
+        List<OnlineUser> users = KiloEssentials.getServer().getUserManager().getOnlineUsersAsList();
 
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("Current online players: " + playerList.size());
-        eb.setColor(Color.GREEN);
-        src.getChannel().sendMessage(eb.build()).queue();
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setTitle("Online Players");
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < users.size(); i++) {
+            stringBuilder.append(users.get(i).getUsername());
+
+            if (i + 1 < users.size()) {
+                stringBuilder.append(", ");
+            }
+        }
+
+        builder.addField(users.size() + " online", stringBuilder.toString(), false);
+        src.sendFeedback(builder.build()).queue();
 
         return SUCCESS;
     }

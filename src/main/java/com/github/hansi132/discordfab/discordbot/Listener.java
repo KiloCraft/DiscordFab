@@ -1,17 +1,14 @@
 package com.github.hansi132.discordfab.discordbot;
 
-import com.github.hansi132.discordfab.DatabaseConnection;
+import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
-import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.integration.AssignNick;
-import com.github.hansi132.discordfab.discordbot.integration.McBroadcaster;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,22 +21,17 @@ import java.sql.SQLException;
 
 public class Listener extends ListenerAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
-    Connection connection;
-
-    @Override
-    public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {
-        //Reaction event handler. Will handle all events where the reaction is added.
-    }
+    private static final DiscordFab DISCORD_FAB = DiscordFab.getInstance();
+    private Connection connection;
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         LOGGER.info("{} is ready", event.getJDA().getSelfUser().getAsTag());
         try {
-            connection = new DatabaseConnection().getConnection();
+            connection = new DatabaseConnection().get();
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            LOGGER.fatal("Could not connect to the Database!", e);
         }
-
     }
 
     @Override
@@ -59,7 +51,7 @@ public class Listener extends ListenerAdapter {
                 if (message == linkKey && DiscordId == null) {
                     String updateSql = "UPDATE linkedaccounts SET DiscordId = ? WHERE LinkKey = ?;";
                     PreparedStatement updateStatement = connection.prepareStatement(updateSql);
-                    updateStatement.setString(1, event.getAuthor().getId());
+                    updateStatement.setLong(1, event.getAuthor().getIdLong());
                     updateStatement.setInt(2, linkKey);
                     updateStatement.execute();
 
@@ -77,21 +69,22 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
         User user = event.getAuthor();
-        if (!user.isBot()) {
-            //Basic broadcast function to send messages discord->MC
-            if (new DataConfig().getProperty("broadcastEnable").equals("true")) {
-                new McBroadcaster(event);
-            }
+        if (user.isBot()) {
+            return;
+        }
 
-            String prefix = new DataConfig().getProperty("prefix");
-            String raw = event.getMessage().getContentRaw();
+        final String raw = event.getMessage().getContentRaw();
+        final String prefix = DiscordFab.getInstance().getConfig().prefix;
 
-            if (raw.startsWith(prefix)) {
-                BotCommandSource src = new BotCommandSource(
-                        event.getJDA(), user.getName(), event.getGuild(), event.getChannel(), user, event.getMember(), event
-                );
+        if (raw.startsWith(prefix)) {
+            BotCommandSource src = new BotCommandSource(
+                    event.getJDA(), user.getName(), event.getGuild(), event.getChannel(), user, event.getMember(), event
+            );
 
-                DiscordFab.getInstance().getCommandManager().execute(src, raw.replaceFirst("k!", ""));
+            DISCORD_FAB.getCommandManager().execute(src, raw.replaceFirst(prefix, ""));
+        } else if (DISCORD_FAB.getConfig().chatSynchronizer.toMinecraft) {
+            if (event.getChannel().getIdLong() == DISCORD_FAB.getConfig().chatSynchronizer.chatChannelId) {
+                DiscordFab.getInstance().getChatSynchronizer().onDiscordChat(event.getMember(), raw);
             }
         }
     }

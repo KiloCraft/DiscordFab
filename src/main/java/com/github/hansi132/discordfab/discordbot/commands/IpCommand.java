@@ -7,7 +7,8 @@ import org.kilocraft.essentials.api.KiloServer;
 
 public class IpCommand extends DiscordFabCommand {
     public IpCommand() {
-        super("ip", "Gives the server ip and version");
+        super("ip");
+        this.withDescription("Gives the server ip and version");
         this.argBuilder.executes(this::execute);
     }
 
