@@ -1,5 +1,6 @@
 package com.github.hansi132.discordfab.discordbot.config;
 
+import com.github.hansi132.discordfab.discordbot.config.section.DefaultEmbedConfigSection;
 import com.github.hansi132.discordfab.discordbot.config.section.chatsync.ChatSynchronizerConfigSection;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -16,7 +17,13 @@ public class MainConfig {
     @Setting(value = "prefix", comment = "The prefix you use for the commands, Default = \"k!\"")
     public String prefix = "k!";
 
+    @Setting(value = "serverIp", comment = "The IP of the Minecraft Server")
+    public String serverIp = "50kilo.org";
+
     @Setting("chatSynchronization")
     public ChatSynchronizerConfigSection chatSynchronizer = new ChatSynchronizerConfigSection();
+
+    @Setting("defaultEmbed")
+    public DefaultEmbedConfigSection defaultEmbed = new DefaultEmbedConfigSection();
 
 }

@@ -9,7 +9,6 @@ import com.github.hansi132.discordfab.discordbot.util.DatabaseUtils;
 import com.google.common.collect.Maps;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.sharding.ShardManager;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
