@@ -18,6 +18,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 public class Listener extends ListenerAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -81,10 +82,10 @@ public class Listener extends ListenerAdapter {
                     event.getJDA(), user.getName(), event.getGuild(), event.getChannel(), user, event.getMember(), event
             );
 
-            DISCORD_FAB.getCommandManager().execute(src, raw.replaceFirst(prefix, ""));
-        } else if (DISCORD_FAB.getConfig().chatSynchronizer.toMinecraft) {
+            DISCORD_FAB.getCommandManager().execute(src, raw);
+        } else if (!event.isWebhookMessage() && DISCORD_FAB.getConfig().chatSynchronizer.toMinecraft) {
             if (event.getChannel().getIdLong() == DISCORD_FAB.getConfig().chatSynchronizer.chatChannelId) {
-                DiscordFab.getInstance().getChatSynchronizer().onDiscordChat(event.getMember(), raw);
+                DiscordFab.getInstance().getChatSynchronizer().onDiscordChat(Objects.requireNonNull(event.getMember()), raw);
             }
         }
     }

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class BotCommandSource implements IDiscordCommandSource {
+    private static final Color ERROR_COLOR = Color.decode("#FF0033");
     private final JDA api;
     private final String name;
     private final Guild guild;
@@ -126,7 +127,7 @@ public class BotCommandSource implements IDiscordCommandSource {
 
     @Override
     public MessageAction sendError(@NotNull EmbedBuilder builder) {
-        return this.sendFeedback(builder.setColor(Color.decode("#FF0033")).build());
+        return this.sendFeedback(builder.setColor(ERROR_COLOR).build());
     }
 
     @Override
