@@ -43,8 +43,6 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTED.register((server -> {
             KiloServer.getServer().registerEvent(new DiscordBroadcaster());
-            KiloServer.getServer().registerEvent(new CommandSpyBroadcaster());
-            KiloServer.getServer().registerEvent(new SocialSpyBroadcaster());
             KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
             KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
 

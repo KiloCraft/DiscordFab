@@ -51,11 +51,6 @@ public class CommandManager {
         return this.commands;
     }
 
-    @Deprecated
-    public String getHelp(String label) {
-        return getCommand(label).getDescription();
-    }
-
     public void execute(@NotNull final BotCommandSource executor, @NotNull final String input) {
         final StringReader reader = new StringReader(input);
         if (reader.canRead() && reader.getString().startsWith(DiscordFab.getInstance().getConfig().prefix)) {
