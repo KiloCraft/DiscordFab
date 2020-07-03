@@ -9,6 +9,7 @@ import com.mojang.brigadier.tree.CommandNode;
 public class DebugCommand extends DiscordFabCommand {
     public DebugCommand() {
         super("debug");
+        this.withDescription("A debug command");
         CommandNode<BotCommandSource> throwNode = literal("throw")
                 .then(
                         argument("message", StringArgumentType.greedyString())
@@ -22,6 +23,6 @@ public class DebugCommand extends DiscordFabCommand {
         String message = StringArgumentType.getString(ctx, "message");
         ctx.getSource().sendFeedback("*Wait for it..*").queue();
 
-        throw new StackOverflowError(message);
+        throw new NullPointerException(message);
     }
 }
