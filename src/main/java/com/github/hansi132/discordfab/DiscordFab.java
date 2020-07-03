@@ -7,6 +7,7 @@ import com.github.hansi132.discordfab.discordbot.Listener;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.config.DiscordFabConfig;
 import com.github.hansi132.discordfab.discordbot.config.MainConfig;
+import com.github.hansi132.discordfab.discordbot.util.EmbedUtil;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -26,7 +27,7 @@ public class DiscordFab {
     private final CommandManager commandManager;
     private final ChatSynchronizer chatSynchronizer;
     private final Guild guild;
-
+    private EmbedUtil embedUtil;
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
         INSTANCE = this;
@@ -35,8 +36,9 @@ public class DiscordFab {
         this.config.load();
         this.isDevelopment = this.dataConfig.getProperties().containsKey("debug");
 
-        this.commandManager = new CommandManager(this);
+        this.commandManager = new CommandManager();
         this.chatSynchronizer = new ChatSynchronizer();
+        this.embedUtil = new EmbedUtil();
 
         try {
             BOT = new DiscordFabBot(
@@ -92,5 +94,13 @@ public class DiscordFab {
 
     public Guild getGuild() {
         return this.guild;
+    }
+
+    public EmbedUtil getEmbedUtil() {
+        return this.embedUtil;
+    }
+
+    void shutdown() {
+        this.chatSynchronizer.shutdown();
     }
 }

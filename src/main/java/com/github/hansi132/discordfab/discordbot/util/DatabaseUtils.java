@@ -1,22 +1,19 @@
 package com.github.hansi132.discordfab.discordbot.util;
 
 import com.github.hansi132.discordfab.DiscordFab;
-import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
 import java.util.UUID;
 
 public class DatabaseUtils {
 
     public static boolean isLinked(@NotNull final UUID uuid) {
         try {
-            DatabaseConnection dbConn = new DatabaseConnection();
-            Connection conn = dbConn.get();
+            Connection conn = new DatabaseConnection().get();
 
             String selectSql = "SELECT McUUID FROM linkedaccounts WHERE McUUID = ?;";
             PreparedStatement selectStatement = conn.prepareStatement(selectSql);
@@ -27,7 +24,7 @@ public class DatabaseUtils {
                 return true;
             }
 
-            dbConn.close();
+            conn.close();
         } catch (ClassNotFoundException | SQLException e) {
             DiscordFab.LOGGER.error("Could not query the database!", e);
         }

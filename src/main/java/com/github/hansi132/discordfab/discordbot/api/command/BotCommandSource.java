@@ -2,6 +2,7 @@ package com.github.hansi132.discordfab.discordbot.api.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -9,9 +10,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class BotCommandSource implements IDiscordCommandSource {
+    private static final Color ERROR_COLOR = Color.decode("#FF0033");
     private final JDA api;
     private final String name;
     private final Guild guild;
@@ -67,8 +71,24 @@ public class BotCommandSource implements IDiscordCommandSource {
         return this.member;
     }
 
-    public boolean isWebhookMessage() {
-        return this.event.isWebhookMessage();
+    @Override
+    public boolean isAuthorized(@NotNull Permission permission) {
+        return Objects.requireNonNull(this.member).hasPermission(permission);
+    }
+
+    @Override
+    public boolean isAuthorized(@NotNull Collection<Permission> permissions) {
+        return Objects.requireNonNull(this.member).hasPermission(permissions);
+    }
+
+    @Override
+    public boolean isAuthorized(@NotNull GuildChannel channel, @NotNull Permission... permissions) {
+        return Objects.requireNonNull(this.member).hasPermission(channel, permissions);
+    }
+
+    @Override
+    public boolean isAuthorized(@NotNull GuildChannel channel, @NotNull Collection<Permission> permissions) {
+        return Objects.requireNonNull(this.member).hasPermission(channel, permissions);
     }
 
     @Override
@@ -103,7 +123,7 @@ public class BotCommandSource implements IDiscordCommandSource {
 
     @Override
     public MessageAction sendError(@NotNull EmbedBuilder builder) {
-        return this.sendFeedback(builder.setColor(Color.decode("#FF0033")).build());
+        return this.sendFeedback(builder.setColor(ERROR_COLOR).build());
     }
 
     @Override

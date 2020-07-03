@@ -39,12 +39,10 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
                 }}
         );
 
-        new DiscordFab(config);
+        DiscordFab fab = new DiscordFab(config);
 
         ServerLifecycleEvents.SERVER_STARTED.register((server -> {
             KiloServer.getServer().registerEvent(new DiscordBroadcaster());
-            KiloServer.getServer().registerEvent(new CommandSpyBroadcaster());
-            KiloServer.getServer().registerEvent(new SocialSpyBroadcaster());
             KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
             KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
 
@@ -52,5 +50,9 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
                     new EssentialsDiscordLinkCommand("link", new String[]{"discord_link"})
             );
         }));
+
+        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> {
+            fab.shutdown();
+        });
     }
 }

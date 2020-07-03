@@ -21,16 +21,15 @@ import java.util.Map;
 
 public class CommandManager {
     private static final Logger LOGGER = LogManager.getLogger(DiscordFab.class);
-    private static boolean isDevelopment;
     private final Map<String, DiscordFabCommand> commands;
     private final CommandDispatcher<BotCommandSource> dispatcher;
 
-    public CommandManager(@NotNull final DiscordFab discordFab) {
-        isDevelopment = discordFab.isDevelopment();
+    public CommandManager() {
         this.commands = Maps.newHashMap();
         this.dispatcher = new CommandDispatcher<>();
 //        CommandSyntaxException.BUILT_IN_EXCEPTIONS = new DiscordFormattedBuiltInExceptions();
 
+        this.register(new DebugCommand());
         this.register(new PingCommand());
         this.register(new IpCommand());
         this.register(new ActivityCommand());
@@ -49,11 +48,6 @@ public class CommandManager {
 
     public Map<String, DiscordFabCommand> getCommands() {
         return this.commands;
-    }
-
-    @Deprecated
-    public String getHelp(String label) {
-        return getCommand(label).getDescription();
     }
 
     public void execute(@NotNull final BotCommandSource executor, @NotNull final String input) {
@@ -75,7 +69,7 @@ public class CommandManager {
                     .setTitle("An unexpected error occurred while trying to execute that command");
             builder.addField("Exception message", Messages.getInnermostMessage(e), false);
 
-            if (isDevelopment) {
+            if (DiscordFab.getInstance().isDevelopment()) {
                 StringBuilder stringBuilder = new StringBuilder();
                 StackTraceElement[] elements = e.getStackTrace();
                 for (int i = 0; i < Math.min(elements.length, 3); i++) {
