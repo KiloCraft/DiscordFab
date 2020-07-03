@@ -73,26 +73,22 @@ public class BotCommandSource implements IDiscordCommandSource {
 
     @Override
     public boolean isAuthorized(@NotNull Permission permission) {
-        return !this.isWebhookMessage() && Objects.requireNonNull(this.member).hasPermission(permission);
+        return Objects.requireNonNull(this.member).hasPermission(permission);
     }
 
     @Override
     public boolean isAuthorized(@NotNull Collection<Permission> permissions) {
-        return !this.isWebhookMessage() && Objects.requireNonNull(this.member).hasPermission(permissions);
+        return Objects.requireNonNull(this.member).hasPermission(permissions);
     }
 
     @Override
     public boolean isAuthorized(@NotNull GuildChannel channel, @NotNull Permission... permissions) {
-        return !this.isWebhookMessage() && Objects.requireNonNull(this.member).hasPermission(channel, permissions);
+        return Objects.requireNonNull(this.member).hasPermission(channel, permissions);
     }
 
     @Override
     public boolean isAuthorized(@NotNull GuildChannel channel, @NotNull Collection<Permission> permissions) {
-        return !this.isWebhookMessage() && Objects.requireNonNull(this.member).hasPermission(channel, permissions);
-    }
-
-    public boolean isWebhookMessage() {
-        return this.event.isWebhookMessage();
+        return Objects.requireNonNull(this.member).hasPermission(channel, permissions);
     }
 
     @Override

@@ -59,13 +59,18 @@ public class ChatSynchronizer {
         );
     }
 
+    @Nullable
     private net.dv8tion.jda.api.entities.User getJDAUser(@NotNull final UUID uuid) {
         if (this.map.containsKey(uuid)) {
             return this.map.get(uuid);
         }
 
         long discordId = DatabaseUtils.getLinkedUserId(uuid);
-        net.dv8tion.jda.api.entities.User user = Objects.requireNonNull(guild.getMemberById(discordId)).getUser();
+        Member member = guild.getMemberById(discordId);
+        if (discordId == 0L || member == null) {
+            return null;
+        }
+        net.dv8tion.jda.api.entities.User user = member.getUser();
         this.map.put(uuid, user);
         return user;
     }
@@ -97,7 +102,7 @@ public class ChatSynchronizer {
     public void setMetaFor(@NotNull final User user, @NotNull final WebhookMessageBuilder builder) {
         if (DatabaseUtils.isLinked(user.getUuid())) {
             net.dv8tion.jda.api.entities.User discordUser = this.getJDAUser(user.getUuid());
-            if (discordUser.getAvatarUrl() != null) {
+            if (discordUser != null && discordUser.getAvatarUrl() != null) {
                 builder.setAvatarUrl(discordUser.getAvatarUrl());
                 builder.setUsername(discordUser.getName());
             }
@@ -128,5 +133,9 @@ public class ChatSynchronizer {
 
             return null;
         }
+    }
+
+    public void shutdown() {
+        this.discordBroadcaster.getClient().close();
     }
 }

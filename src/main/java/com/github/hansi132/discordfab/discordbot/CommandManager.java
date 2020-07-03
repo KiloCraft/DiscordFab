@@ -29,6 +29,7 @@ public class CommandManager {
         this.dispatcher = new CommandDispatcher<>();
 //        CommandSyntaxException.BUILT_IN_EXCEPTIONS = new DiscordFormattedBuiltInExceptions();
 
+        this.register(new DebugCommand());
         this.register(new PingCommand());
         this.register(new IpCommand());
         this.register(new ActivityCommand());

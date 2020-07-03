@@ -99,4 +99,8 @@ public class DiscordFab {
     public EmbedUtil getEmbedUtil() {
         return this.embedUtil;
     }
+
+    void shutdown() {
+        this.chatSynchronizer.shutdown();
+    }
 }
