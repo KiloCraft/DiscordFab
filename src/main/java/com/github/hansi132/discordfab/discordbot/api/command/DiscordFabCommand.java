@@ -27,7 +27,6 @@ public abstract class DiscordFabCommand {
     private final transient Predicate<BotCommandSource> predicate;
     protected transient LiteralArgumentBuilder<BotCommandSource> argBuilder;
     protected transient LiteralCommandNode<BotCommandSource> cmdNode;
-    @Nullable
     private transient String description;
 
     public DiscordFabCommand(@NotNull final String label) {
@@ -74,7 +73,6 @@ public abstract class DiscordFabCommand {
         return this.label;
     }
 
-    @Nullable
     public String getDescription() {
         return this.description;
     }

@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 
 import java.util.Locale;
+import java.util.Objects;
 
 
 public class ActivityCommand extends DiscordFabCommand {
@@ -30,6 +31,11 @@ public class ActivityCommand extends DiscordFabCommand {
 
     private int execute(CommandContext<BotCommandSource> ctx) {
         BotCommandSource src = ctx.getSource();
+
+        if (!Objects.requireNonNull(src.getMember()).hasPermission(Permission.ADMINISTRATOR)) {
+            src.sendFeedback("Sorry you do not have the right permission");
+        }
+
         Activity.ActivityType activityType = ActivityTypeArgument.getActivity(ctx, "type");
         String string = StringArgumentType.getString(ctx, "activity");
 

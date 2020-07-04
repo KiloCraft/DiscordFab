@@ -11,14 +11,15 @@ import java.util.Map;
 
 public class HelpCommand extends DiscordFabCommand {
     public HelpCommand() {
-        super("help", "This is the help message");
+        super("help");
+        this.withDescription("This is the help message");
         this.argBuilder.executes(this::executes);
     }
 
     private int executes(CommandContext<BotCommandSource> ctx) {
         BotCommandSource src = ctx.getSource();
-        DiscordFab fab = DiscordFab.getInstance();
-        Map<String, DiscordFabCommand> commandMap = fab.getCommandManager().getCommands();
+        DiscordFab discordFab = DiscordFab.getInstance();
+        Map<String, DiscordFabCommand> commandMap = discordFab.getCommandManager().getCommands();
 
         //Here we can remove the commands.
         commandMap.remove("help");
@@ -26,6 +27,7 @@ public class HelpCommand extends DiscordFabCommand {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("List of Commands");
         builder.setColor(Color.GREEN);
+
 
         for (Map.Entry<String, DiscordFabCommand> entry : commandMap.entrySet()){
             builder.addField(entry.getKey(), entry.getValue().getDescription(), false);
