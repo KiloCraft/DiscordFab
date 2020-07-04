@@ -56,8 +56,8 @@ public class Listener extends ListenerAdapter {
             );
 
             DISCORD_FAB.getCommandManager().execute(src, raw);
-        } else if (!event.isWebhookMessage() && DISCORD_FAB.getConfig().chatSynchronizer.toMinecraft) {
-            if (event.getChannel().getIdLong() == DISCORD_FAB.getConfig().chatSynchronizer.chatChannelId) {
+        } else if (!event.isWebhookMessage() && DISCORD_FAB.getConfig().chatSynchronizer.to_minecraft) {
+            if (event.getChannel().getIdLong() == DISCORD_FAB.getConfig().chatSynchronizer.chat_channel_id) {
                 DiscordFab.getInstance().getChatSynchronizer().onDiscordChat(Objects.requireNonNull(event.getMember()), raw);
             }
         }

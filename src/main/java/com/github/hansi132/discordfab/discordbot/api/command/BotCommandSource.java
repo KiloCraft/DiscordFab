@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class BotCommandSource implements IDiscordCommandSource {
+    private static final String NO_MEMBER_WEBHOOK_MESSAGE = "You can't get the member for a Webhook Message!";
     private static final Color ERROR_COLOR = Color.decode("#FF0033");
     private final JDA api;
     private final String name;
@@ -73,22 +74,22 @@ public class BotCommandSource implements IDiscordCommandSource {
 
     @Override
     public boolean isAuthorized(@NotNull Permission permission) {
-        return Objects.requireNonNull(this.member).hasPermission(permission);
+        return Objects.requireNonNull(this.member, NO_MEMBER_WEBHOOK_MESSAGE).hasPermission(permission);
     }
 
     @Override
     public boolean isAuthorized(@NotNull Collection<Permission> permissions) {
-        return Objects.requireNonNull(this.member).hasPermission(permissions);
+        return Objects.requireNonNull(this.member, NO_MEMBER_WEBHOOK_MESSAGE).hasPermission(permissions);
     }
 
     @Override
     public boolean isAuthorized(@NotNull GuildChannel channel, @NotNull Permission... permissions) {
-        return Objects.requireNonNull(this.member).hasPermission(channel, permissions);
+        return Objects.requireNonNull(this.member, NO_MEMBER_WEBHOOK_MESSAGE).hasPermission(channel, permissions);
     }
 
     @Override
     public boolean isAuthorized(@NotNull GuildChannel channel, @NotNull Collection<Permission> permissions) {
-        return Objects.requireNonNull(this.member).hasPermission(channel, permissions);
+        return Objects.requireNonNull(this.member, NO_MEMBER_WEBHOOK_MESSAGE).hasPermission(channel, permissions);
     }
 
     @Override

@@ -19,7 +19,6 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ServerChat;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 public class ChatSynchronizer {
@@ -76,13 +75,13 @@ public class ChatSynchronizer {
     }
 
     private static String getMCAvatarURL(@NotNull final UUID uuid) {
-        AvatarRenderType renderType = AvatarRenderType.getByName(CONFIG.renderOptions.renderType);
+        AvatarRenderType renderType = AvatarRenderType.getByName(CONFIG.render_options.renderType);
         if (renderType == null) {
             renderType = AvatarRenderType.AVATAR;
         }
 
-        return "https://crafatar.com/" + renderType.code + "/" + uuid.toString() + "?size=" + CONFIG.renderOptions.size +
-                (CONFIG.renderOptions.showOverlay ? "&overlay" : "");
+        return "https://crafatar.com/" + renderType.code + "/" + uuid.toString() + "?size=" + CONFIG.render_options.size +
+                (CONFIG.render_options.showOverlay ? "&overlay" : "");
     }
 
     public void onUserJoin(@NotNull final User user) {
@@ -107,7 +106,7 @@ public class ChatSynchronizer {
                 builder.setUsername(discordUser.getName());
             }
         } else {
-            builder.setAvatarUrl(CONFIG.defaultAvatarURL.isEmpty() ? CONFIG.defaultAvatarURL : getMCAvatarURL(user.getUuid()));
+            builder.setAvatarUrl(CONFIG.default_avatar_url.isEmpty() ? CONFIG.default_avatar_url : getMCAvatarURL(user.getUuid()));
             builder.setUsername(user.getUsername());
         }
     }

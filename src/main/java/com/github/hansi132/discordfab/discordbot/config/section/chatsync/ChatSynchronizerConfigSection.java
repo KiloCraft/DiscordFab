@@ -6,24 +6,24 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class ChatSynchronizerConfigSection {
 
-    @Setting(value = "toDiscord", comment = "Enables chat synchronization to Discord")
-    public boolean toDiscord = true;
+    @Setting(value = "to_discord", comment = "Enables chat synchronization to Discord")
+    public boolean to_discord = true;
 
-    @Setting(value = "toMinecraft", comment = "Enables chat synchronization to Minecraft")
-    public boolean toMinecraft = true;
+    @Setting(value = "to_minecraft", comment = "Enables chat synchronization to Minecraft")
+    public boolean to_minecraft = true;
 
-    @Setting(value = "chatChannelId", comment = "The Id for the Channel you want to be the" +
+    @Setting(value = "chat_channel_id", comment = "The Id for the Channel you want to be the" +
             " synchronized channel between the game and discord")
-    public long chatChannelId = 123456789101112131L;
+    public long chat_channel_id = 123456789101112131L;
 
-    @Setting(value = "defaultAvatarURL", comment = "The Avatar URL to use if the User isn't linked, " +
+    @Setting(value = "default_avatar_url", comment = "The Avatar URL to use if the User isn't linked, " +
             "leave it empty to use their Minecraft Avatar instead")
-    public String defaultAvatarURL = "";
+    public String default_avatar_url = "";
 
-    @Setting("minecraftAvatarRenderOptions")
-    public MCAvatarRenderOptionsConfigSection renderOptions = new MCAvatarRenderOptionsConfigSection();
+    @Setting("minecraft_avatar_render_options")
+    public MCAvatarRenderOptionsConfigSection render_options = new MCAvatarRenderOptionsConfigSection();
 
     public boolean isEnabled() {
-        return toDiscord || toMinecraft;
+        return to_discord || to_minecraft;
     }
 }

@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class ActivityTypeArgument implements ArgumentType<Activity.ActivityType> {
     private static final List<String> EXAMPLES = Lists.newArrayList("playing", "listening");
     private static final DynamicCommandExceptionType INVALID_ACTIVITY_EXCEPTION = new DynamicCommandExceptionType((object) ->
-            () -> "Invalid Activity Type! **" + object + "** is not valid"
+            () -> "**" + object + "** Is not a valid Activity Type"
     );
 
     public static ActivityTypeArgument activity() {
@@ -33,7 +33,7 @@ public class ActivityTypeArgument implements ArgumentType<Activity.ActivityType>
     @Override
     public Activity.ActivityType parse(StringReader reader) throws CommandSyntaxException {
         String string = reader.readUnquotedString();
-        if (string.equals("playing")) {
+        if (string.equalsIgnoreCase("playing")) {
             string = "default";
         }
         Activity.ActivityType activityType = null;
@@ -43,7 +43,7 @@ public class ActivityTypeArgument implements ArgumentType<Activity.ActivityType>
                 break;
             }
         }
-        if (activityType == null) {
+        if (activityType == null || activityType == Activity.ActivityType.CUSTOM_STATUS) {
             throw INVALID_ACTIVITY_EXCEPTION.create(string);
         }
 

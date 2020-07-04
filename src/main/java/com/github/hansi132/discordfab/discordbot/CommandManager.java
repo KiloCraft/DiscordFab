@@ -56,6 +56,17 @@ public class CommandManager {
             reader.setCursor(2);
         }
 
+        String label = reader.getString().split(" ")[0];
+        DiscordFabCommand command = DiscordFabCommand.getByLabel(label);
+        if (command != null && !command.getPredicate().test(executor)) {
+            executor.sendError(
+                    new EmbedBuilder().setDescription(
+                            DiscordFab.getInstance().getConfig().messages.command_parse_no_permission
+                    )
+            );
+            return;
+        }
+
         try {
             try {
                 this.dispatcher.execute(reader, executor);

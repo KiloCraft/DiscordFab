@@ -1,6 +1,7 @@
 package com.github.hansi132.discordfab.discordbot.api.command;
 
 import com.github.hansi132.discordfab.DiscordFab;
+import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -13,9 +14,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.function.Predicate;
 
 public abstract class DiscordFabCommand {
+    private static final Map<String, DiscordFabCommand> COMMANDS = Maps.newHashMap();
     protected static final transient int SUCCESS = 1;
     protected static final transient int FAILED = -1;
     protected static final transient int AWAIT = 0;
@@ -77,6 +80,10 @@ public abstract class DiscordFabCommand {
         return this.description;
     }
 
+    public Predicate<BotCommandSource> getPredicate() {
+        return this.predicate;
+    }
+
     protected void withDescription(@Nullable final String description) {
         this.description = description;
     }
@@ -97,6 +104,12 @@ public abstract class DiscordFabCommand {
             }
         }
 
+        COMMANDS.put(this.label, this);
         return this;
+    }
+
+    @Nullable
+    public static DiscordFabCommand getByLabel(@NotNull final String label) {
+        return COMMANDS.get(label);
     }
 }
