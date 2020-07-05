@@ -14,6 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -26,12 +28,14 @@ public abstract class DiscordFabCommand {
     protected static final transient Logger LOGGER = LogManager.getLogger();
 
     private final transient String label;
-    private final transient String[] alias;
     private final transient Predicate<BotCommandSource> predicate;
-    protected transient LiteralArgumentBuilder<BotCommandSource> argBuilder;
-    protected transient LiteralCommandNode<BotCommandSource> cmdNode;
+    @Nullable
+    private final transient String[] alias;
     @Nullable
     private transient String description;
+
+    protected transient LiteralArgumentBuilder<BotCommandSource> argBuilder;
+    protected transient LiteralCommandNode<BotCommandSource> cmdNode;
 
     public DiscordFabCommand(@NotNull final String label) {
         this(label, (String[]) null);
@@ -78,8 +82,8 @@ public abstract class DiscordFabCommand {
     }
 
     @Nullable
-    public String[] getAlias() {
-        return this.alias;
+    public List<String> getAlias() {
+        return this.alias == null || this.alias.length == 0 ? null : Arrays.asList(this.alias);
     }
 
     @Nullable
@@ -100,8 +104,12 @@ public abstract class DiscordFabCommand {
         dispatcher.getRoot().addChild(cmdNode);
 
         if (this.alias != null) {
-            for (String aliasName : this.alias) {
-                LiteralArgumentBuilder<BotCommandSource> builder = literal(aliasName).requires(this.argBuilder.getRequirement());
+            for (String aliasLabel : this.alias) {
+                if (aliasLabel == null) {
+                    continue;
+                }
+
+                LiteralArgumentBuilder<BotCommandSource> builder = literal(aliasLabel).requires(this.argBuilder.getRequirement());
 
                 if (this.argBuilder.getCommand() != null) {
                     builder.executes(this.argBuilder.getCommand());

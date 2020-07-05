@@ -17,7 +17,7 @@ public class ActivityCommand extends DiscordFabCommand {
 
     public ActivityCommand() {
         super("activity", Permission.ADMINISTRATOR);
-        this.withDescription("Set the activity of the bot.");
+        this.withDescription("Sets the activity of the bot.");
         ArgumentCommandNode<BotCommandSource, Activity.ActivityType> type = argument("type", ActivityTypeArgument.activity())
                 .build();
 

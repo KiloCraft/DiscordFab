@@ -77,17 +77,18 @@ public class CommandManager {
             } catch (BotCommandException e) {
                 src.sendFeedback(e.getJDAMessage()).queue();
             } catch (CommandSyntaxException e) {
-                src.sendWarning(
-                        new EmbedBuilder().setDescription(e.getMessage())
-                                .setFooter(CONFIG.messages.command_parse_help
-                                        .replace("$command$", prefix + "help " + label)
-                                )
-                ).queue();
+                EmbedBuilder builder = new EmbedBuilder().setDescription(e.getMessage());
+                if (command != null) {
+                    builder.setFooter(CONFIG.messages.command_parse_help
+                            .replace("$command$", prefix + "help " + label)
+                    );
+                }
+                src.sendWarning(builder).queue();
             }
         } catch (Exception e) {
             final EmbedBuilder builder = new EmbedBuilder()
-                    .setTitle("An unexpected error occurred while trying to execute that command");
-            builder.addField("Exception message", Messages.getInnermostMessage(e), false);
+                    .setTitle("An unexpected error occurred while trying to execute that command")
+                    .addField("Exception message", Messages.getInnermostMessage(e), false);
 
             if (DiscordFab.getInstance().isDevelopment()) {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -110,5 +111,7 @@ public class CommandManager {
 
     }
 
-
+    public CommandDispatcher<BotCommandSource> getDispatcher() {
+        return this.dispatcher;
+    }
 }
