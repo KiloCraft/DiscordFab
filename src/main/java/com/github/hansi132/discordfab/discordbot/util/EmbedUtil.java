@@ -14,7 +14,7 @@ public class EmbedUtil {
     public EmbedUtil() {
         DEFAULT_COLOR = Color.decode(CONFIG.color);
         AUTHOR_LINK = CONFIG.author_link;
-        AUTHOR_ICON_URL = CONFIG.authorIconURL;
+        AUTHOR_ICON_URL = CONFIG.author_icon_url;
     }
 
     public Color getDefaultColor() {

@@ -30,6 +30,7 @@ public abstract class DiscordFabCommand {
     private final transient Predicate<BotCommandSource> predicate;
     protected transient LiteralArgumentBuilder<BotCommandSource> argBuilder;
     protected transient LiteralCommandNode<BotCommandSource> cmdNode;
+    @Nullable
     private transient String description;
 
     public DiscordFabCommand(@NotNull final String label) {
@@ -76,6 +77,12 @@ public abstract class DiscordFabCommand {
         return this.label;
     }
 
+    @Nullable
+    public String[] getAlias() {
+        return this.alias;
+    }
+
+    @Nullable
     public String getDescription() {
         return this.description;
     }
@@ -93,8 +100,8 @@ public abstract class DiscordFabCommand {
         dispatcher.getRoot().addChild(cmdNode);
 
         if (this.alias != null) {
-            for (String s : this.alias) {
-                LiteralArgumentBuilder<BotCommandSource> builder = literal(s).requires(this.argBuilder.getRequirement());
+            for (String aliasName : this.alias) {
+                LiteralArgumentBuilder<BotCommandSource> builder = literal(aliasName).requires(this.argBuilder.getRequirement());
 
                 if (this.argBuilder.getCommand() != null) {
                     builder.executes(this.argBuilder.getCommand());

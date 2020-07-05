@@ -30,7 +30,7 @@ public class HelpCommand extends DiscordFabCommand {
 
 
         for (Map.Entry<String, DiscordFabCommand> entry : commandMap.entrySet()){
-            builder.addField(entry.getKey(), entry.getValue().getDescription(), false);
+            builder.addField(entry.getKey(), entry.getValue().getDescription() == null ? "" : entry.getValue().getDescription(), false);
         }
 
         src.getChannel().sendMessage(builder.build()).queue();

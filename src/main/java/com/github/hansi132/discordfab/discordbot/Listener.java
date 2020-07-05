@@ -42,7 +42,7 @@ public class Listener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
-        User user = event.getAuthor();
+        final User user = event.getAuthor();
         if (user.isBot()) {
             return;
         }
@@ -50,9 +50,9 @@ public class Listener extends ListenerAdapter {
         final String raw = event.getMessage().getContentRaw();
         final String prefix = DiscordFab.getInstance().getConfig().prefix;
 
-        if (!event.isWebhookMessage() && raw.startsWith(prefix) && !raw.equals(prefix)) {
-            BotCommandSource src = new BotCommandSource(
-                    event.getJDA(), user.getName(), event.getGuild(), event.getChannel(), user, event.getMember(), event
+        if (!event.isWebhookMessage() && !raw.equals(prefix) && raw.startsWith(prefix)) {
+            final BotCommandSource src = new BotCommandSource(
+                    event.getJDA(), event.getGuild(), event.getChannel(), user, event.getMember(), event
             );
 
             DISCORD_FAB.getCommandManager().execute(src, raw);

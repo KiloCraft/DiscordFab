@@ -5,6 +5,8 @@ import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.mojang.brigadier.context.CommandContext;
 import net.dv8tion.jda.api.MessageBuilder;
 
+import java.util.concurrent.TimeUnit;
+
 public class PingCommand extends DiscordFabCommand {
     public PingCommand() {
         super("ping");
@@ -14,14 +16,16 @@ public class PingCommand extends DiscordFabCommand {
 
     private int execute(final CommandContext<BotCommandSource> ctx) {
         BotCommandSource src = ctx.getSource();
-        double ping = src.getJDA().getGatewayPing();
-        double restPing = src.getJDA().getRestPing().complete();
 
-        MessageBuilder builder = new MessageBuilder("Pong! The Gateway latency is **" + ping +
-                "ms** and the REST API latency is **" + restPing + "**ms");
+        src.sendFeedback("**Pong!**").queueAfter(2, TimeUnit.SECONDS, (message) -> {
+            final double ping = src.getJDA().getGatewayPing();
+            final double restPing = src.getJDA().getRestPing().complete();
 
-        src.sendFeedback(builder.build()).queue();
-        return (int) ping;
+            message.editMessage("**Pong!** The Gateway latency is **" + ping +
+                    "ms** and the REST API latency is **" + restPing + "**ms").queue();
+        });
+
+        return SUCCESS;
 
     }
 
