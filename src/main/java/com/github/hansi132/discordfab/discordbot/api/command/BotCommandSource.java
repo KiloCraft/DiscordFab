@@ -1,8 +1,8 @@
 package com.github.hansi132.discordfab.discordbot.api.command;
 
-import com.github.hansi132.discordfab.discordbot.api.text.Messages;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -10,11 +10,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class BotCommandSource implements IDiscordCommandSource {
+    private static final String NO_MEMBER_WEBHOOK_MESSAGE = "You can't get the member for a Webhook Message!";
+    private static final Color ERROR_COLOR = Color.decode("#FF0033");
+    private static final Color WARNING_COLOR = Color.decode("#FFCC00");
     private final JDA api;
-    private final String name;
     private final Guild guild;
     private final TextChannel channel;
     private final User user;
@@ -22,14 +26,12 @@ public class BotCommandSource implements IDiscordCommandSource {
     private final GuildMessageReceivedEvent event;
 
     public BotCommandSource(@NotNull final JDA api,
-                            @NotNull final String name,
                             @NotNull final Guild guild,
                             @NotNull final TextChannel channel,
                             @NotNull final User user,
                             @Nullable final Member member,
                             @NotNull final GuildMessageReceivedEvent event) {
         this.api = api;
-        this.name = name;
         this.guild = guild;
         this.channel = channel;
         this.user = user;
@@ -49,7 +51,12 @@ public class BotCommandSource implements IDiscordCommandSource {
 
     @Override
     public String getName() {
-        return this.name;
+        return this.user.getName();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return this.member == null ? this.getName() : this.member.getNickname();
     }
 
     @Override
@@ -68,8 +75,24 @@ public class BotCommandSource implements IDiscordCommandSource {
         return this.member;
     }
 
-    public boolean isWebhookMessage() {
-        return this.event.isWebhookMessage();
+    @Override
+    public boolean isAuthorized(@NotNull Permission permission) {
+        return Objects.requireNonNull(this.member, NO_MEMBER_WEBHOOK_MESSAGE).hasPermission(permission);
+    }
+
+    @Override
+    public boolean isAuthorized(@NotNull Collection<Permission> permissions) {
+        return Objects.requireNonNull(this.member, NO_MEMBER_WEBHOOK_MESSAGE).hasPermission(permissions);
+    }
+
+    @Override
+    public boolean isAuthorized(@NotNull GuildChannel channel, @NotNull Permission... permissions) {
+        return Objects.requireNonNull(this.member, NO_MEMBER_WEBHOOK_MESSAGE).hasPermission(channel, permissions);
+    }
+
+    @Override
+    public boolean isAuthorized(@NotNull GuildChannel channel, @NotNull Collection<Permission> permissions) {
+        return Objects.requireNonNull(this.member, NO_MEMBER_WEBHOOK_MESSAGE).hasPermission(channel, permissions);
     }
 
     @Override
@@ -83,7 +106,7 @@ public class BotCommandSource implements IDiscordCommandSource {
     }
 
     @Override
-    public MessageAction sendFeedback(@NotNull String string, @Nullable Object... objects) {
+    public MessageAction sendFeedback(@NotNull String string, @NotNull Object... objects) {
         return this.channel.sendMessageFormat(string, objects);
     }
 
@@ -98,34 +121,15 @@ public class BotCommandSource implements IDiscordCommandSource {
     }
 
     @Override
-    public MessageAction sendFeedback(Messages.@NotNull Builder builder) {
-        return this.sendFeedback(builder.toJDAMessage());
-    }
-
-    @Override
-    public MessageAction sendError(@NotNull CharSequence sequence) {
-        return this.sendFeedback(sequence);
-    }
-
-    @Override
     public MessageAction sendError(@NotNull EmbedBuilder builder) {
-        return this.sendFeedback(builder.setColor(Color.RED).build());
+        return this.sendFeedback(builder.setColor(ERROR_COLOR).build());
     }
 
     @Override
-    public MessageAction sendError(Messages.@NotNull Builder builder) {
-        return this.sendFeedback(builder.toJDAMessage());
+    public MessageAction sendWarning(@NotNull EmbedBuilder builder) {
+        return this.sendFeedback(builder.setColor(WARNING_COLOR).build());
     }
 
-    @Override
-    public MessageAction sendError(@NotNull String string, @Nullable Object... objects) {
-        return this.sendFeedback(string, objects);
-    }
-
-    @Override
-    public MessageAction sendError(@NotNull Message message) {
-        return this.sendFeedback(message);
-    }
 
     @Override
     public GuildMessageReceivedEvent getEvent() {

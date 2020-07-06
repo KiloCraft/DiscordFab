@@ -2,9 +2,15 @@ package com.github.hansi132.discordfab;
 
 import com.github.hansi132.discordfab.discordbot.CommandManager;
 import com.github.hansi132.discordfab.discordbot.DiscordFabBot;
+import com.github.hansi132.discordfab.discordbot.ChatSynchronizer;
 import com.github.hansi132.discordfab.discordbot.Listener;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
+import com.github.hansi132.discordfab.discordbot.config.DiscordFabConfig;
+import com.github.hansi132.discordfab.discordbot.config.MainConfig;
+import com.github.hansi132.discordfab.discordbot.util.EmbedUtil;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,38 +19,45 @@ import org.jetbrains.annotations.NotNull;
 import javax.security.auth.login.LoginException;
 
 public class DiscordFab {
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger("DiscordFab");
     private static DiscordFab INSTANCE;
-    private static ShardManager bot;
+    private static ShardManager BOT;
     private boolean isDevelopment = false;
     private final DataConfig dataConfig;
+    private final DiscordFabConfig config;
     private final CommandManager commandManager;
+    private final ChatSynchronizer chatSynchronizer;
+    private final Guild guild;
+    private EmbedUtil embedUtil;
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
         INSTANCE = this;
         this.dataConfig = dataConfig;
+        this.config = new DiscordFabConfig();
+        this.config.load();
         this.isDevelopment = this.dataConfig.getProperties().containsKey("debug");
 
-        this.commandManager = new CommandManager(this);
+        this.commandManager = new CommandManager();
+        this.chatSynchronizer = new ChatSynchronizer();
+        this.embedUtil = new EmbedUtil();
 
         try {
-            bot = new DiscordFabBot(
+            BOT = new DiscordFabBot(
                     dataConfig.getToken(),
                     new Listener()
             ).getShardManager();
-            bot.setActivity(Activity.playing("50kilo.org"));
 
             if (isDevelopment) {
                 LOGGER.info("**** DiscordFab IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
-                bot.setActivity(Activity.playing("Debugging"));
+                BOT.setActivity(Activity.playing("Debugging"));
             }
 
+            LOGGER.info("Successfully logged in");
         } catch (LoginException e) {
             LOGGER.fatal("Can not log into the bot!", e);
-        } finally {
-            LOGGER.info("Successfully logged in");
         }
 
+        this.guild = BOT.getGuildById(Long.parseLong(dataConfig.getProperty("guild")));
     }
 
     public boolean isDevelopment() {
@@ -63,7 +76,31 @@ public class DiscordFab {
         return this.commandManager;
     }
 
+    public DataConfig getDataConfig() {
+        return this.dataConfig;
+    }
+
+    public MainConfig getConfig() {
+        return this.config.get();
+    }
+
+    public ChatSynchronizer getChatSynchronizer() {
+        return this.chatSynchronizer;
+    }
+
     public static ShardManager getBot() {
-        return DiscordFab.bot;
+        return DiscordFab.BOT;
+    }
+
+    public Guild getGuild() {
+        return this.guild;
+    }
+
+    public EmbedUtil getEmbedUtil() {
+        return this.embedUtil;
+    }
+
+    void shutdown() {
+        this.chatSynchronizer.shutdown();
     }
 }
