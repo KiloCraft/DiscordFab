@@ -28,6 +28,7 @@ public abstract class DiscordFabCommand {
     protected static final transient DiscordFab DISCORD_FAB = DiscordFab.getInstance();
     protected static final transient Logger LOGGER = LogManager.getLogger();
 
+    private final transient CommandCategory category;
     private final transient String label;
     private final transient Predicate<BotCommandSource> predicate;
     @Nullable
@@ -38,30 +39,36 @@ public abstract class DiscordFabCommand {
     protected transient LiteralArgumentBuilder<BotCommandSource> argBuilder;
     protected transient LiteralCommandNode<BotCommandSource> cmdNode;
 
-    public DiscordFabCommand(@NotNull final String label) {
-        this(label, (String[]) null);
+    public DiscordFabCommand(@NotNull final CommandCategory category,
+                             @NotNull final String label) {
+        this(category, label, (String[]) null);
     }
 
-    public DiscordFabCommand(@NotNull final String label, @Nullable final String... alias) {
-        this(label, src -> true, alias);
+    public DiscordFabCommand(@NotNull final CommandCategory category,
+                             @NotNull final String label, @Nullable final String... alias) {
+        this(category, label, src -> true, alias);
     }
 
-    public DiscordFabCommand(@NotNull final String label,
+    public DiscordFabCommand(@NotNull final CommandCategory category,
+                             @NotNull final String label,
                              @NotNull final GuildChannel channel,
                              @NotNull final Permission permission,
                              @Nullable final String... alias) {
-        this(label, src -> src.isAuthorized(channel, permission), alias);
+        this(category, label, src -> src.isAuthorized(channel, permission), alias);
     }
 
-    public DiscordFabCommand(@NotNull final String label,
+    public DiscordFabCommand(@NotNull final CommandCategory category,
+                             @NotNull final String label,
                              @NotNull final Permission permission,
                              @Nullable final String... alias) {
-        this(label, src -> src.isAuthorized(permission), alias);
+        this(category, label, src -> src.isAuthorized(permission), alias);
     }
 
-    public DiscordFabCommand(@NotNull final String label,
+    public DiscordFabCommand(@NotNull final CommandCategory category,
+                             @NotNull final String label,
                              @NotNull final Predicate<BotCommandSource> predicate,
                              @Nullable final String... alias) {
+        this.category = category;
         this.label = label;
         this.predicate = predicate;
         this.alias = alias;

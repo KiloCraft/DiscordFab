@@ -8,6 +8,7 @@ import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.config.DiscordFabConfig;
 import com.github.hansi132.discordfab.discordbot.config.MainConfig;
 import com.github.hansi132.discordfab.discordbot.util.EmbedUtil;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -45,7 +46,7 @@ public class DiscordFab {
                     dataConfig.getToken(),
                     new Listener()
             ).getShardManager();
-            BOT.setActivity(Activity.playing("50kilo.org"));
+
 
             if (isDevelopment) {
                 LOGGER.info("**** DiscordFab IS RUNNING IN DEBUG/DEVELOPMENT MODE!");

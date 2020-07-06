@@ -8,8 +8,6 @@ import com.github.hansi132.discordfab.discordbot.user.DiscordBroadcaster;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseUtils;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.google.common.collect.Maps;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
@@ -83,12 +81,12 @@ public class ChatSynchronizer {
     }
 
     private static String getMCAvatarURL(@NotNull final UUID uuid) {
-        MinecraftAvatar.@Nullable RenderType renderType = MinecraftAvatar.RenderType.getByName(CONFIG.render_options.renderType);
+        MinecraftAvatar.@Nullable RenderType renderType = MinecraftAvatar.RenderType.getByName(CONFIG.renderOptions.renderType);
         if (renderType == null) {
             renderType = MinecraftAvatar.RenderType.AVATAR;
         }
 
-        return MinecraftAvatar.generateUrl(uuid, renderType, CONFIG.render_options.size, CONFIG.render_options.showOverlay);
+        return MinecraftAvatar.generateUrl(uuid, renderType, CONFIG.renderOptions.size, CONFIG.renderOptions.showOverlay);
     }
 
     public void onUserJoin(@NotNull final User user) {

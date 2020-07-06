@@ -1,15 +1,19 @@
 package com.github.hansi132.discordfab.discordbot.commands;
 
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
+import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.util.EmbedUtil;
 import com.mojang.brigadier.context.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 
 public class IpCommand extends DiscordFabCommand {
-    public IpCommand() {
-        super("ip", "connect");
+
+    public IpCommand(@NotNull CommandCategory category, @NotNull String label, @Nullable String... alias) {
+        super(category, label, alias);
         this.withDescription("Gives the server ip and version");
         this.argBuilder.executes(this::execute);
     }

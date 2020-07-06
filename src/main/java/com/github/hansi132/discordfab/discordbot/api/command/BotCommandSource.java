@@ -55,6 +55,11 @@ public class BotCommandSource implements IDiscordCommandSource {
     }
 
     @Override
+    public String getDisplayName() {
+        return this.member == null ? this.getName() : this.member.getNickname();
+    }
+
+    @Override
     public Guild getGuild() {
         return this.guild;
     }

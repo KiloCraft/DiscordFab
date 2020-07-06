@@ -1,6 +1,7 @@
 package com.github.hansi132.discordfab.discordbot.commands;
 
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
+import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.commands.argument.AvatarRenderTypeArgument;
 import com.github.hansi132.discordfab.discordbot.commands.argument.MinecraftPlayerArgument;
@@ -12,8 +13,8 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.util.NameLookup;
 
 import java.awt.*;
@@ -22,17 +23,16 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class MinecraftAvatarCommand extends DiscordFabCommand {
     private static final int DEFAULT_SIZE = 512;
 
-    public MinecraftAvatarCommand() {
-        super("minecraftavatar", "mcavatar", "skin", "minecraftskin", "mcskin");
+    public MinecraftAvatarCommand(@NotNull CommandCategory category, @NotNull String label, @Nullable String... alias) {
+        super(category, label, alias);
         this.withDescription("Get someone's Minecraft Avatar!");
 
         RequiredArgumentBuilder<BotCommandSource, GameProfile> player = argument("player", MinecraftPlayerArgument.player())
-                .executes((ctx) -> this.execute(ctx, MinecraftAvatar.RenderType.AVATAR, DEFAULT_SIZE, true));
+                .executes((ctx) -> this.execute(ctx, MinecraftAvatar.RenderType.BODY, DEFAULT_SIZE, true));
 
         RequiredArgumentBuilder<BotCommandSource, MinecraftAvatar.RenderType> renderType = argument("renderType", AvatarRenderTypeArgument.renderType())
                 .executes((ctx) -> this.execute(ctx, AvatarRenderTypeArgument.getRenderType(ctx, "renderType"), DEFAULT_SIZE, true));
@@ -48,6 +48,7 @@ public class MinecraftAvatarCommand extends DiscordFabCommand {
         player.then(renderType);
         this.argBuilder.then(player);
     }
+
 
     private int execute(final CommandContext<BotCommandSource> ctx,
                         final MinecraftAvatar.RenderType renderType,
@@ -79,7 +80,7 @@ public class MinecraftAvatarCommand extends DiscordFabCommand {
             src.sendFeedback(
                     new EmbedBuilder()
                             .setTitle("Skin " + renderType.getName() + ": " + profile.getName())
-                            .setAuthor(src.getName(), MinecraftAvatar.API_URL, src.getUser().getAvatarUrl())
+                            .setAuthor(src.getDisplayName(), MinecraftAvatar.API_URL, src.getUser().getAvatarUrl())
                             .setColor(Color.LIGHT_GRAY)
                             .setTimestamp(Instant.now())
                             .setFooter("Powered by: crafatar.com")

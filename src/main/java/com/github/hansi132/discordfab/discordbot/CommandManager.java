@@ -2,6 +2,7 @@ package com.github.hansi132.discordfab.discordbot;
 
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
+import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.api.command.exception.BotCommandException;
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
@@ -13,6 +14,7 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -33,12 +35,12 @@ public class CommandManager {
 //        CommandSyntaxException.BUILT_IN_EXCEPTIONS = new DiscordFormattedBuiltInExceptions();
 
         this.register(new DebugCommand());
-        this.register(new PingCommand());
-        this.register(new IpCommand());
-        this.register(new ActivityCommand());
-        this.register(new HelpCommand());
-        this.register(new OnlinePlayersCommand());
-        this.register(new MinecraftAvatarCommand());
+        this.register(new PresenceCommand(CommandCategory.ADMIN, "presence", Permission.ADMINISTRATOR));
+        this.register(new PingCommand(CommandCategory.GENERAL, "ping"));
+        this.register(new IpCommand(CommandCategory.HELP, "ip", "connect"));
+        this.register(new HelpCommand(CommandCategory.HELP, "help"));
+        this.register(new OnlinePlayersCommand(CommandCategory.UTILITY, "online", "players"));
+        this.register(new MinecraftAvatarCommand(CommandCategory.UTILITY, "minecraftavatar", "mcavatar", "skin"));
     }
 
     public <C extends DiscordFabCommand> void register(C command) {
@@ -76,13 +78,13 @@ public class CommandManager {
             } catch (BotCommandException e) {
                 src.sendFeedback(e.getJDAMessage()).queue();
             } catch (CommandSyntaxException e) {
-                EmbedBuilder builder = new EmbedBuilder().setTitle(e.getMessage());
+                EmbedBuilder builder = new EmbedBuilder().setDescription(e.getMessage());
                 if (command != null) {
-                    builder.setDescription(CONFIG.messages.command_parse_help
+                    builder.setFooter(CONFIG.messages.command_parse_help
                             .replace("$command$", prefix + "help " + label)
                     );
                 }
-                src.sendWarning(builder).queue();
+                src.sendError(builder).queue();
             }
         } catch (Exception e) {
             final EmbedBuilder builder = new EmbedBuilder()

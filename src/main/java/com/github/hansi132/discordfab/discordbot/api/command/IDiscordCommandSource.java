@@ -23,6 +23,8 @@ public interface IDiscordCommandSource {
 
     String getName();
 
+    String getDisplayName();
+
     Guild getGuild();
 
     User getUser();

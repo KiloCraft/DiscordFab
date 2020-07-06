@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class ActivityTypeArgument implements ArgumentType<Activity.ActivityType> {
     private static final List<String> EXAMPLES = Lists.newArrayList("playing", "listening");
     private static final DynamicCommandExceptionType INVALID_ACTIVITY_EXCEPTION = new DynamicCommandExceptionType((object) ->
-            () -> "**" + object + "** Is not a valid Activity Type"
+            () -> "**" + object + "** is not a valid Activity Type"
     );
 
     public static ActivityTypeArgument activity() {

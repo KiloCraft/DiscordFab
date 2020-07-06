@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class AvatarRenderTypeArgument implements ArgumentType<MinecraftAvatar.RenderType> {
     private static final List<String> EXAMPLES = Lists.newArrayList("avatar", "body");
     private static final DynamicCommandExceptionType INVALID_RENDER_TYPE_EXCEPTION = new DynamicCommandExceptionType((object) ->
-            () -> "**" + object + "** Is not a valid Render Type"
+            () -> "**" + object + "** is not a valid Render Type"
     );
 
     public static AvatarRenderTypeArgument renderType() {

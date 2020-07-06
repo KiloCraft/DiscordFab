@@ -2,8 +2,8 @@ package com.github.hansi132.discordfab.discordbot.commands;
 
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
+import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
-import com.github.hansi132.discordfab.discordbot.util.EmbedUtil;
 import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
@@ -14,9 +14,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class HelpCommand extends DiscordFabCommand {
     private static final Color EMBED_COLOR = Color.decode("#32CD32");
@@ -24,9 +26,8 @@ public class HelpCommand extends DiscordFabCommand {
             () -> "Unknown command or insufficient permission"
     );
 
-    public HelpCommand() {
-        super("help");
-
+    public HelpCommand(@NotNull CommandCategory category, @NotNull String label) {
+        super(category, label);
         final RequiredArgumentBuilder<BotCommandSource, String> commandArgument = argument("command", StringArgumentType.greedyString())
                 .executes(this::executeUsage);
 
@@ -44,9 +45,11 @@ public class HelpCommand extends DiscordFabCommand {
                 .setDescription("Use `" + DISCORD_FAB.getConfig().prefix + "help <command>` for usage")
                 .setColor(EMBED_COLOR);
 
-        map.forEach((label, command) ->
-                builder.addField(label, command.getDescription() == null ? "" : command.getDescription(), true)
-        );
+        map.forEach((label, command) -> {
+            if (command.getPredicate().test(src)) {
+                builder.addField(label, command.getDescription() == null ? "" : command.getDescription(), true);
+            }
+        });
 
         src.getChannel().sendMessage(builder.build()).queue();
         return SUCCESS;
