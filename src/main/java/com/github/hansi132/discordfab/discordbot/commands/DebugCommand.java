@@ -6,10 +6,13 @@ import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
+import net.dv8tion.jda.api.Permission;
+
+import java.util.concurrent.TimeUnit;
 
 public class DebugCommand extends DiscordFabCommand {
     public DebugCommand() {
-        super(CommandCategory.DEBUG, "debug");
+        super(CommandCategory.DEBUG, "debug", Permission.ADMINISTRATOR);
         this.withDescription("A debug command");
         CommandNode<BotCommandSource> throwNode = literal("throw")
                 .then(
@@ -22,7 +25,9 @@ public class DebugCommand extends DiscordFabCommand {
 
     private int executeThrow(final CommandContext<BotCommandSource> ctx) {
         String message = StringArgumentType.getString(ctx, "message");
-        ctx.getSource().sendFeedback("*Wait for it..*").queue();
+        ctx.getSource().sendFeedback("*Wait for it..*").queueAfter(2, TimeUnit.SECONDS, (msg) ->
+                msg.editMessage("***BOOM!***")
+        );
 
         throw new NullPointerException(message);
     }

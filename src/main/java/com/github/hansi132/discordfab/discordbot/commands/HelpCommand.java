@@ -86,14 +86,17 @@ public class HelpCommand extends DiscordFabCommand {
             builder.addField("Alias", stringBuilder.toString(), false);
         }
 
+
         Map<CommandNode<BotCommandSource>, String> map = dispatcher.getSmartUsage(Iterables.getLast(parseResults.getContext().getNodes()).getNode(), src);
-        map.forEach((node, string) -> {
+        boolean first = true;
+        for (Map.Entry<CommandNode<BotCommandSource>, String> entry : map.entrySet()) {
             builder.addField(
-                    "Usage",
-                    DISCORD_FAB.getConfig().prefix + parseResults.getReader().getString() + " " + string,
+                    first ? "Usage" : "",
+                    DISCORD_FAB.getConfig().prefix + parseResults.getReader().getString() + " " + entry.getValue(),
                     false
             );
-        });
+            first = false;
+        }
 
         src.sendFeedback(builder.build()).queue();
         return SUCCESS;

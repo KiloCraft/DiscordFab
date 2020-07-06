@@ -35,7 +35,7 @@ public class MinecraftAvatar {
         }
 
         public String getName() {
-            return String.valueOf(this.name().charAt(0)).toUpperCase() + this.name().substring(1);
+            return String.valueOf(this.name().charAt(0)).toUpperCase() + this.name().substring(1).toLowerCase();
         }
 
         @Nullable

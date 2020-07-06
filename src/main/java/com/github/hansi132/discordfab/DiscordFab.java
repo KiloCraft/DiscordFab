@@ -47,7 +47,6 @@ public class DiscordFab {
                     new Listener()
             ).getShardManager();
 
-
             if (isDevelopment) {
                 LOGGER.info("**** DiscordFab IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
                 BOT.setActivity(Activity.playing("Debugging"));
