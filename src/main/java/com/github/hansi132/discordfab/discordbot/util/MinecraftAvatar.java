@@ -6,13 +6,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class MinecraftAvatar {
-    private static final String BASE_URL = "https://crafatar.com/";
+    public static final String API_URL = "https://crafatar.com/";
 
     public static String generateUrl(@NotNull final UUID uuid,
                                      @NotNull final RenderType renderType,
                                      final int size,
                                      final boolean overlay) {
-        StringBuilder builder = new StringBuilder(BASE_URL)
+        StringBuilder builder = new StringBuilder(API_URL)
                 .append(renderType.code).append('/').append(uuid)
                 .append("?size=").append(size);
 
@@ -32,6 +32,10 @@ public class MinecraftAvatar {
 
         RenderType(final String code) {
             this.code = code;
+        }
+
+        public String getName() {
+            return String.valueOf(this.name().charAt(0)).toUpperCase() + this.name().substring(1);
         }
 
         @Nullable

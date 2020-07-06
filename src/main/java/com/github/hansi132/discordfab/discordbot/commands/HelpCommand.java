@@ -62,7 +62,7 @@ public class HelpCommand extends DiscordFabCommand {
             throw FAILED_EXCEPTION.create();
         }
 
-        final ParseResults<BotCommandSource> parseResults = dispatcher.parse(input, ctx.getSource());
+        final ParseResults<BotCommandSource> parseResults = dispatcher.parse(command.getLabel(), ctx.getSource());
         final EmbedBuilder builder = new EmbedBuilder().setTitle("Command: " + command.getLabel())
                 .setColor(EMBED_COLOR);
 
@@ -75,7 +75,7 @@ public class HelpCommand extends DiscordFabCommand {
             for (int i = 0; i < command.getAlias().size(); i++) {
                 stringBuilder.append(command.getAlias().get(i));
 
-                if (i < command.getAlias().size()) {
+                if (i + 1 < command.getAlias().size()) {
                     stringBuilder.append(", ");
                 }
             }

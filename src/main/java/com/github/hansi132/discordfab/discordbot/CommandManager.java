@@ -12,9 +12,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.Suggestion;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -78,9 +76,9 @@ public class CommandManager {
             } catch (BotCommandException e) {
                 src.sendFeedback(e.getJDAMessage()).queue();
             } catch (CommandSyntaxException e) {
-                EmbedBuilder builder = new EmbedBuilder().setDescription(e.getMessage());
+                EmbedBuilder builder = new EmbedBuilder().setTitle(e.getMessage());
                 if (command != null) {
-                    builder.setFooter(CONFIG.messages.command_parse_help
+                    builder.setDescription(CONFIG.messages.command_parse_help
                             .replace("$command$", prefix + "help " + label)
                     );
                 }

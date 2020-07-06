@@ -6,6 +6,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
@@ -100,26 +101,29 @@ public abstract class DiscordFabCommand {
     }
 
     public DiscordFabCommand register(@NotNull final CommandDispatcher<BotCommandSource> dispatcher) {
+        DiscordFabCommand command = this;
+        COMMANDS.put(this.label, command);
         dispatcher.register(argBuilder);
         dispatcher.getRoot().addChild(cmdNode);
 
-        if (this.alias != null) {
-            for (String aliasLabel : this.alias) {
-                if (aliasLabel == null) {
-                    continue;
+        if (this.getAlias() != null) {
+            for (String alias : this.getAlias()) {
+                final LiteralCommandNode<BotCommandSource> node = literal(alias).requires(this.predicate)
+                        .executes(this.argBuilder.getCommand()).build();
+
+                for (CommandNode<BotCommandSource> child : this.cmdNode.getChildren()) {
+                    node.addChild(child);
                 }
 
-                LiteralArgumentBuilder<BotCommandSource> builder = literal(aliasLabel).requires(this.argBuilder.getRequirement());
-
-                if (this.argBuilder.getCommand() != null) {
-                    builder.executes(this.argBuilder.getCommand());
+                for (CommandNode<BotCommandSource> child : this.argBuilder.getArguments()) {
+                    node.addChild(child);
                 }
 
-                dispatcher.register(builder);
+                dispatcher.getRoot().addChild(node);
+                COMMANDS.put(alias, command);
             }
         }
 
-        COMMANDS.put(this.label, this);
         return this;
     }
 
@@ -127,4 +131,5 @@ public abstract class DiscordFabCommand {
     public static DiscordFabCommand getByLabel(@NotNull final String label) {
         return COMMANDS.get(label);
     }
+
 }

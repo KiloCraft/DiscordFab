@@ -28,10 +28,10 @@ public class ChatSynchronizer {
     private static final DiscordFab DISCORD_FAB = DiscordFab.getInstance();
     private static final ChatSynchronizerConfigSection CONFIG = DISCORD_FAB.getConfig().chatSynchronizer;
     private final Map<UUID, net.dv8tion.jda.api.entities.User> map = Maps.newHashMap();
-    private final DiscordBroadcaster discordBroadcaster;
+    private DiscordBroadcaster discordBroadcaster;
 
     public ChatSynchronizer() {
-        this.discordBroadcaster = new DiscordBroadcaster();
+        //this.discordBroadcaster = new DiscordBroadcaster();
     }
 
     public void onGameChat(@NotNull final User user, @NotNull final String string) {

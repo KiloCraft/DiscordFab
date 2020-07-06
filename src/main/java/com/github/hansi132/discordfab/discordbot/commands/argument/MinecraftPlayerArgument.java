@@ -53,19 +53,14 @@ public class MinecraftPlayerArgument implements ArgumentType<GameProfile> {
     }
 
     @Override
-    public GameProfile parse(StringReader reader) throws CommandSyntaxException {
+    public GameProfile parse(StringReader reader) {
         final String string = reader.readUnquotedString();
         Matcher uuidMatcher = UUID_PATTERN.matcher(string);
-        if (uuidMatcher.matches()) {
-            return new GameProfile(UUID.fromString(string), "");
+        if (uuidMatcher.find()) {
+            return new GameProfile(UUID.fromString(uuidMatcher.group(1)), "");
         }
 
-        Matcher usernameMatcher = USERNAME_PATTERN.matcher(string);
-        if (usernameMatcher.matches()) {
-            return new GameProfile(null, string);
-        }
-
-        throw INVALID_PLAYER.create();
+        return new GameProfile(null, string);
     }
 
     @Override
