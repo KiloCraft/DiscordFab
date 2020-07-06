@@ -40,6 +40,7 @@ public class CommandManager {
         this.register(new ActivityCommand());
         this.register(new HelpCommand());
         this.register(new OnlinePlayersCommand());
+        this.register(new MinecraftAvatarCommand());
     }
 
     public <C extends DiscordFabCommand> void register(C command) {

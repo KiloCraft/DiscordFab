@@ -46,7 +46,7 @@ public class DatabaseUtils {
             }
 
             conn.close();
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (ClassNotFoundException | SQLException | NullPointerException e) {
             DiscordFab.LOGGER.error("Could not query the database!", e);
         }
 

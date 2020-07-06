@@ -6,7 +6,9 @@ import com.github.hansi132.discordfab.discordbot.api.text.DiscordCompatibleTextF
 import com.github.hansi132.discordfab.discordbot.config.section.chatsync.ChatSynchronizerConfigSection;
 import com.github.hansi132.discordfab.discordbot.user.DiscordBroadcaster;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseUtils;
+import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.google.common.collect.Maps;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.minecraft.text.HoverEvent;
@@ -19,17 +21,17 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ServerChat;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ChatSynchronizer {
     private static final DiscordFab DISCORD_FAB = DiscordFab.getInstance();
     private static final ChatSynchronizerConfigSection CONFIG = DISCORD_FAB.getConfig().chatSynchronizer;
     private final Map<UUID, net.dv8tion.jda.api.entities.User> map = Maps.newHashMap();
-    private DiscordBroadcaster discordBroadcaster;
-    private final Guild guild = DISCORD_FAB.getGuild();
+    private final DiscordBroadcaster discordBroadcaster;
 
     public ChatSynchronizer() {
-        //this.discordBroadcaster = new DiscordBroadcaster();
+        this.discordBroadcaster = new DiscordBroadcaster();
     }
 
     public void onGameChat(@NotNull final User user, @NotNull final String string) {
@@ -45,56 +47,64 @@ public class ChatSynchronizer {
     public void onDiscordChat(final Member member, @NotNull final String string) {
         ServerChat.Channel.PUBLIC.send(
                 new LiteralText("")
-                        .append(new LiteralText(ServerChat.Channel.PUBLIC.getPrefix()).styled((style) ->
-                                style.setHoverEvent(
-                                        new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                new LiteralText("From Discord").formatted(Formatting.BLUE))
-                                )
-                        ))
+                        .append(
+                                new LiteralText(ServerChat.Channel.PUBLIC.getPrefix()
+                                        .replace("%USER_RANKED_DISPLAYNAME%", member.getEffectiveName())
+                                ).styled((style) ->
+                                        style.setHoverEvent(
+                                                new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                        new LiteralText("From Discord").formatted(Formatting.BLUE))
+                                        )
+                                ))
                         .append(" ")
-                        .append(DiscordCompatibleTextFormat.clearAllDiscord(
-                                string.replace("%USER_RANKED_DISPLAYNAME%", member.getEffectiveName()))
-                        )
+                        .append(DiscordCompatibleTextFormat.clearAllDiscord(string))
         );
     }
 
     @Nullable
     private net.dv8tion.jda.api.entities.User getJDAUser(@NotNull final UUID uuid) {
-        if (this.map.containsKey(uuid)) {
+        if (this.map.containsKey(Objects.requireNonNull(uuid))) {
             return this.map.get(uuid);
         }
 
         long discordId = DatabaseUtils.getLinkedUserId(uuid);
-        Member member = guild.getMemberById(discordId);
-        if (discordId == 0L || member == null) {
+        if (discordId == 0L) {
             return null;
         }
-        net.dv8tion.jda.api.entities.User user = member.getUser();
+
+        net.dv8tion.jda.api.entities.User user = DiscordFab.getBot().getUserById(discordId);
+
+        if (user == null) {
+            return null;
+        }
+
         this.map.put(uuid, user);
         return user;
     }
 
     private static String getMCAvatarURL(@NotNull final UUID uuid) {
-        AvatarRenderType renderType = AvatarRenderType.getByName(CONFIG.render_options.renderType);
+        MinecraftAvatar.@Nullable RenderType renderType = MinecraftAvatar.RenderType.getByName(CONFIG.render_options.renderType);
         if (renderType == null) {
-            renderType = AvatarRenderType.AVATAR;
+            renderType = MinecraftAvatar.RenderType.AVATAR;
         }
 
-        return "https://crafatar.com/" + renderType.code + "/" + uuid.toString() + "?size=" + CONFIG.render_options.size +
-                (CONFIG.render_options.showOverlay ? "&overlay" : "");
+        return MinecraftAvatar.generateUrl(uuid, renderType, CONFIG.render_options.size, CONFIG.render_options.showOverlay);
     }
 
     public void onUserJoin(@NotNull final User user) {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         setMetaFor(user, builder);
-        builder.setContent(user.getFormattedDisplayName() + " Joined the game.");
+        builder.setContent(user.getDisplayName() + " Joined the game.");
+
+        this.discordBroadcaster.send(builder.build());
     }
 
     public void onUserLeave(@NotNull final User user) {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         setMetaFor(user, builder);
-        builder.setContent(user.getFormattedDisplayName() + " Left the game.");
+        builder.setContent(user.getDisplayName() + " Left the game.");
 
+        this.discordBroadcaster.send(builder.build());
         this.map.remove(user.getId());
     }
 
@@ -106,31 +116,8 @@ public class ChatSynchronizer {
                 builder.setUsername(discordUser.getName());
             }
         } else {
-            builder.setAvatarUrl(CONFIG.default_avatar_url.isEmpty() ? CONFIG.default_avatar_url : getMCAvatarURL(user.getUuid()));
+            builder.setAvatarUrl(getMCAvatarURL(user.getUuid()));
             builder.setUsername(user.getUsername());
-        }
-    }
-
-    private enum AvatarRenderType {
-        AVATAR("avatars"),
-        HEAD("renders/head"),
-        BODY("renders/body");
-
-        private final String code;
-
-        AvatarRenderType(final String code) {
-            this.code = code;
-        }
-
-        @Nullable
-        public static AvatarRenderType getByName(@NotNull final String name) {
-            for (AvatarRenderType value : values()) {
-                if (name.equalsIgnoreCase(value.name())) {
-                    return value;
-                }
-            }
-
-            return null;
         }
     }
 

@@ -19,7 +19,7 @@ public class PingCommand extends DiscordFabCommand {
         final double ping = src.getJDA().getGatewayPing();
         final double restPing = src.getJDA().getRestPing().complete();
 
-        src.sendFeedback("**Pong!**").queueAfter(1, TimeUnit.SECONDS, (message) ->
+        src.sendFeedback("**Pong!**").queueAfter(2, TimeUnit.SECONDS, (message) ->
                 message.editMessage("**Pong!** The Gateway latency is **" + ping +
                 "ms** and the REST API latency is **" + restPing + "**ms").queue()
         );

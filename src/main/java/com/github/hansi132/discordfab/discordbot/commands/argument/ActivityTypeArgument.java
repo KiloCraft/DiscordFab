@@ -32,7 +32,7 @@ public class ActivityTypeArgument implements ArgumentType<Activity.ActivityType>
 
     @Override
     public Activity.ActivityType parse(StringReader reader) throws CommandSyntaxException {
-        String string = reader.readUnquotedString();
+        final String string = reader.readUnquotedString();
         Activity.ActivityType activityType = null;
         for (Activity.ActivityType value : Activity.ActivityType.values()) {
             if (value.name().equalsIgnoreCase(string)) {
