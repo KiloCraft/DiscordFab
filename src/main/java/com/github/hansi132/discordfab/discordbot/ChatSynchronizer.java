@@ -16,7 +16,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
+import org.kilocraft.essentials.chat.TextMessage;
 
 import java.util.Map;
 import java.util.Objects;
@@ -29,7 +31,7 @@ public class ChatSynchronizer {
     private DiscordBroadcaster discordBroadcaster;
 
     public ChatSynchronizer() {
-        //this.discordBroadcaster = new DiscordBroadcaster();
+        this.discordBroadcaster = new DiscordBroadcaster();
     }
 
     public void onGameChat(@NotNull final User user, @NotNull final String string) {
@@ -43,7 +45,7 @@ public class ChatSynchronizer {
     }
 
     public void onDiscordChat(final Member member, @NotNull final String string) {
-        ServerChat.Channel.PUBLIC.send(
+        KiloChat.broadCast(
                 new LiteralText("")
                         .append(
                                 new LiteralText(ServerChat.Channel.PUBLIC.getPrefix()

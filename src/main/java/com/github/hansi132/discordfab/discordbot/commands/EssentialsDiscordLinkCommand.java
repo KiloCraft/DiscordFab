@@ -45,7 +45,7 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
             selectStatement.setString(1, user.getUuid().toString());
             ResultSet resultSet = selectStatement.executeQuery();
 
-            if (resultSet.next()) {
+            if (resultSet.next() && resultSet.getLong("DiscordID") != 0L) {
                 user.sendError("You're account is already linked!");
                 return FAILED;
             }

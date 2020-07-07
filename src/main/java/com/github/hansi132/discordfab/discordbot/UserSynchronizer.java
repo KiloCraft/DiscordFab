@@ -20,7 +20,7 @@ public class UserSynchronizer {
 
     public static boolean isLinkCode(@NotNull final String string) {
         Matcher matcher = LINK_KEY_PATTERN.matcher(string);
-        return matcher.matches();
+        return matcher.find();
     }
 
     public static void sync(@NotNull final PrivateChannel channel, @NotNull final User user, final int inputLinkKey) {
