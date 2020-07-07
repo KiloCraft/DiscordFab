@@ -26,24 +26,60 @@ import java.util.concurrent.CompletableFuture;
 
 public class MinecraftAvatarCommand extends DiscordFabCommand {
     private static final int DEFAULT_SIZE = 512;
+    private static final int DEFAULT_SCALE = 10;
 
     public MinecraftAvatarCommand(@NotNull CommandCategory category, @NotNull String label, @Nullable String... alias) {
         super(category, label, alias);
         this.withDescription("Get someone's Minecraft Avatar!");
 
         RequiredArgumentBuilder<BotCommandSource, GameProfile> player = argument("player", MinecraftPlayerArgument.player())
-                .executes((ctx) -> this.execute(ctx, MinecraftAvatar.RenderType.BODY, DEFAULT_SIZE, true));
+                .executes((ctx) -> this.execute(
+                        ctx,
+                        MinecraftAvatar.RenderType.BODY,
+                        DEFAULT_SIZE,
+                        DEFAULT_SCALE,
+                        true
+                ));
 
         RequiredArgumentBuilder<BotCommandSource, MinecraftAvatar.RenderType> renderType = argument("renderType", AvatarRenderTypeArgument.renderType())
-                .executes((ctx) -> this.execute(ctx, AvatarRenderTypeArgument.getRenderType(ctx, "renderType"), DEFAULT_SIZE, true));
+                .executes((ctx) -> this.execute(
+                        ctx,
+                        AvatarRenderTypeArgument.getRenderType(ctx, "renderType"),
+                        DEFAULT_SIZE,
+                        DEFAULT_SCALE,
+                        true
+                ));
 
         RequiredArgumentBuilder<BotCommandSource, Integer> size = argument("size", IntegerArgumentType.integer(16, 512))
-                .executes((ctx) -> this.execute(ctx, AvatarRenderTypeArgument.getRenderType(ctx, "renderType"), IntegerArgumentType.getInteger(ctx, "size"), true));
+                .executes((ctx) -> this.execute(
+                        ctx,
+                        AvatarRenderTypeArgument.getRenderType(ctx, "renderType"),
+                        IntegerArgumentType.getInteger(ctx, "size"),
+                        DEFAULT_SCALE,
+                        true)
+                );
+
+        RequiredArgumentBuilder<BotCommandSource, Integer> scale = argument("scale", IntegerArgumentType.integer(1, 10))
+                .executes((ctx) -> this.execute(
+                        ctx,
+                        AvatarRenderTypeArgument.getRenderType(ctx, "renderType"),
+                        IntegerArgumentType.getInteger(ctx, "size"),
+                        IntegerArgumentType.getInteger(ctx, "scale"),
+                        true
+                ));
+
 
         RequiredArgumentBuilder<BotCommandSource, Boolean> overlay = argument("overlay", BoolArgumentType.bool())
-                .executes((ctx) -> this.execute(ctx, AvatarRenderTypeArgument.getRenderType(ctx, "renderType"), IntegerArgumentType.getInteger(ctx, "size"), BoolArgumentType.getBool(ctx, "overlay")));
+                .executes((ctx) -> this.execute(
+                        ctx,
+                        AvatarRenderTypeArgument.getRenderType(ctx, "renderType"),
+                        IntegerArgumentType.getInteger(ctx, "size"),
+                        IntegerArgumentType.getInteger(ctx, "scale"),
+                        BoolArgumentType.getBool(ctx, "overlay"))
+                );
 
-        size.then(overlay);
+        scale.then(overlay);
+        size.then(scale);
         renderType.then(size);
         player.then(renderType);
         this.argBuilder.then(player);
@@ -52,7 +88,7 @@ public class MinecraftAvatarCommand extends DiscordFabCommand {
 
     private int execute(final CommandContext<BotCommandSource> ctx,
                         final MinecraftAvatar.RenderType renderType,
-                        int size, boolean overlay) throws CommandSyntaxException {
+                        int size, int scale, boolean overlay) throws CommandSyntaxException {
         final BotCommandSource src = ctx.getSource();
         final String username = MinecraftPlayerArgument.getUsername(ctx, "player");
 
@@ -84,7 +120,12 @@ public class MinecraftAvatarCommand extends DiscordFabCommand {
                             .setColor(Color.LIGHT_GRAY)
                             .setTimestamp(Instant.now())
                             .setFooter("Powered by: crafatar.com")
-                            .setImage(MinecraftAvatar.generateUrl(profile.getId(), renderType, size, overlay))
+                            .setImage(
+                                    MinecraftAvatar.generateUrl(
+                                            profile.getId(), renderType, MinecraftAvatar.RenderType.Model.DEFAULT,
+                                            size, scale, overlay
+                                    )
+                            )
                             .build()
             ).queue();
         });

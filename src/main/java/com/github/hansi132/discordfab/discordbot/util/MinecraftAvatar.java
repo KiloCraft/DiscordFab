@@ -10,23 +10,30 @@ public class MinecraftAvatar {
 
     public static String generateUrl(@NotNull final UUID uuid,
                                      @NotNull final RenderType renderType,
+                                     @NotNull final RenderType.Model model,
                                      final int size,
+                                     final int scale,
                                      final boolean overlay) {
-        StringBuilder builder = new StringBuilder(API_URL)
-                .append(renderType.code).append('/').append(uuid)
-                .append("?size=").append(size);
+        final StringBuilder builder = new StringBuilder(API_URL)
+                .append(renderType.code).append('/').append(uuid);
 
-        if (overlay) {
+        if (renderType.modifier.size) {
+            builder.append("?size=").append(size);
+        }
+
+        if (renderType.modifier.scale) {
+            builder.append("&scale=").append(scale);
+        }
+
+        if (renderType.modifier.overlay && overlay) {
             builder.append("&overlay");
         }
 
+        if (renderType.modifier.model) {
+            builder.append("&default=").append(model.code);
+        }
+
         return builder.toString();
-    }
-
-    public static String generate(@NotNull final UUID uuid,
-                                  @NotNull final RenderType renderType) {
-
-        return "";
     }
 
     public enum RenderType {
@@ -73,27 +80,25 @@ public class MinecraftAvatar {
             private final boolean scale;
             private final boolean overlay;
             private final boolean model;
+
             Modifier(boolean size, boolean scale, boolean overlay, boolean model) {
                 this.size = size;
                 this.scale = scale;
                 this.overlay = overlay;
                 this.model = model;
             }
+        }
 
-            public boolean isSize() {
-                return size;
-            }
+        public enum Model {
+            DEFAULT("Steve", "MHF_Steve"),
+            SLIM("Alex", "MHF_Alex");
 
-            public boolean isScale() {
-                return scale;
-            }
+            private final String name;
+            private final String code;
 
-            public boolean isOverlay() {
-                return overlay;
-            }
-
-            public boolean isModel() {
-                return model;
+            Model(final String name, final String code) {
+                this.name = name;
+                this.code = code;
             }
         }
     }

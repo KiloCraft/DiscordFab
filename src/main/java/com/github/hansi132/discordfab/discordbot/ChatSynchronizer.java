@@ -4,8 +4,8 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.text.DiscordCompatibleTextFormat;
 import com.github.hansi132.discordfab.discordbot.config.section.chatsync.ChatSynchronizerConfigSection;
+import com.github.hansi132.discordfab.discordbot.integration.UserSynchronizer;
 import com.github.hansi132.discordfab.discordbot.user.DiscordBroadcaster;
-import com.github.hansi132.discordfab.discordbot.util.DatabaseUtils;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.google.common.collect.Maps;
 import net.dv8tion.jda.api.entities.Member;
@@ -18,7 +18,6 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.TextMessage;
 
 import java.util.Map;
 import java.util.Objects;
@@ -28,7 +27,7 @@ public class ChatSynchronizer {
     private static final DiscordFab DISCORD_FAB = DiscordFab.getInstance();
     private static final ChatSynchronizerConfigSection CONFIG = DISCORD_FAB.getConfig().chatSynchronizer;
     private final Map<UUID, net.dv8tion.jda.api.entities.User> map = Maps.newHashMap();
-    private DiscordBroadcaster discordBroadcaster;
+    private final DiscordBroadcaster discordBroadcaster;
 
     public ChatSynchronizer() {
         this.discordBroadcaster = new DiscordBroadcaster();
@@ -67,7 +66,7 @@ public class ChatSynchronizer {
             return this.map.get(uuid);
         }
 
-        long discordId = DatabaseUtils.getLinkedUserId(uuid);
+        long discordId = UserSynchronizer.getSyncedUserId(uuid);
         if (discordId == 0L) {
             return null;
         }
@@ -88,7 +87,13 @@ public class ChatSynchronizer {
             renderType = MinecraftAvatar.RenderType.AVATAR;
         }
 
-        return MinecraftAvatar.generateUrl(uuid, renderType, CONFIG.renderOptions.size, CONFIG.renderOptions.showOverlay);
+        return MinecraftAvatar.generateUrl(uuid,
+                renderType,
+                MinecraftAvatar.RenderType.Model.DEFAULT,
+                CONFIG.renderOptions.size,
+                CONFIG.renderOptions.scale,
+                CONFIG.renderOptions.showOverlay
+        );
     }
 
     public void onUserJoin(@NotNull final User user) {
@@ -109,7 +114,7 @@ public class ChatSynchronizer {
     }
 
     public void setMetaFor(@NotNull final User user, @NotNull final WebhookMessageBuilder builder) {
-        if (DatabaseUtils.isLinked(user.getUuid())) {
+        if (UserSynchronizer.isSynced(user.getUuid())) {
             net.dv8tion.jda.api.entities.User discordUser = this.getJDAUser(user.getUuid());
             if (discordUser != null && discordUser.getAvatarUrl() != null) {
                 builder.setAvatarUrl(discordUser.getAvatarUrl());

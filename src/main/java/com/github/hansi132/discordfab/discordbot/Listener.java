@@ -2,6 +2,7 @@ package com.github.hansi132.discordfab.discordbot;
 
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
+import com.github.hansi132.discordfab.discordbot.integration.UserSynchronizer;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.User;
@@ -35,8 +36,7 @@ public class Listener extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         final String raw = event.getMessage().getContentRaw();
         if (event.isFromType(ChannelType.PRIVATE) && !event.getAuthor().isBot() && UserSynchronizer.isLinkCode(raw)) {
-            int code = Integer.parseInt(raw);
-            UserSynchronizer.sync(event.getPrivateChannel(), event.getAuthor(), code);
+            UserSynchronizer.sync(event.getPrivateChannel(), event.getAuthor(), UserSynchronizer.getLinkCode(raw));
         }
     }
 
