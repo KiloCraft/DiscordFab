@@ -39,7 +39,7 @@ public class UserSynchronizer {
         try {
             Connection conn = new DatabaseConnection().get();
 
-            String selectSql = "SELECT McUUID FROM linkedaccounts WHERE McUUID = ?;";
+            String selectSql = "SELECT McUUID, DiscordId FROM linkedaccounts WHERE McUUID = ?;";
             PreparedStatement selectStatement = conn.prepareStatement(selectSql);
             selectStatement.setString(1, uuid.toString());
             ResultSet resultSet = selectStatement.executeQuery();
