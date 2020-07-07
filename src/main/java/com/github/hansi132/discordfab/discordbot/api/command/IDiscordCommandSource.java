@@ -23,6 +23,8 @@ public interface IDiscordCommandSource {
 
     String getName();
 
+    String getDisplayName();
+
     Guild getGuild();
 
     User getUser();
@@ -48,13 +50,9 @@ public interface IDiscordCommandSource {
 
     MessageAction sendFeedback(@NotNull final MessageEmbed embed);
 
-    MessageAction sendError(@NotNull final CharSequence sequence);
-
     MessageAction sendError(@NotNull final EmbedBuilder builder);
 
-    MessageAction sendError(@NotNull final String string, @Nullable Object... objects);
-
-    MessageAction sendError(@NotNull final Message message);
+    MessageAction sendWarning(@NotNull final EmbedBuilder builder);
 
     GuildMessageReceivedEvent getEvent();
 

@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class ActivityTypeArgument implements ArgumentType<Activity.ActivityType> {
     private static final List<String> EXAMPLES = Lists.newArrayList("playing", "listening");
     private static final DynamicCommandExceptionType INVALID_ACTIVITY_EXCEPTION = new DynamicCommandExceptionType((object) ->
-            () -> "Invalid Activity Type! **" + object + "** is not valid"
+            () -> "**" + object + "** is not a valid Activity Type"
     );
 
     public static ActivityTypeArgument activity() {
@@ -32,10 +32,7 @@ public class ActivityTypeArgument implements ArgumentType<Activity.ActivityType>
 
     @Override
     public Activity.ActivityType parse(StringReader reader) throws CommandSyntaxException {
-        String string = reader.readUnquotedString();
-        if (string.equals("playing")) {
-            string = "default";
-        }
+        final String string = reader.readUnquotedString();
         Activity.ActivityType activityType = null;
         for (Activity.ActivityType value : Activity.ActivityType.values()) {
             if (value.name().equalsIgnoreCase(string)) {
@@ -43,7 +40,7 @@ public class ActivityTypeArgument implements ArgumentType<Activity.ActivityType>
                 break;
             }
         }
-        if (activityType == null) {
+        if (activityType == null || activityType == Activity.ActivityType.CUSTOM_STATUS) {
             throw INVALID_ACTIVITY_EXCEPTION.create(string);
         }
 
@@ -54,6 +51,10 @@ public class ActivityTypeArgument implements ArgumentType<Activity.ActivityType>
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         List<String> strings = Lists.newArrayList();
         for (Activity.ActivityType value : Activity.ActivityType.values()) {
+            if (value == Activity.ActivityType.CUSTOM_STATUS) {
+                continue;
+            }
+
             strings.add(value.name().toLowerCase());
         }
 

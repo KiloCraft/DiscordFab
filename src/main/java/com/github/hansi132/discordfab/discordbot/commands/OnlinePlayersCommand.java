@@ -1,9 +1,12 @@
 package com.github.hansi132.discordfab.discordbot.commands;
 
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
+import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.mojang.brigadier.context.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
@@ -12,8 +15,9 @@ import java.util.List;
 
 
 public class OnlinePlayersCommand extends DiscordFabCommand {
-    public OnlinePlayersCommand() {
-        super("online", "players");
+
+    public OnlinePlayersCommand(@NotNull CommandCategory category, @NotNull String label, @Nullable String... alias) {
+        super(category, label, alias);
         this.withDescription("Gives you the current online players.");
         this.argBuilder.executes(this::execute);
     }

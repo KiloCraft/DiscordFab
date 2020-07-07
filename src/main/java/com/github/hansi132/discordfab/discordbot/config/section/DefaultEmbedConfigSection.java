@@ -10,8 +10,8 @@ public class DefaultEmbedConfigSection {
     public String color = "#FF8C00";
 
     @Setting(value = "authorLink", comment = "The Default Author Link")
-    public String authorLink = "https://50kilo.org/";
+    public String author_link = "https://50kilo.org/";
 
     @Setting(value = "authorIconUrl", comment = "The Default Author ICON URL")
-    public String authorIconURL = "";
+    public String author_icon_url = "";
 }

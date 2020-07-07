@@ -2,6 +2,7 @@ package com.github.hansi132.discordfab.discordbot;
 
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
+import com.github.hansi132.discordfab.discordbot.integration.UserSynchronizer;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.User;
@@ -35,14 +36,13 @@ public class Listener extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         final String raw = event.getMessage().getContentRaw();
         if (event.isFromType(ChannelType.PRIVATE) && !event.getAuthor().isBot() && UserSynchronizer.isLinkCode(raw)) {
-            int code = Integer.parseInt(raw);
-            UserSynchronizer.sync(event.getPrivateChannel(), event.getAuthor(), code);
+            UserSynchronizer.sync(event.getPrivateChannel(), event.getAuthor(), UserSynchronizer.getLinkCode(raw));
         }
     }
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
-        User user = event.getAuthor();
+        final User user = event.getAuthor();
         if (user.isBot()) {
             return;
         }
@@ -50,9 +50,9 @@ public class Listener extends ListenerAdapter {
         final String raw = event.getMessage().getContentRaw();
         final String prefix = DiscordFab.getInstance().getConfig().prefix;
 
-        if (!event.isWebhookMessage() && raw.startsWith(prefix) && !raw.equals(prefix)) {
-            BotCommandSource src = new BotCommandSource(
-                    event.getJDA(), user.getName(), event.getGuild(), event.getChannel(), user, event.getMember(), event
+        if (!event.isWebhookMessage() && !raw.equals(prefix) && raw.startsWith(prefix)) {
+            final BotCommandSource src = new BotCommandSource(
+                    event.getJDA(), event.getGuild(), event.getChannel(), user, event.getMember(), event
             );
 
             DISCORD_FAB.getCommandManager().execute(src, raw);

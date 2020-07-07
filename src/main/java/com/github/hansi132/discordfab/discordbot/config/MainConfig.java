@@ -1,6 +1,8 @@
 package com.github.hansi132.discordfab.discordbot.config;
 
 import com.github.hansi132.discordfab.discordbot.config.section.DefaultEmbedConfigSection;
+import com.github.hansi132.discordfab.discordbot.config.section.MessagesConfigSection;
+import com.github.hansi132.discordfab.discordbot.config.section.UserSyncConfigSection;
 import com.github.hansi132.discordfab.discordbot.config.section.chatsync.ChatSynchronizerConfigSection;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -25,5 +27,11 @@ public class MainConfig {
 
     @Setting("defaultEmbed")
     public DefaultEmbedConfigSection defaultEmbed = new DefaultEmbedConfigSection();
+
+    @Setting("messages")
+    public MessagesConfigSection messages = new MessagesConfigSection();
+
+    @Setting("userSynchronizer")
+    public UserSyncConfigSection userSync = new UserSyncConfigSection();
 
 }

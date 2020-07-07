@@ -4,10 +4,10 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.text.DiscordCompatibleTextFormat;
 import com.github.hansi132.discordfab.discordbot.config.section.chatsync.ChatSynchronizerConfigSection;
+import com.github.hansi132.discordfab.discordbot.integration.UserSynchronizer;
 import com.github.hansi132.discordfab.discordbot.user.DiscordBroadcaster;
-import com.github.hansi132.discordfab.discordbot.util.DatabaseUtils;
+import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.google.common.collect.Maps;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
 
 import java.util.Map;
@@ -27,7 +28,6 @@ public class ChatSynchronizer {
     private static final ChatSynchronizerConfigSection CONFIG = DISCORD_FAB.getConfig().chatSynchronizer;
     private final Map<UUID, net.dv8tion.jda.api.entities.User> map = Maps.newHashMap();
     private final DiscordBroadcaster discordBroadcaster;
-    private final Guild guild = DISCORD_FAB.getGuild();
 
     public ChatSynchronizer() {
         this.discordBroadcaster = new DiscordBroadcaster();
@@ -44,94 +44,85 @@ public class ChatSynchronizer {
     }
 
     public void onDiscordChat(final Member member, @NotNull final String string) {
-        ServerChat.Channel.PUBLIC.send(
+        KiloChat.broadCast(
                 new LiteralText("")
-                        .append(new LiteralText(ServerChat.Channel.PUBLIC.getPrefix()).styled((style) ->
-                                style.setHoverEvent(
-                                        new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                new LiteralText("From Discord").formatted(Formatting.BLUE))
-                                )
-                        ))
+                        .append(
+                                new LiteralText(ServerChat.Channel.PUBLIC.getPrefix()
+                                        .replace("%USER_RANKED_DISPLAYNAME%", member.getEffectiveName())
+                                ).styled((style) ->
+                                        style.setHoverEvent(
+                                                new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                        new LiteralText("From Discord").formatted(Formatting.BLUE))
+                                        )
+                                ))
                         .append(" ")
-                        .append(DiscordCompatibleTextFormat.clearAllDiscord(
-                                string.replace("%USER_RANKED_DISPLAYNAME%", member.getEffectiveName()))
-                        )
+                        .append(DiscordCompatibleTextFormat.clearAllDiscord(string))
         );
     }
 
     @Nullable
     private net.dv8tion.jda.api.entities.User getJDAUser(@NotNull final UUID uuid) {
-        if (this.map.containsKey(uuid)) {
+        if (this.map.containsKey(Objects.requireNonNull(uuid))) {
             return this.map.get(uuid);
         }
 
-        long discordId = DatabaseUtils.getLinkedUserId(uuid);
-        Member member = guild.getMemberById(discordId);
-        if (discordId == 0L || member == null) {
+        long discordId = UserSynchronizer.getSyncedUserId(uuid);
+        if (discordId == 0L) {
             return null;
         }
-        net.dv8tion.jda.api.entities.User user = member.getUser();
+
+        net.dv8tion.jda.api.entities.User user = DiscordFab.getBot().getUserById(discordId);
+
+        if (user == null) {
+            return null;
+        }
+
         this.map.put(uuid, user);
         return user;
     }
 
     private static String getMCAvatarURL(@NotNull final UUID uuid) {
-        AvatarRenderType renderType = AvatarRenderType.getByName(CONFIG.renderOptions.renderType);
+        MinecraftAvatar.@Nullable RenderType renderType = MinecraftAvatar.RenderType.getByName(CONFIG.renderOptions.renderType);
         if (renderType == null) {
-            renderType = AvatarRenderType.AVATAR;
+            renderType = MinecraftAvatar.RenderType.AVATAR;
         }
 
-        return "https://crafatar.com/" + renderType.code + "/" + uuid.toString() + "?size=" + CONFIG.renderOptions.size +
-                (CONFIG.renderOptions.showOverlay ? "&overlay" : "");
+        return MinecraftAvatar.generateUrl(uuid,
+                renderType,
+                MinecraftAvatar.RenderType.Model.DEFAULT,
+                CONFIG.renderOptions.size,
+                CONFIG.renderOptions.scale,
+                CONFIG.renderOptions.showOverlay
+        );
     }
 
     public void onUserJoin(@NotNull final User user) {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         setMetaFor(user, builder);
-        builder.setContent(user.getFormattedDisplayName() + " Joined the game.");
+        builder.setContent(user.getDisplayName() + " Joined the game.");
+
+        this.discordBroadcaster.send(builder.build());
     }
 
     public void onUserLeave(@NotNull final User user) {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         setMetaFor(user, builder);
-        builder.setContent(user.getFormattedDisplayName() + " Left the game.");
+        builder.setContent(user.getDisplayName() + " Left the game.");
 
+        this.discordBroadcaster.send(builder.build());
         this.map.remove(user.getId());
     }
 
     public void setMetaFor(@NotNull final User user, @NotNull final WebhookMessageBuilder builder) {
-        if (DatabaseUtils.isLinked(user.getUuid())) {
+        if (UserSynchronizer.isSynced(user.getUuid())) {
             net.dv8tion.jda.api.entities.User discordUser = this.getJDAUser(user.getUuid());
             if (discordUser != null && discordUser.getAvatarUrl() != null) {
                 builder.setAvatarUrl(discordUser.getAvatarUrl());
                 builder.setUsername(discordUser.getName());
             }
         } else {
-            builder.setAvatarUrl(CONFIG.defaultAvatarURL.isEmpty() ? CONFIG.defaultAvatarURL : getMCAvatarURL(user.getUuid()));
+            builder.setAvatarUrl(getMCAvatarURL(user.getUuid()));
             builder.setUsername(user.getUsername());
-        }
-    }
-
-    private enum AvatarRenderType {
-        AVATAR("avatars"),
-        HEAD("renders/head"),
-        BODY("renders/body");
-
-        private final String code;
-
-        AvatarRenderType(final String code) {
-            this.code = code;
-        }
-
-        @Nullable
-        public static AvatarRenderType getByName(@NotNull final String name) {
-            for (AvatarRenderType value : values()) {
-                if (name.equalsIgnoreCase(value.name())) {
-                    return value;
-                }
-            }
-
-            return null;
         }
     }
 

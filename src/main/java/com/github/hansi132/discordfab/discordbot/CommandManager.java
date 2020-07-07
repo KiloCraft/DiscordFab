@@ -2,15 +2,19 @@ package com.github.hansi132.discordfab.discordbot;
 
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
+import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.api.command.exception.BotCommandException;
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
 import com.github.hansi132.discordfab.discordbot.commands.*;
+import com.github.hansi132.discordfab.discordbot.config.MainConfig;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class CommandManager {
+    private static final MainConfig CONFIG = DiscordFab.getInstance().getConfig();
     private static final Logger LOGGER = LogManager.getLogger(DiscordFab.class);
     private final Map<String, DiscordFabCommand> commands;
     private final CommandDispatcher<BotCommandSource> dispatcher;
@@ -30,11 +35,12 @@ public class CommandManager {
 //        CommandSyntaxException.BUILT_IN_EXCEPTIONS = new DiscordFormattedBuiltInExceptions();
 
         this.register(new DebugCommand());
-        this.register(new PingCommand());
-        this.register(new IpCommand());
-        this.register(new ActivityCommand());
-        this.register(new HelpCommand());
-        this.register(new OnlinePlayersCommand());
+        this.register(new PresenceCommand(CommandCategory.ADMIN, "presence", Permission.ADMINISTRATOR));
+        this.register(new PingCommand(CommandCategory.GENERAL, "ping"));
+        this.register(new IpCommand(CommandCategory.HELP, "ip", "connect"));
+        this.register(new HelpCommand(CommandCategory.HELP, "help"));
+        this.register(new OnlinePlayersCommand(CommandCategory.UTILITY, "online", "players"));
+        this.register(new MinecraftAvatarCommand(CommandCategory.UTILITY, "minecraftavatar", "mcavatar", "skin"));
     }
 
     public <C extends DiscordFabCommand> void register(C command) {
@@ -50,24 +56,40 @@ public class CommandManager {
         return this.commands;
     }
 
-    public void execute(@NotNull final BotCommandSource executor, @NotNull final String input) {
+    public void execute(@NotNull final BotCommandSource src, @NotNull final String input) {
+        final String prefix = CONFIG.prefix;
         final StringReader reader = new StringReader(input);
-        if (reader.canRead() && reader.getString().startsWith(DiscordFab.getInstance().getConfig().prefix)) {
-            reader.setCursor(2);
+        if (reader.canRead() && reader.getString().startsWith(prefix)) {
+            reader.setCursor(prefix.length());
         }
+
+        final String label = reader.getRemaining().split(" ")[0];
+        final DiscordFabCommand command = DiscordFabCommand.getByLabel(label);
+        if (command != null && !command.getPredicate().test(src)) {
+            src.sendError(new EmbedBuilder().setDescription(CONFIG.messages.command_parse_no_permission)).queue();
+            return;
+        }
+
+        final ParseResults<BotCommandSource> parseResults = this.dispatcher.parse(reader, src);
 
         try {
             try {
-                this.dispatcher.execute(reader, executor);
+                this.dispatcher.execute(parseResults);
             } catch (BotCommandException e) {
-                executor.sendError(e.getJDAMessage()).queue();
+                src.sendFeedback(e.getJDAMessage()).queue();
             } catch (CommandSyntaxException e) {
-                executor.sendError(new EmbedBuilder().setDescription(e.getMessage())).queue();
+                EmbedBuilder builder = new EmbedBuilder().setDescription(e.getMessage());
+                if (command != null) {
+                    builder.setFooter(CONFIG.messages.command_parse_help
+                            .replace("$command$", prefix + "help " + label)
+                    );
+                }
+                src.sendError(builder).queue();
             }
         } catch (Exception e) {
-            EmbedBuilder builder = new EmbedBuilder()
-                    .setTitle("An unexpected error occurred while trying to execute that command");
-            builder.addField("Exception message", Messages.getInnermostMessage(e), false);
+            final EmbedBuilder builder = new EmbedBuilder()
+                    .setTitle("An unexpected error occurred while trying to execute that command")
+                    .addField("Exception message", Messages.getInnermostMessage(e), false);
 
             if (DiscordFab.getInstance().isDevelopment()) {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -85,8 +107,12 @@ public class CommandManager {
                 LOGGER.error("'{}' threw an exception", input, e);
             }
 
-            executor.sendError(builder).queue();
+            src.sendError(builder).queue();
         }
 
+    }
+
+    public CommandDispatcher<BotCommandSource> getDispatcher() {
+        return this.dispatcher;
     }
 }

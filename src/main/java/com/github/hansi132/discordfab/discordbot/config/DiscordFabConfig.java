@@ -23,7 +23,7 @@ public class DiscordFabConfig {
 
     public void load() {
         try {
-            File file = Variables.CONFIG_PATH.resolve("config.hocon").toFile();
+            File file = Variables.CONFIG_PATH.resolve("discord_fab.conf").toFile();
             ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
                     .setFile(file).build();
 

@@ -12,7 +12,8 @@ public class DiscordBroadcaster {
     private final WebhookClient client;
 
     public DiscordBroadcaster() {
-        WebhookClientBuilder builder = new WebhookClientBuilder(DISCORD_FAB.getDataConfig().getProperty("discordBroadcaster"));
+        final String url = DISCORD_FAB.getDataConfig().getProperty("discordBroadcaster");
+        WebhookClientBuilder builder = new WebhookClientBuilder(url);
         builder.setAllowedMentions(AllowedMentions.none());
         this.client = builder.build();
     }

@@ -16,9 +16,9 @@ public class ChatSynchronizerConfigSection {
             " synchronized channel between the game and discord")
     public long chatChannelId = 123456789101112131L;
 
-    @Setting(value = "defaultAvatarURL", comment = "The Avatar URL to use if the User isn't linked, " +
+    @Setting(value = "defaultAvatarUrl", comment = "The Avatar URL to use if the User isn't linked, " +
             "leave it empty to use their Minecraft Avatar instead")
-    public String defaultAvatarURL = "";
+    public String defaultAvatarUrl = "";
 
     @Setting("minecraftAvatarRenderOptions")
     public MCAvatarRenderOptionsConfigSection renderOptions = new MCAvatarRenderOptionsConfigSection();

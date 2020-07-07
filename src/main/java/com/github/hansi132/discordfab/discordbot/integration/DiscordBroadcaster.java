@@ -9,7 +9,9 @@ public class DiscordBroadcaster implements EventHandler<PlayerOnChatMessageEvent
 
     @Override
     public void handle(@NotNull PlayerOnChatMessageEvent event) {
-        if (DiscordFab.getInstance().getConfig().chatSynchronizer.toDiscord) {
+        String message = event.getMessage();
+
+        if (!message.startsWith("/") && DiscordFab.getInstance().getConfig().chatSynchronizer.toDiscord) {
             DiscordFab.getInstance().getChatSynchronizer().onGameChat(event.getUser(), event.getMessage());
         }
     }
