@@ -6,21 +6,22 @@ import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.commands.argument.ActivityTypeArgument;
 import com.github.hansi132.discordfab.discordbot.commands.argument.OnlineStatusArgument;
+import com.github.hansi132.discordfab.discordbot.util.OnlinePlayerUpdater;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
-import com.mojang.brigadier.tree.CommandNode;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
-import java.util.Objects;
 
 public class PresenceCommand extends DiscordFabCommand {
+    OnlinePlayerUpdater onlinePlayerUpdater;
+
     public PresenceCommand(@NotNull CommandCategory category, @NotNull String label, @NotNull Permission permission) {
         super(category, label, permission);
         this.withDescription("Set the presences of the bot.");
@@ -61,6 +62,23 @@ public class PresenceCommand extends DiscordFabCommand {
 
         Activity.ActivityType activityType = ActivityTypeArgument.getActivity(ctx, "type");
         String string = StringArgumentType.getString(ctx, "activity");
+
+        if (string.equals("online")) {
+            if (onlinePlayerUpdater != null) {
+                if (onlinePlayerUpdater.getState() != Thread.State.NEW) {
+                    onlinePlayerUpdater.interrupt();
+                    onlinePlayerUpdater = new OnlinePlayerUpdater(activityType);
+                }
+                onlinePlayerUpdater.start();
+            } else {
+                onlinePlayerUpdater = new OnlinePlayerUpdater(activityType);
+                onlinePlayerUpdater.start();
+            }
+            src.sendFeedback("Set the activity to monitor online players!").queue();
+            return SUCCESS;
+        } else {
+            onlinePlayerUpdater.interrupt();
+        }
 
         src.getJDA().getPresence().setActivity(Activity.of(activityType, string));
 

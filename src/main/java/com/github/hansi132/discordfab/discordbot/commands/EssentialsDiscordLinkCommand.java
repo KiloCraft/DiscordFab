@@ -10,7 +10,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
-import org.apache.commons.collections4.MapUtils;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
@@ -42,13 +41,13 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
             Connection connection = new DatabaseConnection().get();
             linkKey = new LinkKeyCreator().checkKey(testKey);
 
-            String selectSql = "SELECT McUUID FROM linkedaccounts WHERE McUUID = ?;";
+            String selectSql = "SELECT McUUID, DiscordId, LinkKey FROM linkedaccounts WHERE McUUID = ?;";
             PreparedStatement selectStatement = connection.prepareStatement(selectSql);
             selectStatement.setString(1, user.getUuid().toString());
             ResultSet resultSet = selectStatement.executeQuery();
 
-            if (resultSet.next() && resultSet.getLong("DiscordID") != 0L) {
-                user.sendError("You're account is already linked!");
+            if (resultSet.next()) {
+                user.sendError("Your account is already linked. LinkKey is: " + resultSet.getInt("LinkKey"));
                 return FAILED;
             }
 
