@@ -17,6 +17,10 @@ public class MinecraftAvatar {
         final StringBuilder builder = new StringBuilder(API_URL)
                 .append(renderType.code).append('/').append(uuid);
 
+        if (renderType == RenderType.SKIN || renderType == RenderType.CAPE) {
+            return builder.toString();
+        }
+
         if (renderType.modifier.size) {
             builder.append("?size=").append(size);
         }
