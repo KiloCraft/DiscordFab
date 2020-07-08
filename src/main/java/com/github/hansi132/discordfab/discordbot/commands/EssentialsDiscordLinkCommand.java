@@ -47,11 +47,15 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
             ResultSet resultSet = selectStatement.executeQuery();
 
             if (resultSet.next()) {
-                user.sendError("Your account is already linked. LinkKey is: " + resultSet.getInt("LinkKey"));
+                user.sendError(
+                        getText(Texter.newText("You are already linked!&r Your link is: "),
+                                resultSet.getInt("LinkKey"))
+                );
+
                 return FAILED;
             }
 
-            user.sendMessage(getText(linkKey));
+            user.sendMessage(getText(Texter.newText("Your link key is: "), linkKey));
 
             String insertSql = "INSERT INTO linkedaccounts (LinkKey, McUUID, McUsername) VALUES (?,?,?);";
             PreparedStatement insertStatement = connection.prepareStatement(insertSql);
@@ -73,9 +77,9 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private static MutableText getText(final int linkKey) {
+    private static MutableText getText(MutableText text, final int linkKey) {
         return Texter.newText().append(
-                Texter.newText("Your link key is: ").append(
+                text.append(
                         Texter.newText(String.valueOf(linkKey)).formatted(Formatting.AQUA).styled((style) ->
                                 style.setHoverEvent(Texter.Events.onHover("Click to Copy"))
                                         .withClickEvent(

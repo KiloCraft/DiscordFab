@@ -99,7 +99,7 @@ public class ChatSynchronizer {
     public void onUserJoin(@NotNull final User user) {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         setMetaFor(user, builder);
-        builder.setContent(user.getDisplayName() + " Joined the game.");
+        builder.setContent(CONFIG.messages.userJoin.replace("%name%", user.getName()));
 
         this.discordBroadcaster.send(builder.build());
     }
@@ -107,7 +107,7 @@ public class ChatSynchronizer {
     public void onUserLeave(@NotNull final User user) {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         setMetaFor(user, builder);
-        builder.setContent(user.getDisplayName() + " Left the game.");
+        builder.setContent(CONFIG.messages.userLeave.replace("%name%", user.getName()));
 
         this.discordBroadcaster.send(builder.build());
         this.map.remove(user.getId());

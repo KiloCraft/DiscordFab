@@ -20,6 +20,9 @@ public class ChatSynchronizerConfigSection {
             "leave it empty to use their Minecraft Avatar instead")
     public String defaultAvatarUrl = "";
 
+    @Setting(value = "messages")
+    public ChatSyncMessagesConfigSection messages = new ChatSyncMessagesConfigSection();
+
     @Setting("minecraftAvatarRenderOptions")
     public MCAvatarRenderOptionsConfigSection renderOptions = new MCAvatarRenderOptionsConfigSection();
 
