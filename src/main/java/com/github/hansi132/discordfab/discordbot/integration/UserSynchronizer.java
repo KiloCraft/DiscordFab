@@ -77,32 +77,32 @@ public class UserSynchronizer {
         return 0L;
     }
 
-    public static void sync(@NotNull final PrivateChannel channel, @NotNull final User user, final int inputLinkKey) {
-        String selectSql = "SELECT LinkKey, DiscordId FROM linkedaccounts WHERE LinkKey = ?";
+    public static void sync(@NotNull final PrivateChannel channel, @NotNull final User user, final int linkKey) {
+        String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ?";
         try {
             Connection connection = new DatabaseConnection().get();
 
             PreparedStatement selectStatement = connection.prepareStatement(selectSql);
-            selectStatement.setInt(1, inputLinkKey);
+            selectStatement.setInt(1, linkKey);
 
             ResultSet resultSet = selectStatement.executeQuery();
-            resultSet.next();
-            int linkKey = resultSet.getInt("LinkKey");
-            long discordId = resultSet.getLong("DiscordId");
-
-            if (inputLinkKey == linkKey && discordId != 0L) {
+            if (resultSet.next()) {
+                String mcUUID = resultSet.getString("McUUID");
                 String updateSql = "UPDATE linkedaccounts SET DiscordId = ? WHERE LinkKey = ?;";
                 PreparedStatement updateStatement = connection.prepareStatement(updateSql);
                 updateStatement.setLong(1, user.getIdLong());
                 updateStatement.setInt(2, linkKey);
                 updateStatement.execute();
 
-                channel.sendMessage("You were successfully linked!").queue();
+                channel.sendMessage("You were successfully linked with " + mcUUID + "!").queue();
 
                 if (DISCORD_FAB.getConfig().userSync.syncDisplayName) {
                     syncDisplayName(linkKey);
                 }
+            } else {
+                channel.sendMessage("Invalid link key, type /link in game to get a key!").queue();
             }
+
 
             connection.close();
         } catch (SQLException | ClassNotFoundException e) {

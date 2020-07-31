@@ -35,8 +35,12 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         final String raw = event.getMessage().getContentRaw();
-        if (event.isFromType(ChannelType.PRIVATE) && !event.getAuthor().isBot() && UserSynchronizer.isLinkCode(raw)) {
-            UserSynchronizer.sync(event.getPrivateChannel(), event.getAuthor(), UserSynchronizer.getLinkCode(raw));
+        if (event.isFromType(ChannelType.PRIVATE) && !event.getAuthor().isBot()) {
+            if(UserSynchronizer.isLinkCode(raw)) {
+                UserSynchronizer.sync(event.getPrivateChannel(), event.getAuthor(), UserSynchronizer.getLinkCode(raw));
+            } else {
+                event.getPrivateChannel().sendMessage("Invalid link key, type /link in game to get a key!").queue();
+            }
         }
     }
 
