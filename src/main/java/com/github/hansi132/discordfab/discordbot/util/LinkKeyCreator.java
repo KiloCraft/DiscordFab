@@ -11,21 +11,22 @@ public class LinkKeyCreator {
 
     }
 
-    public int checkKey(int LinkKey) throws SQLException, ClassNotFoundException {
+    public int checkKey(int linkKey) throws SQLException, ClassNotFoundException {
         Random random = new Random();
 
         Connection connection = new DatabaseConnection().get();
 
         String selectSql = "SELECT LinkKey FROM linkedaccounts WHERE LinkKey = ?;";
         PreparedStatement selectStatement = connection.prepareStatement(selectSql);
-        selectStatement.setInt(1, LinkKey);
+        selectStatement.setInt(1, linkKey);
         ResultSet checkDuplicateRs = selectStatement.executeQuery();
 
         if (checkDuplicateRs.next()) {
-            LinkKey = random.nextInt(10000);
-            this.checkKey(LinkKey);
+            linkKey = random.nextInt(10000);
+            connection.close();
+            return this.checkKey(linkKey);
         }
-
-        return LinkKey;
+        connection.close();
+        return linkKey;
     }
 }
