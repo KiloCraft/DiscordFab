@@ -27,7 +27,7 @@ public class DiscordFab {
     private final DiscordFabConfig config;
     private final CommandManager commandManager;
     private final ChatSynchronizer chatSynchronizer;
-    private EmbedUtil embedUtil;
+    private final EmbedUtil embedUtil;
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
         INSTANCE = this;

@@ -26,7 +26,10 @@ public class Listener extends ListenerAdapter {
     public void onReady(@Nonnull ReadyEvent event) {
         LOGGER.info("{} is ready", event.getJDA().getSelfUser().getAsTag());
         try {
-            Connection connection = new DatabaseConnection().get();
+            DatabaseConnection.connect();
+            if (DISCORD_FAB.isDevelopment()) {
+                LOGGER.info("First Database Connection successfully established");
+            }
         } catch (ClassNotFoundException | SQLException e) {
             LOGGER.fatal("Could not connect to the Database!", e);
         }
@@ -36,10 +39,10 @@ public class Listener extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         final String raw = event.getMessage().getContentRaw();
         if (event.isFromType(ChannelType.PRIVATE) && !event.getAuthor().isBot()) {
-            if(UserSynchronizer.isLinkCode(raw)) {
+            if (UserSynchronizer.isLinkCode(raw)) {
                 UserSynchronizer.sync(event.getPrivateChannel(), event.getAuthor(), UserSynchronizer.getLinkCode(raw));
             } else {
-                event.getPrivateChannel().sendMessage("Invalid link key, type /link in game to get a key!").queue();
+                event.getPrivateChannel().sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
             }
         }
     }

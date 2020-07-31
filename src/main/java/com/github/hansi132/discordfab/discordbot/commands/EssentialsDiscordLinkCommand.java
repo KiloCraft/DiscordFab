@@ -38,8 +38,8 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
         int linkKey;
 
         try {
-            Connection connection = new DatabaseConnection().get();
-            linkKey = new LinkKeyCreator().checkKey(testKey);
+            Connection connection = DatabaseConnection.connect();
+            linkKey = LinkKeyCreator.checkKey(testKey);
 
             String selectSql = "SELECT McUUID, DiscordId, LinkKey FROM linkedaccounts WHERE McUUID = ?;";
             PreparedStatement selectStatement = connection.prepareStatement(selectSql);

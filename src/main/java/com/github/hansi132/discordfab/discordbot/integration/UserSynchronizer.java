@@ -42,7 +42,7 @@ public class UserSynchronizer {
 
     public static boolean isSynced(@NotNull final UUID uuid) {
         try {
-            Connection conn = new DatabaseConnection().get();
+            Connection conn = DatabaseConnection.connect();
 
             String selectSql = "SELECT McUUID, DiscordId FROM linkedaccounts WHERE McUUID = ?;";
             PreparedStatement selectStatement = conn.prepareStatement(selectSql);
@@ -63,7 +63,7 @@ public class UserSynchronizer {
 
     public static long getSyncedUserId(@NotNull final UUID uuid) {
         try {
-            Connection conn = new DatabaseConnection().get();
+            Connection conn = DatabaseConnection.connect();
 
             String selectSql = "SELECT DiscordId FROM linkedaccounts WHERE McUUID = ?";
             PreparedStatement selectStatement = conn.prepareStatement(selectSql);
@@ -85,7 +85,7 @@ public class UserSynchronizer {
     public static void sync(@NotNull final PrivateChannel channel, @NotNull final User user, final int linkKey) {
         String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ?";
         try {
-            Connection connection = new DatabaseConnection().get();
+            Connection connection = DatabaseConnection.connect();
 
             PreparedStatement selectStatement = connection.prepareStatement(selectSql);
             selectStatement.setInt(1, linkKey);
@@ -117,7 +117,7 @@ public class UserSynchronizer {
     }
 
     private static void syncRoles(final int linkKey) throws SQLException, ClassNotFoundException {
-        Connection conn = new DatabaseConnection().get();
+        Connection conn = DatabaseConnection.connect();
         String selectSql = "SELECT DiscordId, McUUID FROM linkedaccounts WHERE LinkKey = ?;";
         PreparedStatement selectStmt = conn.prepareStatement(selectSql);
         selectStmt.setInt(1, linkKey);
@@ -155,7 +155,7 @@ public class UserSynchronizer {
     }
 
     private static void syncDisplayName(final int linkKey) throws SQLException, ClassNotFoundException {
-        Connection conn = new DatabaseConnection().get();
+        Connection conn = DatabaseConnection.connect();
         String selectSql = "SELECT DiscordId, McUsername FROM linkedaccounts WHERE LinkKey = ?;";
         PreparedStatement selectStmt = conn.prepareStatement(selectSql);
         selectStmt.setInt(1, linkKey);

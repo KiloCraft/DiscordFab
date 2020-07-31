@@ -12,4 +12,7 @@ public class MessagesConfigSection {
     @Setting(value = "commandParseHelp", comment = "Variables: $command$")
     public String command_parse_help = "Use '$command$' for help";
 
+    @Setting(value = "invalidLinkKey")
+    public String invalid_link_key = "Invalid Link Key, Do \"/link\" in-game to get your Link Key!";
+
 }
