@@ -50,7 +50,7 @@ public class MemberArgumentType implements ArgumentType<Member> {
     }
 
     @Override
-    public Member parse(StringReader reader) throws CommandSyntaxException {
+    public Member parse(StringReader reader) {
         final String string = reader.readUnquotedString();
         assert this.src != null;
         final Guild guild = this.src.getGuild();
@@ -59,13 +59,13 @@ public class MemberArgumentType implements ArgumentType<Member> {
 
         final Matcher idMatcher = USER_ID.matcher(string);
         if (idMatcher.find()) {
-            final long id = Long.parseLong(idMatcher.group(0));
+            final long id = Long.parseLong(idMatcher.group(1));
             return guild.getMemberById(id);
         }
 
         final Matcher fullTagMatcher = FULL_TAG.matcher(string);
         if (fullTagMatcher.find()) {
-            return guild.getMemberByTag(idMatcher.group(0));
+            return guild.getMemberByTag(idMatcher.group(1));
         }
 
         return null;
