@@ -40,15 +40,13 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register((server -> {
             KiloServer.getServer().registerEvent(new DiscordBroadcaster());
             KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
-            //KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
+            KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
 
             KiloEssentials.getInstance().getCommandHandler().register(
                     new EssentialsDiscordLinkCommand("link", new String[]{"discord_link"})
             );
         }));
 
-        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> {
-            fab.shutdown();
-        });
+        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> fab.shutdown());
     }
 }

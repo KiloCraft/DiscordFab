@@ -18,6 +18,7 @@ import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
+import org.kilocraft.essentials.chat.TextMessage;
 
 import java.util.Map;
 import java.util.Objects;
@@ -45,18 +46,11 @@ public class ChatSynchronizer {
 
     public void onDiscordChat(final Member member, @NotNull final String string) {
         KiloChat.broadCast(
-                new LiteralText("")
-                        .append(
-                                new LiteralText(ServerChat.Channel.PUBLIC.getPrefix()
-                                        .replace("%USER_RANKED_DISPLAYNAME%", member.getEffectiveName())
-                                ).styled((style) ->
-                                        style.setHoverEvent(
-                                                new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                        new LiteralText("From Discord").formatted(Formatting.BLUE))
-                                        )
-                                ))
-                        .append(" ")
-                        .append(DiscordCompatibleTextFormat.clearAllDiscord(string))
+                new TextMessage(
+                        CONFIG.messages.inGameFormat
+                        .replace("%message%", DiscordCompatibleTextFormat.clearAllDiscord(string))
+                        .replace("%name%", member.getEffectiveName())
+                )
         );
     }
 
