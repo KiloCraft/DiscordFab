@@ -27,7 +27,6 @@ public class DiscordFab {
     private final CommandManager commandManager;
     private final ChatSynchronizer chatSynchronizer;
     private final EmbedUtil embedUtil;
-    private final Guild guild;
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
         INSTANCE = this;
@@ -39,7 +38,6 @@ public class DiscordFab {
         this.commandManager = new CommandManager();
         this.chatSynchronizer = new ChatSynchronizer();
         this.embedUtil = new EmbedUtil();
-        this.guild = SHARD_MANAGER.getGuildById(Long.parseLong(dataConfig.getProperty("guild")));
 
         try {
             SHARD_MANAGER = new DiscordFabBot(
@@ -91,7 +89,7 @@ public class DiscordFab {
     }
 
     public Guild getGuild() {
-        return this.guild;
+        return SHARD_MANAGER.getGuildById(Long.parseLong(dataConfig.getProperty("guild")));
     }
 
     public EmbedUtil getEmbedUtil() {
