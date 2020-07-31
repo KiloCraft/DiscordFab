@@ -27,7 +27,6 @@ public class DiscordFab {
     private final DiscordFabConfig config;
     private final CommandManager commandManager;
     private final ChatSynchronizer chatSynchronizer;
-    private final Guild guild;
     private EmbedUtil embedUtil;
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
@@ -56,8 +55,6 @@ public class DiscordFab {
         } catch (LoginException e) {
             LOGGER.fatal("Can not log into the bot!", e);
         }
-
-        this.guild = BOT.getGuildById(Long.parseLong(dataConfig.getProperty("guild")));
     }
 
     public boolean isDevelopment() {
@@ -93,7 +90,7 @@ public class DiscordFab {
     }
 
     public Guild getGuild() {
-        return this.guild;
+        return BOT.getGuildById(Long.parseLong(dataConfig.getProperty("guild")));
     }
 
     public EmbedUtil getEmbedUtil() {

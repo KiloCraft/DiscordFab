@@ -3,7 +3,12 @@ package com.github.hansi132.discordfab.discordbot.integration;
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.query.QueryOptions;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -99,6 +104,7 @@ public class UserSynchronizer {
                 if (DISCORD_FAB.getConfig().userSync.syncDisplayName) {
                     syncDisplayName(linkKey);
                 }
+                syncRoles(linkKey);
             } else {
                 channel.sendMessage("Invalid link key, type /link in game to get a key!").queue();
             }
@@ -108,6 +114,44 @@ public class UserSynchronizer {
         } catch (SQLException | ClassNotFoundException e) {
             LOGGER.error("Unexpected error while trying to sync user", e);
         }
+    }
+
+    private static void syncRoles(final int linkKey) throws SQLException, ClassNotFoundException {
+        Connection conn = new DatabaseConnection().get();
+        String selectSql = "SELECT DiscordId, McUUID FROM linkedaccounts WHERE LinkKey = ?;";
+        PreparedStatement selectStmt = conn.prepareStatement(selectSql);
+        selectStmt.setInt(1, linkKey);
+        ResultSet resultSet = selectStmt.executeQuery();
+        resultSet.next();
+        final long discordId = resultSet.getLong("DiscordId");
+        final UUID mcUUID = UUID.fromString(resultSet.getString("McUUID"));
+        Guild guild = DISCORD_FAB.getGuild();
+        BOT.getRoles();
+        for (Role role : guild.getRoles()) {
+            long roleID = role.getIdLong();
+            if (shouldSync(mcUUID, roleID)) {
+                User user = BOT.getUserById(discordId);
+                if (user != null) {
+                    Member member = guild.getMember(user);
+                    if (member != null) {
+                        try {
+                            guild.addRoleToMember(member, role).queue();
+                        } catch (HierarchyException ignored) { }
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean shouldSync(UUID uuid, long roleID) {
+        final String SYNC_PERM_PREFIX = "discordfab.sync.";
+        LuckPerms luckPerms = LuckPermsProvider.get();
+        net.luckperms.api.model.user.User user = luckPerms.getUserManager().getUser(uuid);
+        if (user != null) {
+            QueryOptions options = luckPerms.getContextManager().getStaticQueryOptions();
+            return user.getCachedData().getPermissionData(options).checkPermission(SYNC_PERM_PREFIX + roleID).asBoolean();
+        }
+        return false;
     }
 
     private static void syncDisplayName(final int linkKey) throws SQLException, ClassNotFoundException {
@@ -130,7 +174,7 @@ public class UserSynchronizer {
             Member member = guild.getMember(user);
             if (member != null) {
                 member.modifyNickname(mcUsername).complete();
-                guild.addRoleToMember(member, role);
+                guild.addRoleToMember(member, role).queue();
             }
 
         }
