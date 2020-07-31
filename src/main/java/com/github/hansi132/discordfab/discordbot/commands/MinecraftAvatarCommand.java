@@ -5,6 +5,7 @@ import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.commands.argument.AvatarRenderTypeArgument;
 import com.github.hansi132.discordfab.discordbot.commands.argument.MinecraftPlayerArgument;
+import com.github.hansi132.discordfab.discordbot.util.FabUtil;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -17,33 +18,67 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.util.NameLookup;
 
-import java.awt.*;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class MinecraftAvatarCommand extends DiscordFabCommand {
     private static final int DEFAULT_SIZE = 512;
+    private static final int DEFAULT_SCALE = 10;
 
     public MinecraftAvatarCommand(@NotNull CommandCategory category, @NotNull String label, @Nullable String... alias) {
         super(category, label, alias);
         this.withDescription("Get someone's Minecraft Avatar!");
 
         RequiredArgumentBuilder<BotCommandSource, GameProfile> player = argument("player", MinecraftPlayerArgument.player())
-                .executes((ctx) -> this.execute(ctx, MinecraftAvatar.RenderType.BODY, DEFAULT_SIZE, true));
+                .executes((ctx) -> this.execute(
+                        ctx,
+                        MinecraftAvatar.RenderType.BODY,
+                        DEFAULT_SIZE,
+                        DEFAULT_SCALE,
+                        true
+                ));
 
         RequiredArgumentBuilder<BotCommandSource, MinecraftAvatar.RenderType> renderType = argument("renderType", AvatarRenderTypeArgument.renderType())
-                .executes((ctx) -> this.execute(ctx, AvatarRenderTypeArgument.getRenderType(ctx, "renderType"), DEFAULT_SIZE, true));
+                .executes((ctx) -> this.execute(
+                        ctx,
+                        AvatarRenderTypeArgument.getRenderType(ctx, "renderType"),
+                        DEFAULT_SIZE,
+                        DEFAULT_SCALE,
+                        true
+                ));
 
         RequiredArgumentBuilder<BotCommandSource, Integer> size = argument("size", IntegerArgumentType.integer(16, 512))
-                .executes((ctx) -> this.execute(ctx, AvatarRenderTypeArgument.getRenderType(ctx, "renderType"), IntegerArgumentType.getInteger(ctx, "size"), true));
+                .executes((ctx) -> this.execute(
+                        ctx,
+                        AvatarRenderTypeArgument.getRenderType(ctx, "renderType"),
+                        IntegerArgumentType.getInteger(ctx, "size"),
+                        DEFAULT_SCALE,
+                        true)
+                );
+
+        RequiredArgumentBuilder<BotCommandSource, Integer> scale = argument("scale", IntegerArgumentType.integer(1, 10))
+                .executes((ctx) -> this.execute(
+                        ctx,
+                        AvatarRenderTypeArgument.getRenderType(ctx, "renderType"),
+                        IntegerArgumentType.getInteger(ctx, "size"),
+                        IntegerArgumentType.getInteger(ctx, "scale"),
+                        true
+                ));
+
 
         RequiredArgumentBuilder<BotCommandSource, Boolean> overlay = argument("overlay", BoolArgumentType.bool())
-                .executes((ctx) -> this.execute(ctx, AvatarRenderTypeArgument.getRenderType(ctx, "renderType"), IntegerArgumentType.getInteger(ctx, "size"), BoolArgumentType.getBool(ctx, "overlay")));
+                .executes((ctx) -> this.execute(
+                        ctx,
+                        AvatarRenderTypeArgument.getRenderType(ctx, "renderType"),
+                        IntegerArgumentType.getInteger(ctx, "size"),
+                        IntegerArgumentType.getInteger(ctx, "scale"),
+                        BoolArgumentType.getBool(ctx, "overlay"))
+                );
 
-        size.then(overlay);
+        scale.then(overlay);
+        size.then(scale);
         renderType.then(size);
         player.then(renderType);
         this.argBuilder.then(player);
@@ -52,7 +87,7 @@ public class MinecraftAvatarCommand extends DiscordFabCommand {
 
     private int execute(final CommandContext<BotCommandSource> ctx,
                         final MinecraftAvatar.RenderType renderType,
-                        int size, boolean overlay) throws CommandSyntaxException {
+                        int size, int scale, boolean overlay) throws CommandSyntaxException {
         final BotCommandSource src = ctx.getSource();
         final String username = MinecraftPlayerArgument.getUsername(ctx, "player");
 
@@ -67,10 +102,7 @@ public class MinecraftAvatarCommand extends DiscordFabCommand {
                     return;
                 }
 
-                final UUID uuid = new UUID(
-                        new BigInteger(id.substring(0, 16), 16).longValue(),
-                        new BigInteger(id.substring(16), 16).longValue()
-                );
+                final UUID uuid = FabUtil.uuidFromShortenedUuidString(id);
                 profile = new GameProfile(uuid, username);
             } catch (IOException e) {
                 src.sendFeedback("Invalid username!").queue();
@@ -79,12 +111,17 @@ public class MinecraftAvatarCommand extends DiscordFabCommand {
 
             src.sendFeedback(
                     new EmbedBuilder()
-                            .setTitle("Skin " + renderType.getName() + ": " + profile.getName())
+                            .setTitle("Skin " + renderType.getName() + " of " + profile.getName())
                             .setAuthor(src.getDisplayName(), MinecraftAvatar.API_URL, src.getUser().getAvatarUrl())
-                            .setColor(Color.LIGHT_GRAY)
+                            .setColor(DISCORD_FAB.getEmbedUtil().getDefaultColor())
                             .setTimestamp(Instant.now())
                             .setFooter("Powered by: crafatar.com")
-                            .setImage(MinecraftAvatar.generateUrl(profile.getId(), renderType, size, overlay))
+                            .setImage(
+                                    MinecraftAvatar.generateUrl(
+                                            profile.getId(), renderType, MinecraftAvatar.RenderType.Model.DEFAULT,
+                                            size, scale, overlay
+                                    )
+                            )
                             .build()
             ).queue();
         });

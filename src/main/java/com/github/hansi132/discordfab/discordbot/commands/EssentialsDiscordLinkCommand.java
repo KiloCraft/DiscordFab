@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import org.kilocraft.essentials.api.command.EssentialCommand;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -40,31 +41,21 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
             Connection connection = new DatabaseConnection().get();
             linkKey = new LinkKeyCreator().checkKey(testKey);
 
-            String selectSql = "SELECT McUUID FROM linkedaccounts WHERE McUUID = ?;";
+            String selectSql = "SELECT McUUID, DiscordId, LinkKey FROM linkedaccounts WHERE McUUID = ?;";
             PreparedStatement selectStatement = connection.prepareStatement(selectSql);
             selectStatement.setString(1, user.getUuid().toString());
             ResultSet resultSet = selectStatement.executeQuery();
 
             if (resultSet.next()) {
-                user.sendError("You're account is already linked!");
+                user.sendError(
+                        getText(Texter.newText("You are already linked!&r Your link is: "),
+                                resultSet.getInt("LinkKey"))
+                );
+
                 return FAILED;
             }
 
-            user.sendMessage(
-                    Texter.newText().append(
-                            Texter.newText("Your link key is: ").append(
-                                    Texter.newText(String.valueOf(linkKey)).formatted(Formatting.AQUA).styled((style) ->
-                                            style.setHoverEvent(Texter.Events.onHover("Click to Copy"))
-                                                    .withClickEvent(
-                                                            new ClickEvent(
-                                                                    ClickEvent.Action.COPY_TO_CLIPBOARD,
-                                                                    String.valueOf(linkKey)
-                                                            )
-                                                    )
-                                    )
-                            )
-                    )
-            );
+            user.sendMessage(getText(Texter.newText("Your link key is: "), linkKey));
 
             String insertSql = "INSERT INTO linkedaccounts (LinkKey, McUUID, McUsername) VALUES (?,?,?);";
             PreparedStatement insertStatement = connection.prepareStatement(insertSql);
@@ -84,5 +75,21 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
         }
 
         return SUCCESS;
+    }
+
+    private static MutableText getText(MutableText text, final int linkKey) {
+        return Texter.newText().append(
+                text.append(
+                        Texter.newText(String.valueOf(linkKey)).formatted(Formatting.AQUA).styled((style) ->
+                                style.setHoverEvent(Texter.Events.onHover("Click to Copy"))
+                                        .withClickEvent(
+                                                new ClickEvent(
+                                                        ClickEvent.Action.COPY_TO_CLIPBOARD,
+                                                        String.valueOf(linkKey)
+                                                )
+                                        )
+                        )
+                )
+        );
     }
 }

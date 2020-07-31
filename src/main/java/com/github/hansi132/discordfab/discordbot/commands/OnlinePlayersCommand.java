@@ -26,12 +26,13 @@ public class OnlinePlayersCommand extends DiscordFabCommand {
         BotCommandSource src = ctx.getSource();
         List<OnlineUser> users = KiloEssentials.getServer().getUserManager().getOnlineUsersAsList();
 
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle("Online Players");
+        EmbedBuilder builder = new EmbedBuilder()
+                .setColor(DISCORD_FAB.getEmbedUtil().getDefaultColor())
+                .setTitle("Online Players");
 
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < users.size(); i++) {
-            stringBuilder.append(users.get(i).getUsername());
+            stringBuilder.append(users.get(i).getName());
 
             if (i + 1 < users.size()) {
                 stringBuilder.append(", ");

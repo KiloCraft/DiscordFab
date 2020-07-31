@@ -28,14 +28,10 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
                     this.put("broadcastEnable", "*True or false*");
                     this.put("broadcastChannel", "*Paste what channel to broadcast to here*");
                     this.put("discordBroadcaster", "*Webhook url to cast Minecraft chat to*");
-                    this.put("embedPicture", "Image link to use in the embeds.");
-                    this.put("commandSpyBroadcaster", "*Webhook url to cast Minecraft commands to*");
-                    this.put("SocialSpyBroadcaster", "Webhook url to cast msg/r commands to");
                     this.put("databaseUser", "*Specify the user of the database*");
                     this.put("databasePassword", "*Specify the password of the database*");
                     this.put("database", "*Specify the database to be used*");
-                    this.put("guild", "*Specify the guild id");
-                    this.put("role", "*Specify what the linked role should be");
+                    this.put("guild", "*Specify the guild id*");
                 }}
         );
 
@@ -51,8 +47,6 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
             );
         }));
 
-        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> {
-            fab.shutdown();
-        });
+        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> fab.shutdown());
     }
 }

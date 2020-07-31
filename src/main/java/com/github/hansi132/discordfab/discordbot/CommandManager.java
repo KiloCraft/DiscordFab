@@ -41,6 +41,7 @@ public class CommandManager {
         this.register(new HelpCommand(CommandCategory.HELP, "help"));
         this.register(new OnlinePlayersCommand(CommandCategory.UTILITY, "online", "players"));
         this.register(new MinecraftAvatarCommand(CommandCategory.UTILITY, "minecraftavatar", "mcavatar", "skin"));
+        this.register(new AvatarCommand(CommandCategory.UTILITY, "avatar"));
     }
 
     public <C extends DiscordFabCommand> void register(C command) {
