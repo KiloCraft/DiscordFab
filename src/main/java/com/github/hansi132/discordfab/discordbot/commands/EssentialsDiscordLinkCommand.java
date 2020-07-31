@@ -78,14 +78,15 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
     }
 
     private static MutableText getText(MutableText text, final int linkKey) {
+        String key = String.format("%04d",linkKey);
         return Texter.newText().append(
                 text.append(
-                        Texter.newText(String.valueOf(linkKey)).formatted(Formatting.AQUA).styled((style) ->
+                        Texter.newText(key).formatted(Formatting.AQUA).styled((style) ->
                                 style.setHoverEvent(Texter.Events.onHover("Click to Copy"))
                                         .withClickEvent(
                                                 new ClickEvent(
                                                         ClickEvent.Action.COPY_TO_CLIPBOARD,
-                                                        String.valueOf(linkKey)
+                                                        key
                                                 )
                                         )
                         )
