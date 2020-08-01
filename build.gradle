@@ -43,8 +43,8 @@ dependencies {
     //Fabric api
     modImplementation "net.fabricmc.fabric-api:fabric-api:0.14.0+build.371-1.16"
 
-    modImplementation 'com.github.KiloCraft:KiloEssentials:1.9.8.45'
-    include 'com.github.KiloCraft:KiloEssentials:1.9.8.44'
+    modImplementation 'com.github.OnBlock:KiloEssentials:v1.10'
+    //include 'com.github.OnBlock:KiloEssentials:1.10'
 
     compile "net.luckperms:api:5.0"
 

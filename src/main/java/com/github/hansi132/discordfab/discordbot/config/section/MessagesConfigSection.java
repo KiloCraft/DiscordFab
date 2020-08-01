@@ -15,4 +15,7 @@ public class MessagesConfigSection {
     @Setting(value = "invalidLinkKey")
     public String invalid_link_key = "Invalid Link Key, Do \"/link\" in-game to get your Link Key!";
 
+    @Setting(value = "alreadyLinked", comment = "Variabels: %player%")
+    public String successfully_linked = "**Your account was successfully linked!** (%player%)";
+
 }

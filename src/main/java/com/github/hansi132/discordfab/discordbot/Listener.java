@@ -14,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
 
@@ -39,11 +38,12 @@ public class Listener extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         final String raw = event.getMessage().getContentRaw();
         if (event.isFromType(ChannelType.PRIVATE) && !event.getAuthor().isBot()) {
-            if (UserSynchronizer.isLinkCode(raw)) {
-                UserSynchronizer.sync(event.getPrivateChannel(), event.getAuthor(), UserSynchronizer.getLinkCode(raw));
-            } else {
+            if (!UserSynchronizer.isLinkCode(raw)) {
                 event.getPrivateChannel().sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
+                return;
             }
+
+            UserSynchronizer.sync(event.getPrivateChannel(), event.getAuthor(), UserSynchronizer.getLinkCode(raw));
         }
     }
 

@@ -27,7 +27,7 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         this.argumentBuilder.executes(this::execute);
     }
 

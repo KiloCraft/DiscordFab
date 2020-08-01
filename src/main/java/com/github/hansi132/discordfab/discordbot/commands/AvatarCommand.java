@@ -16,6 +16,7 @@ import java.awt.*;
 public class AvatarCommand extends DiscordFabCommand {
     public AvatarCommand(@NotNull CommandCategory category, @NotNull String label) {
         super(category, label);
+        this.withDescription("Look at other's Avatars");
 
         RequiredArgumentBuilder<BotCommandSource, Member> member = argument("member", MemberArgumentType.member())
                 .executes(this::execute);
@@ -23,7 +24,7 @@ public class AvatarCommand extends DiscordFabCommand {
         this.argBuilder.then(member);
     }
 
-    private int execute(final CommandContext<BotCommandSource> ctx) throws CommandSyntaxException {
+    private int execute(final CommandContext<BotCommandSource> ctx) {
         final BotCommandSource src = ctx.getSource();
         final Member target = MemberArgumentType.getMember(ctx, "member");
 
