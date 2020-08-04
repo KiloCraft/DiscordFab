@@ -9,15 +9,11 @@ import com.github.hansi132.discordfab.discordbot.user.DiscordBroadcaster;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.google.common.collect.Maps;
 import net.dv8tion.jda.api.entities.Member;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 
 import java.util.Map;
@@ -108,7 +104,7 @@ public class ChatSynchronizer {
     }
 
     public void setMetaFor(@NotNull final User user, @NotNull final WebhookMessageBuilder builder) {
-        if (UserSynchronizer.isSynced(user.getUuid())) {
+        if (UserSynchronizer.isLinked(user.getUuid())) {
             net.dv8tion.jda.api.entities.User discordUser = this.getJDAUser(user.getUuid());
             if (discordUser != null && discordUser.getAvatarUrl() != null) {
                 builder.setAvatarUrl(discordUser.getAvatarUrl());

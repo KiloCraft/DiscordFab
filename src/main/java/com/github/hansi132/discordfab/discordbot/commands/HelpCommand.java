@@ -64,13 +64,10 @@ public class HelpCommand extends DiscordFabCommand {
             throw FAILED_EXCEPTION.create();
         }
 
-        final ParseResults<BotCommandSource> parseResults = dispatcher.parse(command.getLabel(), ctx.getSource());
+        final ParseResults<BotCommandSource> parseResults = dispatcher.parse(input.split(" ")[0], ctx.getSource());
         final EmbedBuilder builder = new EmbedBuilder().setTitle("Command: " + command.getLabel())
-                .setColor(EMBED_COLOR);
-
-        if (command.getDescription() != null) {
-            builder.setDescription(command.getDescription());
-        }
+                .setColor(EMBED_COLOR)
+                .setDescription(command.getDescription());
 
         if (command.getAlias() != null) {
             StringBuilder stringBuilder = new StringBuilder();
