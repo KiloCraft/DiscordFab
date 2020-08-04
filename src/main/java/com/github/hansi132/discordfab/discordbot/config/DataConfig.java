@@ -1,10 +1,9 @@
 package com.github.hansi132.discordfab.discordbot.config;
 
-import com.github.hansi132.discordfab.discordbot.util.Variables;
+import com.github.hansi132.discordfab.discordbot.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.HashMap;
@@ -23,7 +22,7 @@ public class DataConfig {
 
     public DataConfig(@NotNull final Map<String, Object> defaults) {
         this.PROPERTIES = new Properties();
-        this.FILE = Variables.CONFIG_PATH.resolve("tokens.properties").toFile();
+        this.FILE = Constants.CONFIG_PATH.resolve("tokens.properties").toFile();
         this.DEFAULTS = defaults;
 
         if (FILE.exists()) {

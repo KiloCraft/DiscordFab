@@ -11,6 +11,8 @@ import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.query.QueryOptions;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.user.OnlineUser;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,9 +42,9 @@ public class UserSynchronizer {
         return 0;
     }
 
-    public static boolean isSynced(@NotNull final UUID uuid) {
+    public static boolean isLinked(@NotNull final UUID uuid) {
         try {
-            Connection conn = new DatabaseConnection().get();
+            Connection conn = DatabaseConnection.connect();
 
             String selectSql = "SELECT McUUID, DiscordId FROM linkedaccounts WHERE McUUID = ?;";
             PreparedStatement selectStatement = conn.prepareStatement(selectSql);
@@ -50,6 +52,7 @@ public class UserSynchronizer {
             ResultSet resultSet = selectStatement.executeQuery();
 
             if (resultSet.next()) {
+                conn.close();
                 return resultSet.getLong("DiscordId") != 0L;
             }
 
@@ -61,9 +64,31 @@ public class UserSynchronizer {
         return false;
     }
 
+    public static boolean isLinked(final long discordId) {
+        try {
+            Connection conn = DatabaseConnection.connect();
+
+            String selectSql = "SELECT McUUID, DiscordId FROM linkedaccounts WHERE DiscordId = ?;";
+            PreparedStatement selectStatement = conn.prepareStatement(selectSql);
+            selectStatement.setLong(1, discordId);
+            ResultSet resultSet = selectStatement.executeQuery();
+
+            if (resultSet.next()) {
+                conn.close();
+                return resultSet.getString("McUUID") != null;
+            }
+
+            conn.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            DiscordFab.LOGGER.error("Could not query the database!", e);
+        }
+
+        return false;
+    }
+
     public static long getSyncedUserId(@NotNull final UUID uuid) {
         try {
-            Connection conn = new DatabaseConnection().get();
+            Connection conn = DatabaseConnection.connect();
 
             String selectSql = "SELECT DiscordId FROM linkedaccounts WHERE McUUID = ?";
             PreparedStatement selectStatement = conn.prepareStatement(selectSql);
@@ -85,7 +110,7 @@ public class UserSynchronizer {
     public static void sync(@NotNull final PrivateChannel channel, @NotNull final User user, final int linkKey) {
         String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ?";
         try {
-            Connection connection = new DatabaseConnection().get();
+            Connection connection = DatabaseConnection.connect();
 
             PreparedStatement selectStatement = connection.prepareStatement(selectSql);
             selectStatement.setInt(1, linkKey);
@@ -99,16 +124,19 @@ public class UserSynchronizer {
                 updateStatement.setInt(2, linkKey);
                 updateStatement.execute();
 
-                channel.sendMessage("You were successfully linked with " + mcUUID + "!").queue();
+                OnlineUser onlineUser = KiloServer.getServer().getOnlineUser(UUID.fromString(mcUUID));
+                channel.sendMessage(
+                        DISCORD_FAB.getConfig().messages.successfully_linked
+                                .replace("%player%", onlineUser == null ? mcUUID : onlineUser.getName())
+                ).queue();
 
                 if (DISCORD_FAB.getConfig().userSync.syncDisplayName) {
                     syncDisplayName(linkKey);
                 }
                 syncRoles(linkKey);
             } else {
-                channel.sendMessage("Invalid link key, type /link in game to get a key!").queue();
+                channel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
             }
-
 
             connection.close();
         } catch (SQLException | ClassNotFoundException e) {
@@ -117,7 +145,7 @@ public class UserSynchronizer {
     }
 
     private static void syncRoles(final int linkKey) throws SQLException, ClassNotFoundException {
-        Connection conn = new DatabaseConnection().get();
+        Connection conn = DatabaseConnection.connect();
         String selectSql = "SELECT DiscordId, McUUID FROM linkedaccounts WHERE LinkKey = ?;";
         PreparedStatement selectStmt = conn.prepareStatement(selectSql);
         selectStmt.setInt(1, linkKey);
@@ -136,7 +164,8 @@ public class UserSynchronizer {
                     if (member != null) {
                         try {
                             guild.addRoleToMember(member, role).queue();
-                        } catch (HierarchyException ignored) { }
+                        } catch (HierarchyException ignored) {
+                        }
                     }
                 }
             }
@@ -155,7 +184,7 @@ public class UserSynchronizer {
     }
 
     private static void syncDisplayName(final int linkKey) throws SQLException, ClassNotFoundException {
-        Connection conn = new DatabaseConnection().get();
+        Connection conn = DatabaseConnection.connect();
         String selectSql = "SELECT DiscordId, McUsername FROM linkedaccounts WHERE LinkKey = ?;";
         PreparedStatement selectStmt = conn.prepareStatement(selectSql);
         selectStmt.setInt(1, linkKey);

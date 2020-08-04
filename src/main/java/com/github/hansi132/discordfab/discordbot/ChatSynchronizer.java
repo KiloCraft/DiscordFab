@@ -137,7 +137,7 @@ public class ChatSynchronizer {
     }
 
     public void setMetaFor(@NotNull final User user, @NotNull final WebhookMessageBuilder builder) {
-        if (UserSynchronizer.isSynced(user.getUuid())) {
+        if (UserSynchronizer.isLinked(user.getUuid())) {
             net.dv8tion.jda.api.entities.User discordUser = this.getJDAUser(user.getUuid());
             if (discordUser != null && discordUser.getAvatarUrl() != null) {
                 builder.setAvatarUrl(discordUser.getAvatarUrl());
