@@ -54,7 +54,7 @@ public class Listener extends ListenerAdapter {
             return;
         }
 
-        final String raw = event.getMessage().getContentRaw();
+        final String raw = event.getMessage().getContentDisplay();
         final String prefix = DiscordFab.getInstance().getConfig().prefix;
 
         if (!event.isWebhookMessage() && !raw.equals(prefix) && raw.startsWith(prefix)) {
@@ -65,7 +65,7 @@ public class Listener extends ListenerAdapter {
             DISCORD_FAB.getCommandManager().execute(src, raw);
         } else if (!event.isWebhookMessage() && DISCORD_FAB.getConfig().chatSynchronizer.toMinecraft) {
             if (event.getChannel().getIdLong() == DISCORD_FAB.getConfig().chatSynchronizer.chatChannelId) {
-                DiscordFab.getInstance().getChatSynchronizer().onDiscordChat(Objects.requireNonNull(event.getMember()), raw);
+                DiscordFab.getInstance().getChatSynchronizer().onDiscordChat(Objects.requireNonNull(event.getMember()), raw, event.getMessage().getAttachments());
             }
         }
     }
