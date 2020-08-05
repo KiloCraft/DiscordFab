@@ -52,8 +52,9 @@ public class UserSynchronizer {
             ResultSet resultSet = selectStatement.executeQuery();
 
             if (resultSet.next()) {
+                long discordID = resultSet.getLong("DiscordId");
                 conn.close();
-                return resultSet.getLong("DiscordId") != 0L;
+                return discordID != 0L;
             }
 
             conn.close();
