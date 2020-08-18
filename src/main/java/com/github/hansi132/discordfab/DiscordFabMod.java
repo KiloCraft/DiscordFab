@@ -8,8 +8,12 @@ import com.github.hansi132.discordfab.discordbot.util.Constants;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.event.Event;
+import org.kilocraft.essentials.api.event.EventHandler;
+import org.kilocraft.essentials.api.event.server.lifecycle.ServerReloadEvent;
 
 import java.io.File;
 import java.util.HashMap;
@@ -45,6 +49,8 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
             KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
             KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
         });
+
+        KiloEssentials.getServer().getEventRegistry().register((EventHandler<ServerReloadEvent>) event -> fab.onLoad());
 
         ServerLifecycleEvents.SERVER_STOPPED.register((server) -> fab.shutdown());
     }

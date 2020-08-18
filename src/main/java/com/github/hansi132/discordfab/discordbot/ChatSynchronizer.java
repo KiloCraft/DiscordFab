@@ -8,6 +8,7 @@ import com.github.hansi132.discordfab.discordbot.user.DiscordBroadcaster;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.google.common.collect.Maps;
 import net.dv8tion.jda.api.entities.Member;
+
 import net.dv8tion.jda.api.entities.Message;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -137,16 +138,8 @@ public class ChatSynchronizer {
     }
 
     public void setMetaFor(@NotNull final User user, @NotNull final WebhookMessageBuilder builder) {
-        if (UserSynchronizer.isLinked(user.getUuid())) {
-            net.dv8tion.jda.api.entities.User discordUser = this.getJDAUser(user.getUuid());
-            if (discordUser != null && discordUser.getAvatarUrl() != null) {
-                builder.setAvatarUrl(discordUser.getAvatarUrl());
-                builder.setUsername(discordUser.getName());
-            }
-        } else {
-            builder.setAvatarUrl(getMCAvatarURL(user.getUuid()));
-            builder.setUsername(user.getUsername());
-        }
+        builder.setAvatarUrl(getMCAvatarURL(user.getUuid()));
+        builder.setUsername(user.getUsername());
     }
 
     public void shutdown() {

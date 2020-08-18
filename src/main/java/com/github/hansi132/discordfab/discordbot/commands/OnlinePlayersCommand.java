@@ -28,20 +28,19 @@ public class OnlinePlayersCommand extends DiscordFabCommand {
 
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(DISCORD_FAB.getEmbedUtil().getDefaultColor())
-                .setTitle("Online Players");
+                .setTitle(users.size() + " Players Online");
 
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < users.size(); i++) {
-            stringBuilder.append(users.get(i).getName());
+            stringBuilder.append('`').append(users.get(i).getName()).append('`');
 
-            if (i + 1 < users.size()) {
-                stringBuilder.append(", ");
+            if (i + 1 > users.size()) {
+                stringBuilder.append(' ');
             }
         }
 
-        builder.addField(users.size() + " online", stringBuilder.toString(), false);
+        builder.addField("", stringBuilder.toString(), false);
         src.sendFeedback(builder.build()).queue();
-
         return SUCCESS;
     }
 }

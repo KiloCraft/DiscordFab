@@ -8,6 +8,8 @@ import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.config.DiscordFabConfig;
 import com.github.hansi132.discordfab.discordbot.config.MainConfig;
 import com.github.hansi132.discordfab.discordbot.util.EmbedUtil;
+import com.github.hansi132.discordfab.discordbot.util.OnlinePlayerUpdater;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -27,6 +29,7 @@ public class DiscordFab {
     private final CommandManager commandManager;
     private final ChatSynchronizer chatSynchronizer;
     private final EmbedUtil embedUtil;
+    private OnlinePlayerUpdater onlinePlayerUpdater;
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
         INSTANCE = this;
@@ -54,6 +57,17 @@ public class DiscordFab {
         } catch (LoginException e) {
             LOGGER.fatal("Can not log into the bot!", e);
         }
+    }
+
+    public void onLoad() {
+        final Activity.ActivityType activityType = config.get().activity.getActivityType();
+        final String activityValue = config.get().activity.value;
+        final OnlineStatus status = config.get().activity.getOnlineStatus();
+
+        this.setActivity(activityType, activityValue);
+        SHARD_MANAGER.setStatus(status);
+
+        config.load();
     }
 
     public boolean isDevelopment() {
@@ -98,5 +112,25 @@ public class DiscordFab {
 
     void shutdown() {
         this.chatSynchronizer.shutdown();
+    }
+
+    public void setActivity(@NotNull final Activity.ActivityType type, @NotNull final String value) {
+        if (value.equals("online")) {
+            if (onlinePlayerUpdater != null) {
+                if (onlinePlayerUpdater.getState() != Thread.State.NEW) {
+                    onlinePlayerUpdater.interrupt();
+                    onlinePlayerUpdater = new OnlinePlayerUpdater(type);
+                }
+            } else {
+                onlinePlayerUpdater = new OnlinePlayerUpdater(type);
+            }
+
+            onlinePlayerUpdater.start();
+            return;
+        } else {
+            onlinePlayerUpdater.interrupt();
+        }
+
+        SHARD_MANAGER.setActivity(Activity.of(type, value));
     }
 }

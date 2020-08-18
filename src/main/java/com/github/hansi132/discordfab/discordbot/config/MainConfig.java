@@ -1,5 +1,6 @@
 package com.github.hansi132.discordfab.discordbot.config;
 
+import com.github.hansi132.discordfab.discordbot.config.section.BotPretenseConfigSection;
 import com.github.hansi132.discordfab.discordbot.config.section.DefaultEmbedConfigSection;
 import com.github.hansi132.discordfab.discordbot.config.section.MessagesConfigSection;
 import com.github.hansi132.discordfab.discordbot.config.section.UserSyncConfigSection;
@@ -33,5 +34,8 @@ public class MainConfig {
 
     @Setting("userSynchronizer")
     public UserSyncConfigSection userSync = new UserSyncConfigSection();
+
+    @Setting("activity")
+    public BotPretenseConfigSection activity = new BotPretenseConfigSection();
 
 }

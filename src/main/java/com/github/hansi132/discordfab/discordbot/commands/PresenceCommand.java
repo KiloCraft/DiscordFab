@@ -6,7 +6,6 @@ import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.commands.argument.ActivityTypeArgument;
 import com.github.hansi132.discordfab.discordbot.commands.argument.OnlineStatusArgument;
-import com.github.hansi132.discordfab.discordbot.util.OnlinePlayerUpdater;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -20,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Locale;
 
 public class PresenceCommand extends DiscordFabCommand {
-    OnlinePlayerUpdater onlinePlayerUpdater;
 
     public PresenceCommand(@NotNull CommandCategory category, @NotNull String label, @NotNull Permission permission) {
         super(category, label, permission);
@@ -63,23 +61,7 @@ public class PresenceCommand extends DiscordFabCommand {
         Activity.ActivityType activityType = ActivityTypeArgument.getActivity(ctx, "type");
         String string = StringArgumentType.getString(ctx, "activity");
 
-        if (string.equals("online")) {
-            if (onlinePlayerUpdater != null) {
-                if (onlinePlayerUpdater.getState() != Thread.State.NEW) {
-                    onlinePlayerUpdater.interrupt();
-                    onlinePlayerUpdater = new OnlinePlayerUpdater(activityType);
-                }
-            } else {
-                onlinePlayerUpdater = new OnlinePlayerUpdater(activityType);
-            }
-            onlinePlayerUpdater.start();
-            src.sendFeedback("Set the activity to monitor online players!").queue();
-            return SUCCESS;
-        } else {
-            onlinePlayerUpdater.interrupt();
-        }
-
-        src.getJDA().getPresence().setActivity(Activity.of(activityType, string));
+        DiscordFab.getInstance().setActivity(activityType, string);
 
         src.sendFeedback("Set Activity to **%s** (%s)", string, activityType.toString().toLowerCase(Locale.ROOT)).queue();
         return SUCCESS;
