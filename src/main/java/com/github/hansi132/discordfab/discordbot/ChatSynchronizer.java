@@ -66,7 +66,7 @@ public class ChatSynchronizer {
         this.discordBroadcaster.send(builder.build());
     }
 
-    public void sendtoGame(final Member member, @NotNull final Text content) {
+    public void sendToGame(final Member member, @NotNull final Text content) {
         MutableText text = new TextMessage(CONFIG.messages.prefix
                 .replace("%name%", member.getEffectiveName())).toText()
                 .append(content);
@@ -91,10 +91,10 @@ public class ChatSynchronizer {
                     .append(new LiteralText("\nSize: ").formatted(Formatting.GRAY))
                     .append(new LiteralText(attachment.getSize() / 1024 + "kb").formatted(Formatting.AQUA));
             text.styled(style -> style.setHoverEvent(Texter.Events.onHover(hover)).withClickEvent(Texter.Events.onClickOpen(attachment.getUrl()))).formatted(Formatting.GREEN);
-            sendtoGame(member, text);
+            sendToGame(member, text);
         }
         if (!string.equals("")) {
-            sendtoGame(member, new TextMessage(string).toText());
+            sendToGame(member, new TextMessage(string).toText());
         }
     }
 

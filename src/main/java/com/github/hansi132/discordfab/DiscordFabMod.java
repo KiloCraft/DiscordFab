@@ -1,10 +1,12 @@
 package com.github.hansi132.discordfab;
 
-import com.github.hansi132.discordfab.discordbot.commands.EssentialsDiscordLinkCommand;
+import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
+import com.github.hansi132.discordfab.discordbot.commands.DiscordLinkCommand;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.integration.*;
 import com.github.hansi132.discordfab.discordbot.util.Constants;
 import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
@@ -37,15 +39,12 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
 
         DiscordFab fab = new DiscordFab(config);
 
-        ServerLifecycleEvents.SERVER_STARTED.register((server -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+            DiscordLinkCommand.register(dispatcher);
             KiloServer.getServer().registerEvent(new DiscordBroadcaster());
             KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
             KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
-
-            KiloEssentials.getInstance().getCommandHandler().register(
-                    new EssentialsDiscordLinkCommand("link", new String[]{"discord_link"})
-            );
-        }));
+        });
 
         ServerLifecycleEvents.SERVER_STOPPED.register((server) -> fab.shutdown());
     }
