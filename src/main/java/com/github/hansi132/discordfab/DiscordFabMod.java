@@ -30,7 +30,6 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
         DataConfig config = new DataConfig(
                 new HashMap<String, Object>() {{
                     this.put("token", "*paste bot token here*");
-                    this.put("webhook_url", "*paste webhook_url here*");
                     this.put("broadcastEnable", "*True or false*");
                     this.put("broadcastChannel", "*Paste what channel to broadcast to here*");
                     this.put("discordBroadcaster", "*Webhook url to cast Minecraft chat to*");

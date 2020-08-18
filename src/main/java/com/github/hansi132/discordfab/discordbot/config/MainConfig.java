@@ -4,7 +4,7 @@ import com.github.hansi132.discordfab.discordbot.config.section.BotPretenseConfi
 import com.github.hansi132.discordfab.discordbot.config.section.DefaultEmbedConfigSection;
 import com.github.hansi132.discordfab.discordbot.config.section.MessagesConfigSection;
 import com.github.hansi132.discordfab.discordbot.config.section.UserSyncConfigSection;
-import com.github.hansi132.discordfab.discordbot.config.section.chatsync.ChatSynchronizerConfigSection;
+import com.github.hansi132.discordfab.discordbot.config.section.messagesync.ChatSynchronizerConfigSection;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 

@@ -2,9 +2,8 @@ package com.github.hansi132.discordfab.discordbot;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.hansi132.discordfab.DiscordFab;
-import com.github.hansi132.discordfab.discordbot.config.section.chatsync.ChatSynchronizerConfigSection;
+import com.github.hansi132.discordfab.discordbot.config.section.messagesync.ChatSynchronizerConfigSection;
 import com.github.hansi132.discordfab.discordbot.integration.UserSynchronizer;
-import com.github.hansi132.discordfab.discordbot.user.DiscordBroadcaster;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.google.common.collect.Maps;
 import net.dv8tion.jda.api.entities.Member;
@@ -34,12 +33,18 @@ public class ChatSynchronizer {
     private static final ChatSynchronizerConfigSection CONFIG = DISCORD_FAB.getConfig().chatSynchronizer;
     private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
     private static final int LINK_MAX_LENGTH = 20;
-    private final DiscordBroadcaster discordBroadcaster;
+    private final WebhookClientHolder webhookClientHolder;
     private final Map<UUID, net.dv8tion.jda.api.entities.User> map = Maps.newHashMap();
 
+    private static final String GAME_CHAT_ID = "game_chat";
+    private static final String SOCIAL_SPY_ID = "social_spy";
+    private static final String COMMAND_SPY = "command_spy";
 
     public ChatSynchronizer() {
-        this.discordBroadcaster = new DiscordBroadcaster();
+        this.webhookClientHolder = new WebhookClientHolder();
+        this.webhookClientHolder.addClient(GAME_CHAT_ID, CONFIG.webhookUrl);
+        this.webhookClientHolder.addClient(SOCIAL_SPY_ID, CONFIG.spy.socialWebhookUrl);
+        this.webhookClientHolder.addClient(COMMAND_SPY, CONFIG.spy.commandWebhookUrl);
     }
 
     private static String getMCAvatarURL(@NotNull final UUID uuid) {
@@ -64,10 +69,10 @@ public class ChatSynchronizer {
         String content = TextFormat.clearColorCodes(string.replaceAll("@", ""));
         builder.setContent(content);
 
-        this.discordBroadcaster.send(builder.build());
+        this.webhookClientHolder.send(GAME_CHAT_ID, builder.build());
     }
 
-    public void sendToGame(final Member member, @NotNull final Text content) {
+    private void sendToGame(final Member member, @NotNull final Text content) {
         MutableText text = new TextMessage(CONFIG.messages.prefix
                 .replace("%name%", member.getEffectiveName())).toText()
                 .append(content);
@@ -125,7 +130,7 @@ public class ChatSynchronizer {
         setMetaFor(user, builder);
         builder.setContent(CONFIG.messages.userJoin.replace("%name%", user.getName()));
 
-        this.discordBroadcaster.send(builder.build());
+        this.webhookClientHolder.send(GAME_CHAT_ID, builder.build());
     }
 
     public void onUserLeave(@NotNull final User user) {
@@ -133,7 +138,7 @@ public class ChatSynchronizer {
         setMetaFor(user, builder);
         builder.setContent(CONFIG.messages.userLeave.replace("%name%", user.getName()));
 
-        this.discordBroadcaster.send(builder.build());
+        this.webhookClientHolder.send(GAME_CHAT_ID, builder.build());
         this.map.remove(user.getId());
     }
 
@@ -143,6 +148,6 @@ public class ChatSynchronizer {
     }
 
     public void shutdown() {
-        this.discordBroadcaster.getClient().close();
+        this.webhookClientHolder.closeAll();
     }
 }

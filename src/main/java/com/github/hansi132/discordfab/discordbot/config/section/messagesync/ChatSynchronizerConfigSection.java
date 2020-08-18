@@ -1,4 +1,4 @@
-package com.github.hansi132.discordfab.discordbot.config.section.chatsync;
+package com.github.hansi132.discordfab.discordbot.config.section.messagesync;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -16,6 +16,9 @@ public class ChatSynchronizerConfigSection {
             " synchronized channel between the game and discord")
     public long chatChannelId = 123456789101112131L;
 
+    @Setting(value = "webhookUrl")
+    public String webhookUrl = "";
+
     @Setting(value = "defaultAvatarUrl", comment = "The Avatar URL to use if the User isn't linked, " +
             "leave it empty to use their Minecraft Avatar instead")
     public String defaultAvatarUrl = "";
@@ -25,6 +28,9 @@ public class ChatSynchronizerConfigSection {
 
     @Setting("minecraftAvatarRenderOptions")
     public MCAvatarRenderOptionsConfigSection renderOptions = new MCAvatarRenderOptionsConfigSection();
+
+    @Setting("spySynchronizer")
+    public SpySynchronizerConfigSection spy = new SpySynchronizerConfigSection();
 
     public boolean isEnabled() {
         return toDiscord || toMinecraft;
