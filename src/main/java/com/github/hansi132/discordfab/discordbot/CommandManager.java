@@ -58,11 +58,13 @@ public class CommandManager {
     }
 
     public void execute(@NotNull final BotCommandSource src, @NotNull final String input) {
-        final String prefix = CONFIG.prefix;
+        final String prefix = CONFIG.prefix.toLowerCase(Locale.ROOT);
         final StringReader reader = new StringReader(input);
-        if (reader.canRead() && reader.getString().startsWith(prefix)) {
+        if (reader.canRead() && reader.getString().toLowerCase(Locale.ROOT).startsWith(prefix)) {
             reader.setCursor(prefix.length());
         }
+
+        reader.skipWhitespace();
 
         final String label = reader.getRemaining().split(" ")[0];
         final DiscordFabCommand command = DiscordFabCommand.getByLabel(label);

@@ -57,12 +57,13 @@ public class Listener extends ListenerAdapter {
         final String raw = event.getMessage().getContentDisplay();
         final String prefix = DiscordFab.getInstance().getConfig().prefix;
 
-        if (!event.isWebhookMessage() && !raw.equals(prefix) && raw.startsWith(prefix)) {
-            final BotCommandSource src = new BotCommandSource(
-                    event.getJDA(), event.getGuild(), event.getChannel(), user, event.getMember(), event
+        if (!event.isWebhookMessage() && !raw.equalsIgnoreCase(prefix) && raw.toLowerCase().startsWith(prefix.toLowerCase())) {
+            DISCORD_FAB.getCommandManager().execute(
+                    new BotCommandSource(
+                            event.getJDA(), event.getGuild(), event.getChannel(), user, event.getMember(), event
+                    ),
+                    raw
             );
-
-            DISCORD_FAB.getCommandManager().execute(src, raw);
         } else if (!event.isWebhookMessage() && DISCORD_FAB.getConfig().chatSynchronizer.toMinecraft) {
             if (event.getChannel().getIdLong() == DISCORD_FAB.getConfig().chatSynchronizer.chatChannelId) {
                 DiscordFab.getInstance().getChatSynchronizer().onDiscordChat(Objects.requireNonNull(event.getMember()), raw, event.getMessage().getAttachments());
