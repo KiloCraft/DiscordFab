@@ -1,4 +1,4 @@
-package com.github.hansi132.discordfab.discordbot;
+package com.github.hansi132.discordfab.discordbot.listener;
 
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;

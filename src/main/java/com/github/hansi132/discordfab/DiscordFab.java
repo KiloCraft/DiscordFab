@@ -3,7 +3,7 @@ package com.github.hansi132.discordfab;
 import com.github.hansi132.discordfab.discordbot.CommandManager;
 import com.github.hansi132.discordfab.discordbot.DiscordFabBot;
 import com.github.hansi132.discordfab.discordbot.ChatSynchronizer;
-import com.github.hansi132.discordfab.discordbot.Listener;
+import com.github.hansi132.discordfab.discordbot.listener.Listener;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.config.DiscordFabConfig;
 import com.github.hansi132.discordfab.discordbot.config.MainConfig;

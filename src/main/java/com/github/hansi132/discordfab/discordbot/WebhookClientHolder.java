@@ -5,6 +5,7 @@ import club.minnced.discord.webhook.WebhookClientBuilder;
 import club.minnced.discord.webhook.send.AllowedMentions;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +19,10 @@ public class WebhookClientHolder {
     }
 
     public void addClient(@NotNull final String id, @NotNull final String url) {
+        Validate.notNull(url, "Url must not be null!");
+        if (url.isEmpty()) {
+            return;
+        }
         addClient(id, new WebhookClientBuilder(url).setAllowedMentions(AllowedMentions.none()).build());
     }
 

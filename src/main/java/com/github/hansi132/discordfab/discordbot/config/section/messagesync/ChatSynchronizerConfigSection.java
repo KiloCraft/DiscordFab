@@ -16,12 +16,20 @@ public class ChatSynchronizerConfigSection {
             " synchronized channel between the game and discord")
     public long chatChannelId = 123456789101112131L;
 
-    @Setting(value = "webhookUrl")
+    @Setting(value = "webhookUrl", comment = "Leave it empty to disable it")
     public String webhookUrl = "";
 
-    @Setting(value = "defaultAvatarUrl", comment = "The Avatar URL to use if the User isn't linked, " +
-            "leave it empty to use their Minecraft Avatar instead")
-    public String defaultAvatarUrl = "";
+    @Setting(value = "staffChatWebhookUrl", comment = "Leave it empty to disable it")
+    public String staffChatWebhookUrl = "";
+
+    @Setting(value = "builderChatWebhookUrl", comment = "Leave it empty to disable it")
+    public String builderChatWebhookUrl = "";
+
+    @Setting(value = "socialSpyChannelWebhookUrl", comment = "Leave it empty to disable it")
+    public String socialSpyWebhookUrl = "";
+
+    @Setting(value = "socialSpyFormat", comment = "Values: %message%, %source%, %target%")
+    public String socialSpyFormat = "**to %target% -> ** %message%";
 
     @Setting(value = "messages")
     public ChatSyncMessagesConfigSection messages = new ChatSyncMessagesConfigSection();
@@ -29,8 +37,6 @@ public class ChatSynchronizerConfigSection {
     @Setting("minecraftAvatarRenderOptions")
     public MCAvatarRenderOptionsConfigSection renderOptions = new MCAvatarRenderOptionsConfigSection();
 
-    @Setting("spySynchronizer")
-    public SpySynchronizerConfigSection spy = new SpySynchronizerConfigSection();
 
     public boolean isEnabled() {
         return toDiscord || toMinecraft;
