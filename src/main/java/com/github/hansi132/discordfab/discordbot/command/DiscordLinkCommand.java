@@ -1,4 +1,4 @@
-package com.github.hansi132.discordfab.discordbot.commands;
+package com.github.hansi132.discordfab.discordbot.command;
 
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;

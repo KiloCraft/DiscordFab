@@ -1,4 +1,4 @@
-package com.github.hansi132.discordfab.discordbot.commands.argument.discord;
+package com.github.hansi132.discordfab.discordbot.command.argument.discord;
 
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;

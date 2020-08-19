@@ -14,6 +14,15 @@ public class MinecraftAvatar {
                                      final int size,
                                      final int scale,
                                      final boolean overlay) {
+        return generateUrl(uuid.toString(), renderType, model, size, scale, overlay);
+    }
+
+    public static String generateUrl(@NotNull final String uuid,
+                                     @NotNull final RenderType renderType,
+                                     @NotNull final RenderType.Model model,
+                                     final int size,
+                                     final int scale,
+                                     final boolean overlay) {
         final StringBuilder builder = new StringBuilder(API_URL)
                 .append(renderType.code).append('/').append(uuid);
 

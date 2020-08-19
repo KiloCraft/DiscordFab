@@ -1,6 +1,7 @@
 package com.github.hansi132.discordfab;
 
-import com.github.hansi132.discordfab.discordbot.commands.DiscordLinkCommand;
+import com.github.hansi132.discordfab.discordbot.ChatSynchronizer;
+import com.github.hansi132.discordfab.discordbot.command.DiscordLinkCommand;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.integration.*;
 import com.github.hansi132.discordfab.discordbot.listener.ChatMessageListener;
@@ -41,8 +42,9 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
 
         DiscordFab fab = new DiscordFab(config);
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-            DiscordLinkCommand.register(dispatcher);
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> DiscordLinkCommand.register(dispatcher));
+
+        ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
             KiloServer.getServer().registerEvent(new ChatMessageListener());
             KiloServer.getServer().registerEvent(new DirectMessageListener());
             KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
@@ -50,8 +52,9 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
             KiloEssentials.getServer().getEventRegistry().register(
                     (EventHandler<ServerReloadEvent>) event -> fab.onLoad()
             );
-        });
 
+            fab.getChatSynchronizer().onServerEvent(ChatSynchronizer.ServerEvent.START);
+        });
 
         ServerLifecycleEvents.SERVER_STOPPED.register((server) -> fab.shutdown());
     }

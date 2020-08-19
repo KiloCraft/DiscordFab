@@ -47,4 +47,8 @@ public class WebhookClientHolder {
         this.clients.clear();
     }
 
+    void clearAll() {
+        this.clients.clear();
+    }
+
 }

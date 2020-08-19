@@ -1,7 +1,6 @@
-package com.github.hansi132.discordfab.discordbot.commands.argument;
+package com.github.hansi132.discordfab.discordbot.command.argument;
 
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
-import com.github.hansi132.discordfab.discordbot.api.command.exception.BotCommandException;
 import com.github.hansi132.discordfab.discordbot.util.FabUtil;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;

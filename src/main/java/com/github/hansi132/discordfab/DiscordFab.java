@@ -23,7 +23,7 @@ public class DiscordFab {
     public static final Logger LOGGER = LogManager.getLogger("DiscordFab");
     private static DiscordFab INSTANCE;
     private static ShardManager SHARD_MANAGER;
-    private boolean isDevelopment = false;
+    private boolean isDevelopment;
     private final DataConfig dataConfig;
     private final DiscordFabConfig config;
     private final CommandManager commandManager;
@@ -60,10 +60,14 @@ public class DiscordFab {
     }
 
     public void onLoad() {
+        this.dataConfig.load();
+        this.isDevelopment = this.dataConfig.getProperties().containsKey("debug");
+        this.config.load();
         final Activity.ActivityType activityType = config.get().activity.getActivityType();
         final String activityValue = config.get().activity.value;
         final OnlineStatus status = config.get().activity.getOnlineStatus();
 
+        this.chatSynchronizer.load();
         this.setActivity(activityType, activityValue);
         SHARD_MANAGER.setStatus(status);
 

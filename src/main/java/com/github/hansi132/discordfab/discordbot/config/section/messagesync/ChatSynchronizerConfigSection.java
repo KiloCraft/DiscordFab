@@ -12,24 +12,6 @@ public class ChatSynchronizerConfigSection {
     @Setting(value = "toMinecraft", comment = "Enables chat synchronization to Minecraft")
     public boolean toMinecraft = true;
 
-    @Setting(value = "chatChannelId", comment = "The Id for the Channel you want to be the" +
-            " synchronized channel between the game and discord")
-    public long chatChannelId = 123456789101112131L;
-
-    @Setting(value = "webhookUrl", comment = "Leave it empty to disable it")
-    public String webhookUrl = "";
-
-    @Setting(value = "staffChatWebhookUrl", comment = "Leave it empty to disable it")
-    public String staffChatWebhookUrl = "";
-
-    @Setting(value = "builderChatWebhookUrl", comment = "Leave it empty to disable it")
-    public String builderChatWebhookUrl = "";
-
-    @Setting(value = "socialSpyChannelWebhookUrl", comment = "Leave it empty to disable it")
-    public String socialSpyWebhookUrl = "";
-
-    @Setting(value = "socialSpyFormat", comment = "Values: %message%, %source%, %target%")
-    public String socialSpyFormat = "**to %target% -> ** %message%";
 
     @Setting(value = "messages")
     public ChatSyncMessagesConfigSection messages = new ChatSyncMessagesConfigSection();
@@ -37,6 +19,20 @@ public class ChatSynchronizerConfigSection {
     @Setting("minecraftAvatarRenderOptions")
     public MCAvatarRenderOptionsConfigSection renderOptions = new MCAvatarRenderOptionsConfigSection();
 
+    @Setting(value = "publicChat", comment = "for public chat")
+    public ChatChannelSynchronizerConfigSection publicChat = new ChatChannelSynchronizerConfigSection();
+
+    @Setting(value = "staffChat", comment = "for staff chat")
+    public ChatChannelSynchronizerConfigSection staffChat = new ChatChannelSynchronizerConfigSection();
+
+    @Setting(value = "builderChat", comment = "for builder chat")
+    public ChatChannelSynchronizerConfigSection builderChat = new ChatChannelSynchronizerConfigSection();
+
+    @Setting(value = "socialSpy", comment = "for public chat")
+    public SocialSpySynchronizerConfigSection socialSpy = new SocialSpySynchronizerConfigSection();
+
+    @Setting
+    public EventMessagesConfigSection event = new EventMessagesConfigSection();
 
     public boolean isEnabled() {
         return toDiscord || toMinecraft;

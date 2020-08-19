@@ -3,13 +3,16 @@ package com.github.hansi132.discordfab.discordbot;
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.hansi132.discordfab.DiscordFab;
+import com.github.hansi132.discordfab.discordbot.config.section.messagesync.ChatChannelSynchronizerConfigSection;
 import com.github.hansi132.discordfab.discordbot.config.section.messagesync.ChatSynchronizerConfigSection;
 import com.github.hansi132.discordfab.discordbot.integration.UserSynchronizer;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.google.common.collect.Maps;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -21,14 +24,13 @@ import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
-import org.kilocraft.essentials.chat.KiloChat;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.util.RegexLib;
 import org.kilocraft.essentials.util.text.Texter;
 
-import java.util.List;
+import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -39,20 +41,13 @@ public class ChatSynchronizer {
     private static final ChatSynchronizerConfigSection CONFIG = DISCORD_FAB.getConfig().chatSynchronizer;
     private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
     private static final int LINK_MAX_LENGTH = 20;
+    private static final String SOCIAL_SPY_ID = "social_spy";
     private final WebhookClientHolder webhookClientHolder;
     private final Map<UUID, net.dv8tion.jda.api.entities.User> map = Maps.newHashMap();
 
-    private static final String PUBLIC_CHAT_ID = "game_chat";
-    private static final String STAFF_CHAT_ID = "game_chat";
-    private static final String BUILDER_CHAT_ID = "game_chat";
-    private static final String SOCIAL_SPY_ID = "social_spy";
-
     public ChatSynchronizer() {
         this.webhookClientHolder = new WebhookClientHolder();
-        this.webhookClientHolder.addClient(PUBLIC_CHAT_ID, CONFIG.webhookUrl);
-        this.webhookClientHolder.addClient(STAFF_CHAT_ID, CONFIG.staffChatWebhookUrl);
-        this.webhookClientHolder.addClient(BUILDER_CHAT_ID, CONFIG.builderChatWebhookUrl);
-        this.webhookClientHolder.addClient(SOCIAL_SPY_ID, CONFIG.socialSpyWebhookUrl);
+        this.load();
     }
 
     private static String getMCAvatarURL(@NotNull final UUID uuid) {
@@ -70,21 +65,35 @@ public class ChatSynchronizer {
         );
     }
 
-    private WebhookClient getClientFor(@NotNull final ServerChat.Channel channel) {
-        switch (channel) {
-            case PUBLIC:
-                return this.webhookClientHolder.getClient(PUBLIC_CHAT_ID);
-            case STAFF:
-                return this.webhookClientHolder.getClient(STAFF_CHAT_ID);
-            case BUILDER:
-                return this.webhookClientHolder.getClient(BUILDER_CHAT_ID);
-            default:
-                return null;
+    public static boolean shouldRespondToCommandIn(final long id) {
+        for (MappedChannel value : MappedChannel.values()) {
+            if (value.config.discordChannelId == id) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void load() {
+        this.webhookClientHolder.clearAll();
+        for (MappedChannel mappedChannel : MappedChannel.values()) {
+            this.webhookClientHolder.addClient(mappedChannel.id, mappedChannel.config.webhookUrl);
         }
     }
 
+    @Nullable
+    private WebhookClient getClientFor(@NotNull final ServerChat.Channel channel) {
+        final MappedChannel mapped = MappedChannel.byServerChannel(channel);
+        if (mapped == null) {
+            return null;
+        }
+
+        return this.webhookClientHolder.getClient(mapped.id);
+    }
+
     public void onGameDirectChat(@NotNull final ServerCommandSource source, @NotNull final OnlineUser receiver, @NotNull final String message) {
-        final WebhookClient client = this.webhookClientHolder.getClient(SOCIAL_SPY_ID);
+        final WebhookClient client = this.webhookClientHolder.getClient(MappedChannel.SOCIAL_SPY.id);
         if (client == null) {
             return;
         }
@@ -100,7 +109,7 @@ public class ChatSynchronizer {
         }
 
         builder.setContent(
-                CONFIG.socialSpyFormat.replace("%message%", message)
+                CONFIG.socialSpy.format.replace("%message%", message)
                         .replace("%source%", source.getName())
                         .replace("%target%", receiver.getName())
         );
@@ -122,15 +131,22 @@ public class ChatSynchronizer {
         client.send(builder.build());
     }
 
-    private void sendToGame(final Member member, @NotNull final Text content) {
+    private void sendToGame(@NotNull final ServerChat.Channel channel, @NotNull final Member member, @NotNull final Text content) {
         MutableText text = new TextMessage(CONFIG.messages.prefix
                 .replace("%name%", member.getEffectiveName())).toText()
                 .append(content);
-        KiloChat.broadCast(text);
+        channel.send(text);
     }
 
-    public void onDiscordChat(final Member member, @NotNull final String string, List<Message.Attachment> attachments) {
-        for (Message.Attachment attachment : attachments) {
+    public void onDiscordChat(@NotNull final TextChannel channel,
+                              @NotNull final Member member,
+                              @NotNull final Message message) {
+        final MappedChannel mappedChannel = MappedChannel.byChannelId(channel.getIdLong());
+        if (mappedChannel == null || !mappedChannel.toMinecraft || mappedChannel.channel == null) {
+            return;
+        }
+
+        for (Message.Attachment attachment : message.getAttachments()) {
             MutableText text;
             if (attachment.isImage()) {
                 text = new LiteralText("[IMAGE]");
@@ -147,10 +163,11 @@ public class ChatSynchronizer {
                     .append(new LiteralText("\nSize: ").formatted(Formatting.GRAY))
                     .append(new LiteralText(attachment.getSize() / 1024 + "kb").formatted(Formatting.AQUA));
             text.styled(style -> style.withHoverEvent(Texter.Events.onHover(hover)).withClickEvent(Texter.Events.onClickOpen(attachment.getUrl()))).formatted(Formatting.GREEN);
-            sendToGame(member, text);
+            sendToGame(mappedChannel.channel, member, text);
         }
-        if (!string.equals("")) {
-            sendToGame(member, new TextMessage(string).toText());
+
+        if (!message.getContentRaw().equals("")) {
+            sendToGame(mappedChannel.channel, member, new TextMessage(message.getContentRaw()).toText());
         }
     }
 
@@ -180,7 +197,7 @@ public class ChatSynchronizer {
         setMetaFor(user, builder);
         builder.setContent(CONFIG.messages.userJoin.replace("%name%", user.getName()));
 
-        this.webhookClientHolder.send(PUBLIC_CHAT_ID, builder.build());
+        this.webhookClientHolder.send(MappedChannel.PUBLIC.id, builder.build());
     }
 
     public void onUserLeave(@NotNull final User user) {
@@ -188,8 +205,28 @@ public class ChatSynchronizer {
         setMetaFor(user, builder);
         builder.setContent(CONFIG.messages.userLeave.replace("%name%", user.getName()));
 
-        this.webhookClientHolder.send(PUBLIC_CHAT_ID, builder.build());
+        this.webhookClientHolder.send(MappedChannel.PUBLIC.id, builder.build());
         this.map.remove(user.getId());
+    }
+
+    public void broadcast(@NotNull final String message) {
+        final WebhookClient client = this.webhookClientHolder.getClient(MappedChannel.PUBLIC.id);
+        if (client == null) {
+            return;
+        }
+
+        final WebhookMessageBuilder builder = new WebhookMessageBuilder().setContent(TextFormat.clearColorCodes(message));
+        setServerUserMeta(builder);
+        client.send(builder.build());
+    }
+
+    public void broadcast(@NotNull final MessageEmbed message) {
+        final TextChannel channel = MappedChannel.PUBLIC.getTextChannel();
+        if (channel == null) {
+            return;
+        }
+
+        channel.sendMessage(message);
     }
 
     public void setMetaFor(@NotNull final User user, @NotNull final WebhookMessageBuilder builder) {
@@ -197,7 +234,88 @@ public class ChatSynchronizer {
         builder.setUsername(user.getUsername());
     }
 
+    public void setServerUserMeta(@NotNull final WebhookMessageBuilder builder) {
+        builder.setUsername(DISCORD_FAB.getConfig().serverUserName);
+        builder.setAvatarUrl(DISCORD_FAB.getConfig().serverUserAvatarUrl);
+    }
+
     public void shutdown() {
+        this.onServerEvent(ServerEvent.STOP);
         this.webhookClientHolder.closeAll();
+    }
+
+    public void onServerEvent(@NotNull final ServerEvent event) {
+        String message;
+        Color color;
+        if (event == ServerEvent.START) {
+            message = CONFIG.event.serverStart;
+            color = Color.GREEN;
+        } else {
+            message = CONFIG.event.serverStop;
+            color = Color.RED;
+        }
+
+        final EmbedBuilder builder = new EmbedBuilder().setTitle(message).setColor(color);
+        this.broadcast(builder.build());
+    }
+
+    private enum MappedChannel {
+        PUBLIC("public_chat", CONFIG.publicChat, ServerChat.Channel.PUBLIC),
+        STAFF("staff_chat", CONFIG.staffChat, ServerChat.Channel.STAFF),
+        BUILDER("builder_chat", CONFIG.builderChat, ServerChat.Channel.BUILDER),
+        SOCIAL_SPY("social_spy", CONFIG.socialSpy, null, false);
+
+        final String id;
+        final ChatChannelSynchronizerConfigSection config;
+        @Nullable
+        final ServerChat.Channel channel;
+        final boolean toMinecraft;
+
+        MappedChannel(final String id, final ChatChannelSynchronizerConfigSection config, @Nullable final ServerChat.Channel channel) {
+            this(id, config, channel, true);
+        }
+
+        MappedChannel(final String id, final ChatChannelSynchronizerConfigSection config, @Nullable final ServerChat.Channel channel, final boolean toMinecraft) {
+            this.id = id;
+            this.config = config;
+            this.channel = channel;
+            this.toMinecraft = toMinecraft;
+        }
+
+        @Nullable
+        public TextChannel getTextChannel() {
+            return DISCORD_FAB.getGuild().getTextChannelById(this.config.discordChannelId);
+        }
+
+        @Nullable
+        public static ChatSynchronizer.MappedChannel byServerChannel(@NotNull final ServerChat.Channel channel) {
+            for (MappedChannel value : values()) {
+                if (value.channel == null) {
+                    continue;
+                }
+
+                if (value.channel.equals(channel)) {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+
+        @Nullable
+        public static ChatSynchronizer.MappedChannel byChannelId(final long id) {
+            for (MappedChannel value : values()) {
+                if (value.config.discordChannelId == id) {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public enum ServerEvent {
+        START,
+        STOP;
     }
 }

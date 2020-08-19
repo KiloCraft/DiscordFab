@@ -1,11 +1,11 @@
-package com.github.hansi132.discordfab.discordbot.commands;
+package com.github.hansi132.discordfab.discordbot.command;
 
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
-import com.github.hansi132.discordfab.discordbot.commands.argument.ActivityTypeArgument;
-import com.github.hansi132.discordfab.discordbot.commands.argument.OnlineStatusArgument;
+import com.github.hansi132.discordfab.discordbot.command.argument.ActivityTypeArgument;
+import com.github.hansi132.discordfab.discordbot.command.argument.OnlineStatusArgument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;

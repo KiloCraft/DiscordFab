@@ -1,4 +1,4 @@
-package com.github.hansi132.discordfab.discordbot.commands;
+package com.github.hansi132.discordfab.discordbot.command;
 
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
-import java.awt.*;
 import java.util.List;
 
 
