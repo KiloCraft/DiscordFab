@@ -29,7 +29,7 @@ public class ChatSynchronizerConfigSection {
     public ChatChannelSynchronizerConfigSection builderChat = new ChatChannelSynchronizerConfigSection("&1[&aBuilder&1] &7@&f%name% &8»&r");
 
     @Setting(value = "socialSpy", comment = "for public chat")
-    public ChatChannelSynchronizerConfigSection socialSpy = new ChatChannelSynchronizerConfigSection("**to %target% ->** %message%");
+    public ChatChannelSynchronizerConfigSection socialSpy = new ChatChannelSynchronizerConfigSection("**to %target% ->**");
 
     @Setting
     public EventMessagesConfigSection event = new EventMessagesConfigSection();
