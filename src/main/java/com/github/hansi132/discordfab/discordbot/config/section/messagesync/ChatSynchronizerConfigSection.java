@@ -20,16 +20,16 @@ public class ChatSynchronizerConfigSection {
     public MCAvatarRenderOptionsConfigSection renderOptions = new MCAvatarRenderOptionsConfigSection();
 
     @Setting(value = "publicChat", comment = "for public chat")
-    public ChatChannelSynchronizerConfigSection publicChat = new ChatChannelSynchronizerConfigSection();
+    public ChatChannelSynchronizerConfigSection publicChat = new ChatChannelSynchronizerConfigSection("&7@&f%name% &8»&r");
 
     @Setting(value = "staffChat", comment = "for staff chat")
-    public ChatChannelSynchronizerConfigSection staffChat = new ChatChannelSynchronizerConfigSection();
+    public ChatChannelSynchronizerConfigSection staffChat = new ChatChannelSynchronizerConfigSection("&8[&cStaff&8] &7@&f%name% &8»&r");
 
     @Setting(value = "builderChat", comment = "for builder chat")
-    public ChatChannelSynchronizerConfigSection builderChat = new ChatChannelSynchronizerConfigSection();
+    public ChatChannelSynchronizerConfigSection builderChat = new ChatChannelSynchronizerConfigSection("&1[&aBuilder&1] &7@&f%name% &8»&r");
 
     @Setting(value = "socialSpy", comment = "for public chat")
-    public SocialSpySynchronizerConfigSection socialSpy = new SocialSpySynchronizerConfigSection();
+    public ChatChannelSynchronizerConfigSection socialSpy = new ChatChannelSynchronizerConfigSection("**to %target% ->** %message%");
 
     @Setting
     public EventMessagesConfigSection event = new EventMessagesConfigSection();

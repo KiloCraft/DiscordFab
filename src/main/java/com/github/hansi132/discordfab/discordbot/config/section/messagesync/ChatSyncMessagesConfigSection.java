@@ -12,6 +12,4 @@ public class ChatSyncMessagesConfigSection {
     @Setting(comment = "Variables: %name%")
     public String userLeave = "%name% has left the game.";
 
-    @Setting(comment = "Variables: %name%")
-    public String prefix = "&7@&f%name% &9>&9>&f ";
 }

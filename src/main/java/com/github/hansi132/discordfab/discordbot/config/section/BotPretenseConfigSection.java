@@ -26,8 +26,7 @@ public class BotPretenseConfigSection {
         Activity.ActivityType type = FabUtil.activityTypeFromString(this.type);
         if (type == null) {
             DiscordFab.LOGGER.error("Invalid activity type found! '{}'", this.type);
-            this.type = Activity.ActivityType.DEFAULT.name();
-            return getActivityType();
+            return Activity.ActivityType.DEFAULT;
         }
 
         return type;
@@ -38,8 +37,7 @@ public class BotPretenseConfigSection {
         OnlineStatus status = FabUtil.onlineStatusFromString(this.status);
         if (status == null) {
             DiscordFab.LOGGER.error("Invalid activity type found! '{}'", this.type);
-            this.status = OnlineStatus.ONLINE.name();
-            return getOnlineStatus();
+            return OnlineStatus.ONLINE;
         }
 
         return status;

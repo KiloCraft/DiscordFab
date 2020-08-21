@@ -50,7 +50,6 @@ public class DiscordFab {
 
             if (isDevelopment) {
                 LOGGER.info("**** DiscordFab IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
-                SHARD_MANAGER.setActivity(Activity.playing("Debugging"));
             }
 
             LOGGER.info("Successfully logged in");
@@ -60,18 +59,17 @@ public class DiscordFab {
     }
 
     public void onLoad() {
+        LOGGER.info("Loading DiscordFab..");
         this.dataConfig.load();
         this.isDevelopment = this.dataConfig.getProperties().containsKey("debug");
         this.config.load();
         final Activity.ActivityType activityType = config.get().activity.getActivityType();
         final String activityValue = config.get().activity.value;
         final OnlineStatus status = config.get().activity.getOnlineStatus();
+        this.setActivity(activityType, activityValue);
 
         this.chatSynchronizer.load();
-        this.setActivity(activityType, activityValue);
         SHARD_MANAGER.setStatus(status);
-
-        config.load();
     }
 
     public boolean isDevelopment() {
@@ -107,7 +105,7 @@ public class DiscordFab {
     }
 
     public Guild getGuild() {
-        return SHARD_MANAGER.getGuildById(Long.parseLong(dataConfig.getProperty("guild")));
+        return SHARD_MANAGER.getGuildById(Long.parseLong(this.dataConfig.getProperty("guild")));
     }
 
     public EmbedUtil getEmbedUtil() {
@@ -119,7 +117,7 @@ public class DiscordFab {
     }
 
     public void setActivity(@NotNull final Activity.ActivityType type, @NotNull final String value) {
-        if (value.equals("online")) {
+        if (value.equalsIgnoreCase("online")) {
             if (onlinePlayerUpdater != null) {
                 if (onlinePlayerUpdater.getState() != Thread.State.NEW) {
                     onlinePlayerUpdater.interrupt();

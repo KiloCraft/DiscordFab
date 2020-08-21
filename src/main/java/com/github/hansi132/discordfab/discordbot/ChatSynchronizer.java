@@ -31,6 +31,7 @@ import org.kilocraft.essentials.util.RegexLib;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -92,26 +93,27 @@ public class ChatSynchronizer {
         return this.webhookClientHolder.getClient(mapped.id);
     }
 
-    public void onGameDirectChat(@NotNull final ServerCommandSource source, @NotNull final OnlineUser receiver, @NotNull final String message) {
+    public void onGameDirectChat(@NotNull final ServerCommandSource source, @NotNull final OnlineUser receiver, @NotNull final String raw, final List<String> marked) {
         final WebhookClient client = this.webhookClientHolder.getClient(MappedChannel.SOCIAL_SPY.id);
         if (client == null) {
             return;
         }
 
-        final WebhookMessageBuilder builder = new WebhookMessageBuilder().setContent(
-                TextFormat.clearColorCodes(message.replaceAll("@", ""))
-        );
-
+        final WebhookMessageBuilder builder = new WebhookMessageBuilder();
         if (CommandUtils.isPlayer(source)) {
             setMetaFor(KiloServer.getServer().getOnlineUser(source.getName()), builder);
         } else {
             builder.setUsername("Server");
         }
 
+        String string = raw;
+        for (String s : marked) {
+            string = string.replace(s, CONFIG.socialSpy.sensitiveWordFormat.replace("%word%", s));
+        }
+
         builder.setContent(
-                CONFIG.socialSpy.format.replace("%message%", message)
-                        .replace("%source%", source.getName())
-                        .replace("%target%", receiver.getName())
+                CONFIG.socialSpy.prefix.replace("%source%", source.getName())
+                        .replace("%target%", receiver.getName()) + " " + string
         );
 
         client.send(builder.build());
@@ -131,18 +133,23 @@ public class ChatSynchronizer {
         client.send(builder.build());
     }
 
-    private void sendToGame(@NotNull final ServerChat.Channel channel, @NotNull final Member member, @NotNull final Text content) {
-        MutableText text = new TextMessage(CONFIG.messages.prefix
+    private void sendToGame(@NotNull final MappedChannel mapped, @NotNull final Member member, @NotNull final Text content) {
+        if (mapped.channel == null) {
+            return;
+        }
+
+        MutableText text = new TextMessage(mapped.config.prefix
                 .replace("%name%", member.getEffectiveName())).toText()
-                .append(content);
-        channel.send(text);
+                .append(" ").append(content);
+
+        mapped.channel.send(text);
     }
 
     public void onDiscordChat(@NotNull final TextChannel channel,
                               @NotNull final Member member,
                               @NotNull final Message message) {
         final MappedChannel mappedChannel = MappedChannel.byChannelId(channel.getIdLong());
-        if (mappedChannel == null || !mappedChannel.toMinecraft || mappedChannel.channel == null) {
+        if (mappedChannel == null || !mappedChannel.isEnabled() || !mappedChannel.toMinecraft || mappedChannel.channel == null) {
             return;
         }
 
@@ -163,11 +170,11 @@ public class ChatSynchronizer {
                     .append(new LiteralText("\nSize: ").formatted(Formatting.GRAY))
                     .append(new LiteralText(attachment.getSize() / 1024 + "kb").formatted(Formatting.AQUA));
             text.styled(style -> style.withHoverEvent(Texter.Events.onHover(hover)).withClickEvent(Texter.Events.onClickOpen(attachment.getUrl()))).formatted(Formatting.GREEN);
-            sendToGame(mappedChannel.channel, member, text);
+            sendToGame(mappedChannel, member, text);
         }
 
         if (!message.getContentRaw().equals("")) {
-            sendToGame(mappedChannel.channel, member, new TextMessage(message.getContentRaw()).toText());
+            sendToGame(mappedChannel, member, new TextMessage(message.getContentRaw()).toText());
         }
     }
 
@@ -285,6 +292,10 @@ public class ChatSynchronizer {
         @Nullable
         public TextChannel getTextChannel() {
             return DISCORD_FAB.getGuild().getTextChannelById(this.config.discordChannelId);
+        }
+
+        public boolean isEnabled() {
+            return this.config.enabled;
         }
 
         @Nullable

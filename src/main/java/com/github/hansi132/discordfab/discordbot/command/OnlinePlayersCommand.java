@@ -33,7 +33,7 @@ public class OnlinePlayersCommand extends DiscordFabCommand {
         for (int i = 0; i < users.size(); i++) {
             stringBuilder.append('`').append(users.get(i).getName()).append('`');
 
-            if (i + 1 > users.size()) {
+            if (i + 1 < users.size()) {
                 stringBuilder.append(' ');
             }
         }

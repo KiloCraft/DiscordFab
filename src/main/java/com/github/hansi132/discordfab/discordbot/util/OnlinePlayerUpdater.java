@@ -18,7 +18,7 @@ public class OnlinePlayerUpdater extends Thread {
     public void run() {
         while (true) {
             int rate = 1;
-            int currentPlayers = KiloServer.getServer().getPlayerList().size();
+            int currentPlayers = KiloServer.getServer().getPlayerManager().getCurrentPlayerCount();
             DiscordFab.getBot().setActivity(Activity.of(type, currentPlayers + " Players online!"));
 
             try {
