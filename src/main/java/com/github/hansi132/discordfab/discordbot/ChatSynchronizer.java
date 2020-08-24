@@ -35,12 +35,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ChatSynchronizer {
     private static final DiscordFab DISCORD_FAB = DiscordFab.getInstance();
     private static final ChatSynchronizerConfigSection CONFIG = DISCORD_FAB.getConfig().chatSynchronizer;
-    private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
+    private static final Pattern SIMPLE_LINK_PATTERN = Pattern.compile("([--:\\w?@%&+~#=]*\\.[a-z]{2,4}/{0,2})((?:[?&](?:\\w+)=(?:\\w+))+|[--:\\w?@%&+~#=]+)?");
     private static final int LINK_MAX_LENGTH = 20;
     private static final String SOCIAL_SPY_ID = "social_spy";
     private final WebhookClientHolder webhookClientHolder;
@@ -93,7 +94,7 @@ public class ChatSynchronizer {
         return this.webhookClientHolder.getClient(mapped.id);
     }
 
-    public void onGameDirectChat(@NotNull final ServerCommandSource source, @NotNull final OnlineUser receiver, @NotNull final String raw, final List<String> marked) {
+    public void onSocialSpyWarning(@NotNull final ServerCommandSource source, @NotNull final OnlineUser receiver, @NotNull final String raw, final List<String> marked) {
         final WebhookClient client = this.webhookClientHolder.getClient(MappedChannel.SOCIAL_SPY.id);
         if (client == null) {
             return;
@@ -108,6 +109,11 @@ public class ChatSynchronizer {
 
         String string = raw;
         for (String s : marked) {
+            Matcher matcher = SIMPLE_LINK_PATTERN.matcher(s);
+            if (matcher.matches() && (!s.contains("https://") || !s.contains("http://"))) {
+                string.replace(s, "https://" + s);
+            }
+
             string = string.replace(s, CONFIG.socialSpy.sensitiveWordFormat.replace("%word%", s));
         }
 

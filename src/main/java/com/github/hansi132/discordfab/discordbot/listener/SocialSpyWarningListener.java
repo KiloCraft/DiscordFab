@@ -9,7 +9,7 @@ public class SocialSpyWarningListener implements EventHandler<OnSocialSpyWarning
 
     @Override
     public void handle(@NotNull OnSocialSpyWarning event) {
-        DiscordFab.getInstance().getChatSynchronizer().onGameDirectChat(event.getSource(), event.getReceiver(), event.getMessage(), event.getMarked());
+        DiscordFab.getInstance().getChatSynchronizer().onSocialSpyWarning(event.getSource(), event.getReceiver(), event.getMessage(), event.getMarked());
     }
 
 }
