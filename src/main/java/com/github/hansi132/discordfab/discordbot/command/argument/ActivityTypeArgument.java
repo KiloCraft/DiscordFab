@@ -1,7 +1,8 @@
-package com.github.hansi132.discordfab.discordbot.commands.argument;
+package com.github.hansi132.discordfab.discordbot.command.argument;
 
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.api.command.IDiscordCommandSource;
+import com.github.hansi132.discordfab.discordbot.util.FabUtil;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -33,14 +34,8 @@ public class ActivityTypeArgument implements ArgumentType<Activity.ActivityType>
     @Override
     public Activity.ActivityType parse(StringReader reader) throws CommandSyntaxException {
         final String string = reader.readUnquotedString();
-        Activity.ActivityType activityType = null;
-        for (Activity.ActivityType value : Activity.ActivityType.values()) {
-            if (value.name().equalsIgnoreCase(string)) {
-                activityType = value;
-                break;
-            }
-        }
-        if (activityType == null || activityType == Activity.ActivityType.CUSTOM_STATUS) {
+        Activity.ActivityType activityType = FabUtil.activityTypeFromString(string);
+        if (activityType == null) {
             throw INVALID_ACTIVITY_EXCEPTION.create(string);
         }
 

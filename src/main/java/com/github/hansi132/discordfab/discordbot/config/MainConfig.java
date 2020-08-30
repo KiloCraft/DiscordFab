@@ -1,9 +1,10 @@
 package com.github.hansi132.discordfab.discordbot.config;
 
+import com.github.hansi132.discordfab.discordbot.config.section.BotPretenseConfigSection;
 import com.github.hansi132.discordfab.discordbot.config.section.DefaultEmbedConfigSection;
 import com.github.hansi132.discordfab.discordbot.config.section.MessagesConfigSection;
 import com.github.hansi132.discordfab.discordbot.config.section.UserSyncConfigSection;
-import com.github.hansi132.discordfab.discordbot.config.section.chatsync.ChatSynchronizerConfigSection;
+import com.github.hansi132.discordfab.discordbot.config.section.messagesync.ChatSynchronizerConfigSection;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -22,16 +23,25 @@ public class MainConfig {
     @Setting(value = "serverIp", comment = "The IP of the Minecraft Server")
     public String serverIp = "50kilo.org";
 
-    @Setting("chatSynchronization")
+    @Setting
+    public String serverUserName = "Server";
+
+    @Setting
+    public String serverUserAvatarUrl = "";
+
+    @Setting
     public ChatSynchronizerConfigSection chatSynchronizer = new ChatSynchronizerConfigSection();
 
-    @Setting("defaultEmbed")
+    @Setting
     public DefaultEmbedConfigSection defaultEmbed = new DefaultEmbedConfigSection();
 
-    @Setting("messages")
+    @Setting
     public MessagesConfigSection messages = new MessagesConfigSection();
 
-    @Setting("userSynchronizer")
+    @Setting
     public UserSyncConfigSection userSync = new UserSyncConfigSection();
+
+    @Setting
+    public BotPretenseConfigSection activity = new BotPretenseConfigSection();
 
 }

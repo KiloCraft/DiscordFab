@@ -1,4 +1,4 @@
-package com.github.hansi132.discordfab.discordbot.commands.argument;
+package com.github.hansi132.discordfab.discordbot.command.argument;
 
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
@@ -10,7 +10,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.dv8tion.jda.api.entities.Activity;
 
 import java.util.Collection;
 import java.util.List;

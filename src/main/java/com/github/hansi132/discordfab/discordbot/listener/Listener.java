@@ -1,6 +1,7 @@
-package com.github.hansi132.discordfab.discordbot;
+package com.github.hansi132.discordfab.discordbot.listener;
 
 import com.github.hansi132.discordfab.DiscordFab;
+import com.github.hansi132.discordfab.discordbot.ChatSynchronizer;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.integration.UserSynchronizer;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;
@@ -57,16 +58,22 @@ public class Listener extends ListenerAdapter {
         final String raw = event.getMessage().getContentDisplay();
         final String prefix = DiscordFab.getInstance().getConfig().prefix;
 
-        if (!event.isWebhookMessage() && !raw.equals(prefix) && raw.startsWith(prefix)) {
-            final BotCommandSource src = new BotCommandSource(
-                    event.getJDA(), event.getGuild(), event.getChannel(), user, event.getMember(), event
+        if (
+                !event.isWebhookMessage() &&
+                        !raw.equalsIgnoreCase(prefix) &&
+                        raw.toLowerCase().startsWith(prefix.toLowerCase()) &&
+                        ChatSynchronizer.shouldRespondToCommandIn(event.getChannel().getIdLong())
+        ) {
+            DISCORD_FAB.getCommandManager().execute(
+                    new BotCommandSource(
+                            event.getJDA(), event.getGuild(), event.getChannel(), user, event.getMember(), event
+                    ),
+                    raw
             );
-
-            DISCORD_FAB.getCommandManager().execute(src, raw);
         } else if (!event.isWebhookMessage() && DISCORD_FAB.getConfig().chatSynchronizer.toMinecraft) {
-            if (event.getChannel().getIdLong() == DISCORD_FAB.getConfig().chatSynchronizer.chatChannelId) {
-                DiscordFab.getInstance().getChatSynchronizer().onDiscordChat(Objects.requireNonNull(event.getMember()), raw, event.getMessage().getAttachments());
-            }
+            DISCORD_FAB.getChatSynchronizer().onDiscordChat(
+                    event.getChannel(), Objects.requireNonNull(event.getMember()), event.getMessage()
+            );
         }
     }
 }
