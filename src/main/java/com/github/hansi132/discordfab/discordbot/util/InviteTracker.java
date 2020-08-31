@@ -19,32 +19,21 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 public class InviteTracker {
-    private static final DiscordFab DISCORD_FAB = DiscordFab.getInstance();
     HashMap<Invite, Integer> inviteCache = new HashMap<>();
 
     public void cacheInvites(Guild guild) {
         inviteCache.clear();
-//        DiscordFab.LOGGER.error("Caching invites!");
         guild.retrieveInvites().queue(invites -> {
             for (Invite invite : invites) {
                 inviteCache.put(invite, invite.getUses());
-//                DiscordFab.LOGGER.error("Cache: " + invite.getUrl() + " " + invite.getUses() + " (" + invite.hashCode() + ")");
             }
-
         });
-
-/*        for (Invite invite : guild.retrieveInvites().complete()) {
-            inviteCache.put(invite, invite.getUses());
-            DiscordFab.LOGGER.info(invite.getUrl() + " " + invite.getUses());
-        }*/
     }
 
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
         event.getGuild().retrieveInvites().queue(invites -> {
             for (Invite invite : invites) {
-//                DiscordFab.LOGGER.error("onGuildMemberJoin: " + invite.getUrl() + " " + invite.getUses() + " (" + invite.hashCode() + ")");
                 int i = inviteCache.get(invite);
-//                DiscordFab.LOGGER.info("i " + i);
                 if (invite.getUses() != i) {
                     User inviter = invite.getInviter();
                     if (inviter == null) return;
@@ -61,21 +50,6 @@ public class InviteTracker {
             DiscordFab.LOGGER.error("This shouldn't have happened! A new member joined, but we couldn't detect who invited them!");
             this.cacheInvites(event.getGuild());
         });
-/*        for (Map.Entry<Invite, Integer> entry : inviteCache.entrySet()) {
-            DiscordFab.LOGGER.error(entry.getKey().getUrl() + " " + entry.getKey().getUses());
-            if (entry.getKey().getUses() != entry.getValue()) {
-                User inviter = entry.getKey().getInviter();
-                if (inviter == null) return;
-                long inviterID = inviter.getIdLong();
-                long invitedID = event.getUser().getIdLong();
-                this.addEntry(inviterID, invitedID);
-                this.cacheInvites(event.getGuild());
-                return;
-            } else {
-                DiscordFab.LOGGER.info(entry.getKey().getUses() + "!=" + entry.getValue());
-            }
-        }*/
-
     }
 
     public void onGuildInviteChange(@Nonnull GenericGuildInviteEvent event) {
