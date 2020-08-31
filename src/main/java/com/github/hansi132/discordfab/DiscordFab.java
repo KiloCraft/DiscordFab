@@ -8,6 +8,7 @@ import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.config.DiscordFabConfig;
 import com.github.hansi132.discordfab.discordbot.config.MainConfig;
 import com.github.hansi132.discordfab.discordbot.util.EmbedUtil;
+import com.github.hansi132.discordfab.discordbot.util.InviteTracker;
 import com.github.hansi132.discordfab.discordbot.util.OnlinePlayerUpdater;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -29,6 +30,7 @@ public class DiscordFab {
     private final CommandManager commandManager;
     private final ChatSynchronizer chatSynchronizer;
     private final EmbedUtil embedUtil;
+    private final InviteTracker inviteTracker;
     private OnlinePlayerUpdater onlinePlayerUpdater;
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
@@ -40,6 +42,7 @@ public class DiscordFab {
 
         this.commandManager = new CommandManager();
         this.chatSynchronizer = new ChatSynchronizer();
+        this.inviteTracker = new InviteTracker();
         this.embedUtil = new EmbedUtil();
 
         try {
@@ -99,6 +102,11 @@ public class DiscordFab {
     public ChatSynchronizer getChatSynchronizer() {
         return this.chatSynchronizer;
     }
+
+    public InviteTracker getInviteTracker() {
+        return this.inviteTracker;
+    }
+
 
     public static ShardManager getBot() {
         return DiscordFab.SHARD_MANAGER;

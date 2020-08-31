@@ -1,3 +1,4 @@
+/*
 package com.github.hansi132.discordfab.discordbot.listener;
 
 import com.github.hansi132.discordfab.DiscordFab;
@@ -13,3 +14,4 @@ public class SocialSpyWarningListener implements EventHandler<OnSocialSpyWarning
     }
 
 }
+*/

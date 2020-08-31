@@ -75,7 +75,6 @@ public class UserSynchronizer {
             ResultSet resultSet = selectStatement.executeQuery();
 
             if (resultSet.next()) {
-                conn.close();
                 return resultSet.getString("McUUID") != null;
             }
 

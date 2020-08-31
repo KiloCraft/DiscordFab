@@ -5,7 +5,7 @@ import com.github.hansi132.discordfab.discordbot.command.DiscordLinkCommand;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.integration.*;
 import com.github.hansi132.discordfab.discordbot.listener.ChatMessageListener;
-import com.github.hansi132.discordfab.discordbot.listener.SocialSpyWarningListener;
+//import com.github.hansi132.discordfab.discordbot.listener.SocialSpyWarningListener;
 import com.github.hansi132.discordfab.discordbot.util.Constants;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -46,7 +46,7 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
             KiloServer.getServer().registerEvent(new ChatMessageListener());
-            KiloServer.getServer().registerEvent(new SocialSpyWarningListener());
+//            KiloServer.getServer().registerEvent(new SocialSpyWarningListener());
             KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
             KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
             KiloEssentials.getServer().getEventRegistry().register(
