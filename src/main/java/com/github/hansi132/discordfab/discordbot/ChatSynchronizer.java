@@ -18,6 +18,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.KiloServer;
@@ -27,10 +28,10 @@ import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
-import org.kilocraft.essentials.util.RegexLib;
 import org.kilocraft.essentials.util.text.Texter;
 
 import java.awt.*;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,6 +40,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ChatSynchronizer {
+    private static final Logger LOGGER = DiscordFab.LOGGER;
     private static final DiscordFab DISCORD_FAB = DiscordFab.getInstance();
     private static final ChatSynchronizerConfigSection CONFIG = DISCORD_FAB.getConfig().chatSynchronizer;
     private static final Pattern SIMPLE_LINK_PATTERN = Pattern.compile("([--:\\w?@%&+~#=]*\\.[a-z]{2,4}/{0,2})((?:[?&](?:\\w+)=(?:\\w+))+|[--:\\w?@%&+~#=]+)?");
@@ -206,6 +208,11 @@ public class ChatSynchronizer {
     }
 
     public void onUserJoin(@NotNull final User user) {
+        try {
+            UserSynchronizer.syncRoles(user.getUuid());
+        } catch (SQLException | ClassNotFoundException e) {
+            LOGGER.error("Unexpected error while trying to sync user", e);
+        }
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         setMetaFor(user, builder);
         builder.setContent(CONFIG.messages.userJoin.replace("%name%", user.getName()));
@@ -296,15 +303,6 @@ public class ChatSynchronizer {
         }
 
         @Nullable
-        public TextChannel getTextChannel() {
-            return DISCORD_FAB.getGuild().getTextChannelById(this.config.discordChannelId);
-        }
-
-        public boolean isEnabled() {
-            return this.config.enabled;
-        }
-
-        @Nullable
         public static ChatSynchronizer.MappedChannel byServerChannel(@NotNull final ServerChat.Channel channel) {
             for (MappedChannel value : values()) {
                 if (value.channel == null) {
@@ -328,6 +326,15 @@ public class ChatSynchronizer {
             }
 
             return null;
+        }
+
+        @Nullable
+        public TextChannel getTextChannel() {
+            return DISCORD_FAB.getGuild().getTextChannelById(this.config.discordChannelId);
+        }
+
+        public boolean isEnabled() {
+            return this.config.enabled;
         }
     }
 

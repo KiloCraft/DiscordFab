@@ -9,8 +9,12 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.query.QueryOptions;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
@@ -129,11 +133,15 @@ public class UserSynchronizer {
                         DISCORD_FAB.getConfig().messages.successfully_linked
                                 .replace("%player%", onlineUser == null ? mcUUID : onlineUser.getName())
                 ).queue();
+                if (onlineUser != null) {
+                    KiloEssentials.getServer().execute(DISCORD_FAB.getConfig().userSync.command
+                        .replace("%player%", onlineUser.getName()));
+                }
 
                 if (DISCORD_FAB.getConfig().userSync.syncDisplayName) {
                     syncDisplayName(linkKey);
                 }
-                syncRoles(linkKey);
+                syncRoles(UUID.fromString(mcUUID));
             } else {
                 channel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
             }
@@ -143,8 +151,8 @@ public class UserSynchronizer {
             LOGGER.error("Unexpected error while trying to sync user", e);
         }
     }
-
-    private static void syncRoles(final int linkKey) throws SQLException, ClassNotFoundException {
+    @Deprecated
+    public static void syncRoles(final int linkKey) throws SQLException, ClassNotFoundException {
         Connection conn = DatabaseConnection.connect();
         String selectSql = "SELECT DiscordId, McUUID FROM linkedaccounts WHERE LinkKey = ?;";
         PreparedStatement selectStmt = conn.prepareStatement(selectSql);
@@ -153,12 +161,29 @@ public class UserSynchronizer {
         resultSet.next();
         final long discordId = resultSet.getLong("DiscordId");
         final UUID mcUUID = UUID.fromString(resultSet.getString("McUUID"));
+        syncRoles(discordId, mcUUID);
+    }
+
+    public static void syncRoles(final UUID mcUUID) throws SQLException, ClassNotFoundException {
+        Connection conn = DatabaseConnection.connect();
+        String selectSql = "SELECT DiscordId FROM linkedaccounts WHERE McUUID = ?;";
+        PreparedStatement selectStmt = conn.prepareStatement(selectSql);
+        selectStmt.setString(1, mcUUID.toString());
+        ResultSet resultSet = selectStmt.executeQuery();
+        resultSet.next();
+        final long discordId = resultSet.getLong("DiscordId");
+        if (discordId != 0) {
+            syncRoles(discordId, mcUUID);
+        }
+    }
+
+    private static void syncRoles(final long discordID, final UUID mcUUID) {
         Guild guild = DISCORD_FAB.getGuild();
         BOT.getRoles();
         for (Role role : guild.getRoles()) {
             long roleID = role.getIdLong();
             if (shouldSync(mcUUID, roleID)) {
-                User user = BOT.getUserById(discordId);
+                User user = BOT.getUserById(discordID);
                 if (user != null) {
                     Member member = guild.getMember(user);
                     if (member != null) {
