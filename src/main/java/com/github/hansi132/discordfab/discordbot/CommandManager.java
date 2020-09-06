@@ -42,6 +42,7 @@ public class CommandManager {
         this.register(new OnlinePlayersCommand(CommandCategory.UTILITY, "online", "players"));
         this.register(new MinecraftAvatarCommand(CommandCategory.UTILITY, "minecraftavatar", "mcavatar", "skin"));
         this.register(new InvitesCommand(CommandCategory.UTILITY, "invites"));
+        this.register(new InvitesTopCommand(CommandCategory.UTILITY, "invitestop"));
 //        this.register(new AvatarCommand(CommandCategory.UTILITY, "avatar"));
     }
 
