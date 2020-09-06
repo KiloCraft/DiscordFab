@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
+import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 
 import javax.annotation.Nonnull;
@@ -31,12 +32,21 @@ public class InviteTracker {
     }
 
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
+        DiscordFab.LOGGER.info("onGuildMemberJoinEvent: " + event.getUser().getName() + " joined " + event.getGuild().getName());
         event.getGuild().retrieveInvites().queue(invites -> {
             for (Invite invite : invites) {
+                User inviter = invite.getInviter();
+                if (inviter == null) {
+                    DiscordFab.LOGGER.error("Inviter is null");
+                    return;
+                }
+                if (!inviteCache.containsKey(invite)) {
+                    DiscordFab.LOGGER.info(invite.getCode() + " by " + invite.getInviter().getName() + " hasn't been cached WTF");
+                    continue;
+                }
                 int i = inviteCache.get(invite);
+                DiscordFab.LOGGER.info("Checking " + invite.getCode() + " by " + invite.getInviter().getName() + ", cached uses: " + i + ", uses: " + invite.getUses());
                 if (invite.getUses() != i) {
-                    User inviter = invite.getInviter();
-                    if (inviter == null) return;
                     long inviterID = inviter.getIdLong();
                     long invitedID = event.getUser().getIdLong();
                     DiscordFab.LOGGER.info(inviter.getName() + " invited " + event.getUser().getName() + " to " + event.getGuild().getName());
@@ -44,7 +54,7 @@ public class InviteTracker {
                     this.cacheInvites(event.getGuild());
                     return;
                 } else {
-                    DiscordFab.LOGGER.info(invite.getUses() + "!=" + i);
+                    DiscordFab.LOGGER.info(invite.getCode() + " didn't change and isn't eligible");
                 }
             }
             DiscordFab.LOGGER.error("This shouldn't have happened! A new member joined, but we couldn't detect who invited them!");
@@ -53,6 +63,7 @@ public class InviteTracker {
     }
 
     public void onGuildInviteChange(@Nonnull GenericGuildInviteEvent event) {
+        DiscordFab.LOGGER.info(event.getCode() + " changed " + "(" + (event instanceof GuildInviteDeleteEvent ? "deleted" : "created") + ")" + " caching.");
         this.cacheInvites(event.getGuild());
     }
 
@@ -89,6 +100,25 @@ public class InviteTracker {
                 long invitedID = rs.getLong("InvitedDiscordId");
                 //Prevent duplicates
                 if (hashSet.add(invitedID)) list.add(invitedID);
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            DiscordFab.LOGGER.error("Could not query the database!", e);
+        }
+        return list;
+    }
+
+    public List<Long> getInviterIDs() {
+        List<Long> list = new ArrayList<>();
+        LinkedHashSet<Long> hashSet = new LinkedHashSet<>();
+        try {
+            Connection connection = DatabaseConnection.connect();
+            String selectSql = "SELECT * FROM trackedinvites;";
+            PreparedStatement insertStatement = connection.prepareStatement(selectSql);
+            ResultSet rs = insertStatement.executeQuery();
+            while (rs.next()) {
+                long inviterID = rs.getLong("InviterDiscordId");
+                //Prevent duplicates
+                if (hashSet.add(inviterID)) list.add(inviterID);
             }
         } catch (SQLException | ClassNotFoundException e) {
             DiscordFab.LOGGER.error("Could not query the database!", e);

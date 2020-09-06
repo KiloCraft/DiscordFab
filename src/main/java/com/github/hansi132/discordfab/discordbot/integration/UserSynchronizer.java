@@ -4,14 +4,10 @@ import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.query.QueryOptions;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
@@ -135,7 +131,7 @@ public class UserSynchronizer {
                 ).queue();
                 if (onlineUser != null) {
                     KiloEssentials.getServer().execute(DISCORD_FAB.getConfig().userSync.command
-                        .replace("%player%", onlineUser.getName()));
+                            .replace("%player%", onlineUser.getName()));
                 }
 
                 if (DISCORD_FAB.getConfig().userSync.syncDisplayName) {
@@ -151,6 +147,7 @@ public class UserSynchronizer {
             LOGGER.error("Unexpected error while trying to sync user", e);
         }
     }
+
     @Deprecated
     public static void syncRoles(final int linkKey) throws SQLException, ClassNotFoundException {
         Connection conn = DatabaseConnection.connect();
@@ -170,10 +167,11 @@ public class UserSynchronizer {
         PreparedStatement selectStmt = conn.prepareStatement(selectSql);
         selectStmt.setString(1, mcUUID.toString());
         ResultSet resultSet = selectStmt.executeQuery();
-        resultSet.next();
-        final long discordId = resultSet.getLong("DiscordId");
-        if (discordId != 0) {
-            syncRoles(discordId, mcUUID);
+        if (resultSet.next()) {
+            final long discordId = resultSet.getLong("DiscordId");
+            if (discordId != 0) {
+                syncRoles(discordId, mcUUID);
+            }
         }
     }
 
