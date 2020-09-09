@@ -38,7 +38,7 @@ public class InviteTracker {
                 User inviter = invite.getInviter();
                 if (inviter == null) {
                     DiscordFab.LOGGER.error("Inviter is null");
-                    return;
+                    continue;
                 }
                 if (!inviteCache.containsKey(invite)) {
                     DiscordFab.LOGGER.info(invite.getCode() + " by " + invite.getInviter().getName() + " hasn't been cached WTF");
