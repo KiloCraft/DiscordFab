@@ -108,7 +108,7 @@ public class UserSynchronizer {
     }
 
     public static void sync(@NotNull final PrivateChannel channel, @NotNull final User user, final int linkKey) {
-        String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ?";
+        String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ? AND DiscordID IS NULL";
         try {
             Connection connection = DatabaseConnection.connect();
 
