@@ -7,25 +7,24 @@ import java.sql.SQLException;
 import java.util.Random;
 
 public class LinkKeyCreator {
-    public LinkKeyCreator() {
-
+    public static int checkKey(int linkKey) throws SQLException, ClassNotFoundException {
+        return checkKey(linkKey, DatabaseConnection.connect());
     }
 
-    public int checkKey(int LinkKey) throws SQLException, ClassNotFoundException {
+    private static int checkKey(int linkKey, Connection conn) throws SQLException {
         Random random = new Random();
 
-        Connection connection = new DatabaseConnection().get();
-
         String selectSql = "SELECT LinkKey FROM linkedaccounts WHERE LinkKey = ?;";
-        PreparedStatement selectStatement = connection.prepareStatement(selectSql);
-        selectStatement.setInt(1, LinkKey);
+        PreparedStatement selectStatement = conn.prepareStatement(selectSql);
+        selectStatement.setInt(1, linkKey);
         ResultSet checkDuplicateRs = selectStatement.executeQuery();
 
         if (checkDuplicateRs.next()) {
-            LinkKey = random.nextInt(10000);
-            this.checkKey(LinkKey);
+            linkKey = random.nextInt(10000);
+            return checkKey(linkKey, conn);
         }
 
-        return LinkKey;
+        conn.close();
+        return linkKey;
     }
 }

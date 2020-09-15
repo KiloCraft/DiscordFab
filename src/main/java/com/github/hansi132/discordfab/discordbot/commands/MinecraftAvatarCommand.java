@@ -5,6 +5,7 @@ import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.commands.argument.AvatarRenderTypeArgument;
 import com.github.hansi132.discordfab.discordbot.commands.argument.MinecraftPlayerArgument;
+import com.github.hansi132.discordfab.discordbot.util.FabUtil;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -17,9 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.util.NameLookup;
 
-import java.awt.*;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -103,10 +102,7 @@ public class MinecraftAvatarCommand extends DiscordFabCommand {
                     return;
                 }
 
-                final UUID uuid = new UUID(
-                        new BigInteger(id.substring(0, 16), 16).longValue(),
-                        new BigInteger(id.substring(16), 16).longValue()
-                );
+                final UUID uuid = FabUtil.uuidFromShortenedUuidString(id);
                 profile = new GameProfile(uuid, username);
             } catch (IOException e) {
                 src.sendFeedback("Invalid username!").queue();
@@ -115,9 +111,9 @@ public class MinecraftAvatarCommand extends DiscordFabCommand {
 
             src.sendFeedback(
                     new EmbedBuilder()
-                            .setTitle("Skin " + renderType.getName() + ": " + profile.getName())
+                            .setTitle("Skin " + renderType.getName() + " of " + profile.getName())
                             .setAuthor(src.getDisplayName(), MinecraftAvatar.API_URL, src.getUser().getAvatarUrl())
-                            .setColor(Color.LIGHT_GRAY)
+                            .setColor(DISCORD_FAB.getEmbedUtil().getDefaultColor())
                             .setTimestamp(Instant.now())
                             .setFooter("Powered by: crafatar.com")
                             .setImage(

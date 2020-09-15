@@ -10,7 +10,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-version "1.1-BETA"
+version "1.0.1"
 group "com.github.hansi132.DiscordFab"
 
 minecraft {}
@@ -43,8 +43,8 @@ dependencies {
     //Fabric api
     modImplementation "net.fabricmc.fabric-api:fabric-api:0.14.0+build.371-1.16"
 
-    modImplementation 'com.github.KiloCraft:KiloEssentials:1.9.8.45'
-    include 'com.github.KiloCraft:KiloEssentials:1.9.8.44'
+    modImplementation 'com.github.OnBlock:KiloEssentials:v1.10'
+    //include 'com.github.OnBlock:KiloEssentials:1.10'
 
     compile "net.luckperms:api:5.0"
 
@@ -72,12 +72,12 @@ processResources {
     inputs.property "version", project.version
 
     from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json.ft"
+        include "fabric.mod.json"
         expand "version": project.version
     }
 
     from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json.ft"
+        exclude "fabric.mod.json"
     }
 }
 

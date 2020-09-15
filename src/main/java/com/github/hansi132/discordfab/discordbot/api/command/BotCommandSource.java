@@ -130,7 +130,6 @@ public class BotCommandSource implements IDiscordCommandSource {
         return this.sendFeedback(builder.setColor(WARNING_COLOR).build());
     }
 
-
     @Override
     public GuildMessageReceivedEvent getEvent() {
         return this.event;

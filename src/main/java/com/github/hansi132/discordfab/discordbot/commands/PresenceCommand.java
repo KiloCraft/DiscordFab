@@ -69,11 +69,10 @@ public class PresenceCommand extends DiscordFabCommand {
                     onlinePlayerUpdater.interrupt();
                     onlinePlayerUpdater = new OnlinePlayerUpdater(activityType);
                 }
-                onlinePlayerUpdater.start();
             } else {
                 onlinePlayerUpdater = new OnlinePlayerUpdater(activityType);
-                onlinePlayerUpdater.start();
             }
+            onlinePlayerUpdater.start();
             src.sendFeedback("Set the activity to monitor online players!").queue();
             return SUCCESS;
         } else {

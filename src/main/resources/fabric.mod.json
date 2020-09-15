@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
   "id": "discordfab",
-  "version": "1.1-BETA",
+  "version": "${version}",
 
   "name": "DiscordFab",
   "description": "",
   "authors": [
-    ""
+    "hansi132",
+    "ItsIlya"
   ],
   "contact": {
     "homepage": "",
@@ -21,9 +22,6 @@
       "com.github.hansi132.discordfab.DiscordFabMod"
     ]
   },
-  "mixins": [
-    "discordfab.mixins.json"
-  ],
 
   "depends": {
     "fabricloader": ">=0.7.2"

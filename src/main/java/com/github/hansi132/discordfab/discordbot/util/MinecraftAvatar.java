@@ -17,6 +17,10 @@ public class MinecraftAvatar {
         final StringBuilder builder = new StringBuilder(API_URL)
                 .append(renderType.code).append('/').append(uuid);
 
+        if (renderType == RenderType.TEXTURE || renderType == RenderType.CAPE) {
+            return builder.toString();
+        }
+
         if (renderType.modifier.size) {
             builder.append("?size=").append(size);
         }
@@ -41,7 +45,7 @@ public class MinecraftAvatar {
         HEAD("Head", "renders/head", Modifier.ALL),
         BODY("Body", "renders/body", Modifier.ALL),
         CAPE("Cape", "cape", Modifier.MODEL),
-        SKIN("Skin", "skins", Modifier.MODEL);
+        TEXTURE("Texture", "skins", Modifier.MODEL);
 
         private final String name;
         private final String code;

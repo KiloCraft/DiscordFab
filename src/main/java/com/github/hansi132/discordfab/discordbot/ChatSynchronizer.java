@@ -2,35 +2,58 @@ package com.github.hansi132.discordfab.discordbot;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.github.hansi132.discordfab.DiscordFab;
-import com.github.hansi132.discordfab.discordbot.api.text.DiscordCompatibleTextFormat;
 import com.github.hansi132.discordfab.discordbot.config.section.chatsync.ChatSynchronizerConfigSection;
 import com.github.hansi132.discordfab.discordbot.integration.UserSynchronizer;
 import com.github.hansi132.discordfab.discordbot.user.DiscordBroadcaster;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.google.common.collect.Maps;
 import net.dv8tion.jda.api.entities.Member;
-import net.minecraft.text.HoverEvent;
+import net.dv8tion.jda.api.entities.Message;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.KiloChat;
-import org.kilocraft.essentials.chat.ServerChat;
+import org.kilocraft.essentials.chat.TextMessage;
+import org.kilocraft.essentials.util.RegexLib;
+import org.kilocraft.essentials.util.text.Texter;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class ChatSynchronizer {
     private static final DiscordFab DISCORD_FAB = DiscordFab.getInstance();
     private static final ChatSynchronizerConfigSection CONFIG = DISCORD_FAB.getConfig().chatSynchronizer;
-    private final Map<UUID, net.dv8tion.jda.api.entities.User> map = Maps.newHashMap();
+    private static final Pattern LINK_PATTERN = Pattern.compile(RegexLib.URL.get());
+    private static final int LINK_MAX_LENGTH = 20;
     private final DiscordBroadcaster discordBroadcaster;
+    private final Map<UUID, net.dv8tion.jda.api.entities.User> map = Maps.newHashMap();
+
 
     public ChatSynchronizer() {
         this.discordBroadcaster = new DiscordBroadcaster();
+    }
+
+    private static String getMCAvatarURL(@NotNull final UUID uuid) {
+        MinecraftAvatar.@Nullable RenderType renderType = MinecraftAvatar.RenderType.getByName(CONFIG.renderOptions.renderType);
+        if (renderType == null) {
+            renderType = MinecraftAvatar.RenderType.AVATAR;
+        }
+
+        return MinecraftAvatar.generateUrl(uuid,
+                renderType,
+                MinecraftAvatar.RenderType.Model.DEFAULT,
+                CONFIG.renderOptions.size,
+                CONFIG.renderOptions.scale,
+                CONFIG.renderOptions.showOverlay
+        );
     }
 
     public void onGameChat(@NotNull final User user, @NotNull final String string) {
@@ -43,21 +66,36 @@ public class ChatSynchronizer {
         this.discordBroadcaster.send(builder.build());
     }
 
-    public void onDiscordChat(final Member member, @NotNull final String string) {
-        KiloChat.broadCast(
-                new LiteralText("")
-                        .append(
-                                new LiteralText(ServerChat.Channel.PUBLIC.getPrefix()
-                                        .replace("%USER_RANKED_DISPLAYNAME%", member.getEffectiveName())
-                                ).styled((style) ->
-                                        style.setHoverEvent(
-                                                new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                        new LiteralText("From Discord").formatted(Formatting.BLUE))
-                                        )
-                                ))
-                        .append(" ")
-                        .append(DiscordCompatibleTextFormat.clearAllDiscord(string))
-        );
+    public void sendtoGame(final Member member, @NotNull final Text content) {
+        MutableText text = new TextMessage(CONFIG.messages.prefix
+                .replace("%name%", member.getEffectiveName())).toText()
+                .append(content);
+        KiloChat.broadCast(text);
+    }
+
+    public void onDiscordChat(final Member member, @NotNull final String string, List<Message.Attachment> attachments) {
+        for (Message.Attachment attachment : attachments) {
+            MutableText text;
+            if (attachment.isImage()) {
+                text = new LiteralText("[IMAGE]");
+            } else if (attachment.isVideo()) {
+                text = new LiteralText("[VIDEO]");
+            } else {
+                text = new LiteralText("[FILE]");
+            }
+            MutableText hover = new LiteralText("")
+                    .append(new LiteralText("Name: ").formatted(Formatting.GRAY))
+                    .append(new LiteralText(attachment.getFileName()).formatted(Formatting.AQUA))
+                    .append(new LiteralText("\nResolution: ").formatted(Formatting.GRAY))
+                    .append(new LiteralText(attachment.getWidth() + "x" + attachment.getHeight()).formatted(Formatting.AQUA))
+                    .append(new LiteralText("\nSize: ").formatted(Formatting.GRAY))
+                    .append(new LiteralText(attachment.getSize() / 1024 + "kb").formatted(Formatting.AQUA));
+            text.styled(style -> style.setHoverEvent(Texter.Events.onHover(hover)).withClickEvent(Texter.Events.onClickOpen(attachment.getUrl()))).formatted(Formatting.GREEN);
+            sendtoGame(member, text);
+        }
+        if (!string.equals("")) {
+            sendtoGame(member, new TextMessage(string).toText());
+        }
     }
 
     @Nullable
@@ -81,25 +119,10 @@ public class ChatSynchronizer {
         return user;
     }
 
-    private static String getMCAvatarURL(@NotNull final UUID uuid) {
-        MinecraftAvatar.@Nullable RenderType renderType = MinecraftAvatar.RenderType.getByName(CONFIG.renderOptions.renderType);
-        if (renderType == null) {
-            renderType = MinecraftAvatar.RenderType.AVATAR;
-        }
-
-        return MinecraftAvatar.generateUrl(uuid,
-                renderType,
-                MinecraftAvatar.RenderType.Model.DEFAULT,
-                CONFIG.renderOptions.size,
-                CONFIG.renderOptions.scale,
-                CONFIG.renderOptions.showOverlay
-        );
-    }
-
     public void onUserJoin(@NotNull final User user) {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         setMetaFor(user, builder);
-        builder.setContent(user.getDisplayName() + " Joined the game.");
+        builder.setContent(CONFIG.messages.userJoin.replace("%name%", user.getName()));
 
         this.discordBroadcaster.send(builder.build());
     }
@@ -107,14 +130,14 @@ public class ChatSynchronizer {
     public void onUserLeave(@NotNull final User user) {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         setMetaFor(user, builder);
-        builder.setContent(user.getDisplayName() + " Left the game.");
+        builder.setContent(CONFIG.messages.userLeave.replace("%name%", user.getName()));
 
         this.discordBroadcaster.send(builder.build());
         this.map.remove(user.getId());
     }
 
     public void setMetaFor(@NotNull final User user, @NotNull final WebhookMessageBuilder builder) {
-        if (UserSynchronizer.isSynced(user.getUuid())) {
+        if (UserSynchronizer.isLinked(user.getUuid())) {
             net.dv8tion.jda.api.entities.User discordUser = this.getJDAUser(user.getUuid());
             if (discordUser != null && discordUser.getAvatarUrl() != null) {
                 builder.setAvatarUrl(discordUser.getAvatarUrl());

@@ -27,7 +27,7 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
     }
 
     @Override
-    public void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         this.argumentBuilder.executes(this::execute);
     }
 
@@ -38,8 +38,8 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
         int linkKey;
 
         try {
-            Connection connection = new DatabaseConnection().get();
-            linkKey = new LinkKeyCreator().checkKey(testKey);
+            Connection connection = DatabaseConnection.connect();
+            linkKey = LinkKeyCreator.checkKey(testKey);
 
             String selectSql = "SELECT McUUID, DiscordId, LinkKey FROM linkedaccounts WHERE McUUID = ?;";
             PreparedStatement selectStatement = connection.prepareStatement(selectSql);
@@ -47,11 +47,15 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
             ResultSet resultSet = selectStatement.executeQuery();
 
             if (resultSet.next()) {
-                user.sendError("Your account is already linked. LinkKey is: " + resultSet.getInt("LinkKey"));
+                user.sendError(
+                        getText(Texter.newText("You are already linked!&r Your link is: "),
+                                resultSet.getInt("LinkKey"))
+                );
+
                 return FAILED;
             }
 
-            user.sendMessage(getText(linkKey));
+            user.sendMessage(getText(Texter.newText("Your link key is: "), linkKey));
 
             String insertSql = "INSERT INTO linkedaccounts (LinkKey, McUUID, McUsername) VALUES (?,?,?);";
             PreparedStatement insertStatement = connection.prepareStatement(insertSql);
@@ -73,15 +77,16 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
         return SUCCESS;
     }
 
-    private static MutableText getText(final int linkKey) {
+    private static MutableText getText(MutableText text, final int linkKey) {
+        String key = String.format("%04d",linkKey);
         return Texter.newText().append(
-                Texter.newText("Your link key is: ").append(
-                        Texter.newText(String.valueOf(linkKey)).formatted(Formatting.AQUA).styled((style) ->
+                text.append(
+                        Texter.newText(key).formatted(Formatting.AQUA).styled((style) ->
                                 style.setHoverEvent(Texter.Events.onHover("Click to Copy"))
                                         .withClickEvent(
                                                 new ClickEvent(
                                                         ClickEvent.Action.COPY_TO_CLIPBOARD,
-                                                        String.valueOf(linkKey)
+                                                        key
                                                 )
                                         )
                         )

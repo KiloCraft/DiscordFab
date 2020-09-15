@@ -14,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
 
@@ -26,7 +25,10 @@ public class Listener extends ListenerAdapter {
     public void onReady(@Nonnull ReadyEvent event) {
         LOGGER.info("{} is ready", event.getJDA().getSelfUser().getAsTag());
         try {
-            Connection connection = new DatabaseConnection().get();
+            DatabaseConnection.connect();
+            if (DISCORD_FAB.isDevelopment()) {
+                LOGGER.info("First Database Connection successfully established");
+            }
         } catch (ClassNotFoundException | SQLException e) {
             LOGGER.fatal("Could not connect to the Database!", e);
         }
@@ -35,7 +37,12 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         final String raw = event.getMessage().getContentRaw();
-        if (event.isFromType(ChannelType.PRIVATE) && !event.getAuthor().isBot() && UserSynchronizer.isLinkCode(raw)) {
+        if (event.isFromType(ChannelType.PRIVATE) && !event.getAuthor().isBot()) {
+            if (!UserSynchronizer.isLinkCode(raw)) {
+                event.getPrivateChannel().sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
+                return;
+            }
+
             UserSynchronizer.sync(event.getPrivateChannel(), event.getAuthor(), UserSynchronizer.getLinkCode(raw));
         }
     }
@@ -47,7 +54,7 @@ public class Listener extends ListenerAdapter {
             return;
         }
 
-        final String raw = event.getMessage().getContentRaw();
+        final String raw = event.getMessage().getContentDisplay();
         final String prefix = DiscordFab.getInstance().getConfig().prefix;
 
         if (!event.isWebhookMessage() && !raw.equals(prefix) && raw.startsWith(prefix)) {
@@ -58,7 +65,7 @@ public class Listener extends ListenerAdapter {
             DISCORD_FAB.getCommandManager().execute(src, raw);
         } else if (!event.isWebhookMessage() && DISCORD_FAB.getConfig().chatSynchronizer.toMinecraft) {
             if (event.getChannel().getIdLong() == DISCORD_FAB.getConfig().chatSynchronizer.chatChannelId) {
-                DiscordFab.getInstance().getChatSynchronizer().onDiscordChat(Objects.requireNonNull(event.getMember()), raw);
+                DiscordFab.getInstance().getChatSynchronizer().onDiscordChat(Objects.requireNonNull(event.getMember()), raw, event.getMessage().getAttachments());
             }
         }
     }

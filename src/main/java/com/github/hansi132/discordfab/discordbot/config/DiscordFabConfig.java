@@ -1,7 +1,7 @@
 package com.github.hansi132.discordfab.discordbot.config;
 
 import com.github.hansi132.discordfab.DiscordFab;
-import com.github.hansi132.discordfab.discordbot.util.Variables;
+import com.github.hansi132.discordfab.discordbot.util.Constants;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -23,7 +23,7 @@ public class DiscordFabConfig {
 
     public void load() {
         try {
-            File file = Variables.CONFIG_PATH.resolve("discord_fab.conf").toFile();
+            File file = Constants.CONFIG_PATH.resolve("discord_fab.conf").toFile();
             ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder()
                     .setFile(file).build();
 

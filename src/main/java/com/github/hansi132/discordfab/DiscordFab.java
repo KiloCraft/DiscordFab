@@ -8,7 +8,6 @@ import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.config.DiscordFabConfig;
 import com.github.hansi132.discordfab.discordbot.config.MainConfig;
 import com.github.hansi132.discordfab.discordbot.util.EmbedUtil;
-import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -21,14 +20,13 @@ import javax.security.auth.login.LoginException;
 public class DiscordFab {
     public static final Logger LOGGER = LogManager.getLogger("DiscordFab");
     private static DiscordFab INSTANCE;
-    private static ShardManager BOT;
+    private static ShardManager SHARD_MANAGER;
     private boolean isDevelopment = false;
     private final DataConfig dataConfig;
     private final DiscordFabConfig config;
     private final CommandManager commandManager;
     private final ChatSynchronizer chatSynchronizer;
-    private final Guild guild;
-    private EmbedUtil embedUtil;
+    private final EmbedUtil embedUtil;
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
         INSTANCE = this;
@@ -42,22 +40,20 @@ public class DiscordFab {
         this.embedUtil = new EmbedUtil();
 
         try {
-            BOT = new DiscordFabBot(
+            SHARD_MANAGER = new DiscordFabBot(
                     dataConfig.getToken(),
                     new Listener()
             ).getShardManager();
 
             if (isDevelopment) {
                 LOGGER.info("**** DiscordFab IS RUNNING IN DEBUG/DEVELOPMENT MODE!");
-                BOT.setActivity(Activity.playing("Debugging"));
+                SHARD_MANAGER.setActivity(Activity.playing("Debugging"));
             }
 
             LOGGER.info("Successfully logged in");
         } catch (LoginException e) {
             LOGGER.fatal("Can not log into the bot!", e);
         }
-
-        this.guild = BOT.getGuildById(Long.parseLong(dataConfig.getProperty("guild")));
     }
 
     public boolean isDevelopment() {
@@ -89,11 +85,11 @@ public class DiscordFab {
     }
 
     public static ShardManager getBot() {
-        return DiscordFab.BOT;
+        return DiscordFab.SHARD_MANAGER;
     }
 
     public Guild getGuild() {
-        return this.guild;
+        return SHARD_MANAGER.getGuildById(Long.parseLong(dataConfig.getProperty("guild")));
     }
 
     public EmbedUtil getEmbedUtil() {
