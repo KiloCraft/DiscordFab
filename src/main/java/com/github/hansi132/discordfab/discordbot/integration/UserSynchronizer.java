@@ -4,7 +4,6 @@ import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -107,7 +106,7 @@ public class UserSynchronizer {
         return 0L;
     }
 
-    public static void sync(@NotNull final PrivateChannel channel, @NotNull final User user, final int linkKey) {
+    public static void sync(final PrivateChannel privateChannel, final MessageChannel publicChannel, @NotNull final User user, final int linkKey) {
         String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ?";
         try {
             Connection connection = DatabaseConnection.connect();
@@ -125,17 +124,31 @@ public class UserSynchronizer {
                 updateStatement.execute();
 
                 OnlineUser onlineUser = KiloServer.getServer().getOnlineUser(UUID.fromString(mcUUID));
-                channel.sendMessage(
-                        DISCORD_FAB.getConfig().messages.successfully_linked
-                                .replace("%player%", onlineUser == null ? mcUUID : onlineUser.getName())
-                ).queue();
+
+                if (privateChannel != null) {
+                    privateChannel.sendMessage(
+                            DISCORD_FAB.getConfig().messages.successfully_linked
+                                    .replace("%player%", onlineUser == null ? mcUUID : onlineUser.getName())
+                    ).queue();
+                } else if (publicChannel != null) {
+                    publicChannel.sendMessage(
+                            DISCORD_FAB.getConfig().messages.successfully_linked
+                                    .replace("%player%", onlineUser == null ? mcUUID : onlineUser.getName())
+                    ).queue();
+                }
+
 
                 if (DISCORD_FAB.getConfig().userSync.syncDisplayName) {
                     syncDisplayName(linkKey);
                 }
                 syncRoles(linkKey);
             } else {
-                channel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
+                if (privateChannel != null) {
+                    privateChannel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
+                } else if (publicChannel != null) {
+                    publicChannel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
+                }
+
             }
 
             connection.close();
