@@ -54,7 +54,7 @@ public class Listener extends ListenerAdapter {
                 return;
             }
 
-            UserSynchronizer.sync(event.getPrivateChannel(), event.getAuthor(), UserSynchronizer.getLinkCode(raw));
+            UserSynchronizer.sync(event.getPrivateChannel(),null, event.getAuthor(), UserSynchronizer.getLinkCode(raw));
         }
     }
 

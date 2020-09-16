@@ -7,6 +7,7 @@ import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.api.command.exception.BotCommandException;
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
 import com.github.hansi132.discordfab.discordbot.command.*;
+import com.github.hansi132.discordfab.discordbot.commands.LinkCommand;
 import com.github.hansi132.discordfab.discordbot.config.MainConfig;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
@@ -43,6 +44,7 @@ public class CommandManager {
         this.register(new MinecraftAvatarCommand(CommandCategory.UTILITY, "minecraftavatar", "mcavatar", "skin"));
         this.register(new InvitesCommand(CommandCategory.UTILITY, "invites"));
         this.register(new InvitesTopCommand(CommandCategory.UTILITY, "invitestop"));
+        this.register(new LinkCommand(CommandCategory.UTILITY, "link"));
 //        this.register(new AvatarCommand(CommandCategory.UTILITY, "avatar"));
     }
 

@@ -107,7 +107,9 @@ public class UserSynchronizer {
         return 0L;
     }
 
-    public static void sync(@NotNull final PrivateChannel channel, @NotNull final User user, final int linkKey) {
+
+
+    public static void sync(final PrivateChannel privateChannel, MessageChannel publicChannel, @NotNull final User user, final int linkKey) {
         String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ? AND DiscordID IS NULL";
         try {
             Connection connection = DatabaseConnection.connect();
@@ -125,10 +127,18 @@ public class UserSynchronizer {
                 updateStatement.execute();
 
                 OnlineUser onlineUser = KiloServer.getServer().getOnlineUser(UUID.fromString(mcUUID));
-                channel.sendMessage(
-                        DISCORD_FAB.getConfig().messages.successfully_linked
-                                .replace("%player%", onlineUser == null ? mcUUID : onlineUser.getName())
-                ).queue();
+                if (privateChannel != null) {
+                    privateChannel.sendMessage(
+                            DISCORD_FAB.getConfig().messages.successfully_linked
+                                    .replace("%player%", onlineUser == null ? mcUUID : onlineUser.getName())
+                    ).queue();
+                } else if (publicChannel != null) {
+                    publicChannel.sendMessage(
+                            DISCORD_FAB.getConfig().messages.successfully_linked
+                                    .replace("%player%", onlineUser == null ? mcUUID : onlineUser.getName())
+                    ).queue();
+                }
+
                 if (onlineUser != null) {
                     KiloEssentials.getServer().execute(DISCORD_FAB.getConfig().userSync.command
                             .replace("%player%", onlineUser.getName()));
@@ -139,7 +149,11 @@ public class UserSynchronizer {
                 }
                 syncRoles(UUID.fromString(mcUUID));
             } else {
-                channel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
+                if (privateChannel != null) {
+                    privateChannel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
+                } else if (publicChannel != null) {
+                    publicChannel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
+                }
             }
 
             connection.close();
