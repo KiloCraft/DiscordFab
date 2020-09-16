@@ -10,6 +10,7 @@ import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.query.QueryOptions;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 
@@ -106,8 +107,8 @@ public class UserSynchronizer {
         return 0L;
     }
 
-    public static void sync(final PrivateChannel privateChannel, final MessageChannel publicChannel, @NotNull final User user, final int linkKey) {
-        String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ?";
+    public static void sync(final PrivateChannel privateChannel, MessageChannel publicChannel, @NotNull final User user, final int linkKey) {
+        String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ? AND DiscordID IS NULL";
         try {
             Connection connection = DatabaseConnection.connect();
 
@@ -124,7 +125,6 @@ public class UserSynchronizer {
                 updateStatement.execute();
 
                 OnlineUser onlineUser = KiloServer.getServer().getOnlineUser(UUID.fromString(mcUUID));
-
                 if (privateChannel != null) {
                     privateChannel.sendMessage(
                             DISCORD_FAB.getConfig().messages.successfully_linked
@@ -138,17 +138,21 @@ public class UserSynchronizer {
                 }
 
 
+                if (onlineUser != null) {
+                    KiloEssentials.getServer().execute(DISCORD_FAB.getConfig().userSync.command
+                            .replace("%player%", onlineUser.getName()));
+                }
+
                 if (DISCORD_FAB.getConfig().userSync.syncDisplayName) {
                     syncDisplayName(linkKey);
                 }
-                syncRoles(linkKey);
+                syncRoles(UUID.fromString(mcUUID));
             } else {
                 if (privateChannel != null) {
                     privateChannel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
                 } else if (publicChannel != null) {
                     publicChannel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
                 }
-
             }
 
             connection.close();
@@ -157,7 +161,8 @@ public class UserSynchronizer {
         }
     }
 
-    private static void syncRoles(final int linkKey) throws SQLException, ClassNotFoundException {
+    @Deprecated
+    public static void syncRoles(final int linkKey) throws SQLException, ClassNotFoundException {
         Connection conn = DatabaseConnection.connect();
         String selectSql = "SELECT DiscordId, McUUID FROM linkedaccounts WHERE LinkKey = ?;";
         PreparedStatement selectStmt = conn.prepareStatement(selectSql);
@@ -166,12 +171,30 @@ public class UserSynchronizer {
         resultSet.next();
         final long discordId = resultSet.getLong("DiscordId");
         final UUID mcUUID = UUID.fromString(resultSet.getString("McUUID"));
+        syncRoles(discordId, mcUUID);
+    }
+
+    public static void syncRoles(final UUID mcUUID) throws SQLException, ClassNotFoundException {
+        Connection conn = DatabaseConnection.connect();
+        String selectSql = "SELECT DiscordId FROM linkedaccounts WHERE McUUID = ?;";
+        PreparedStatement selectStmt = conn.prepareStatement(selectSql);
+        selectStmt.setString(1, mcUUID.toString());
+        ResultSet resultSet = selectStmt.executeQuery();
+        if (resultSet.next()) {
+            final long discordId = resultSet.getLong("DiscordId");
+            if (discordId != 0) {
+                syncRoles(discordId, mcUUID);
+            }
+        }
+    }
+
+    private static void syncRoles(final long discordID, final UUID mcUUID) {
         Guild guild = DISCORD_FAB.getGuild();
         BOT.getRoles();
         for (Role role : guild.getRoles()) {
             long roleID = role.getIdLong();
             if (shouldSync(mcUUID, roleID)) {
-                User user = BOT.getUserById(discordId);
+                User user = BOT.getUserById(discordID);
                 if (user != null) {
                     Member member = guild.getMember(user);
                     if (member != null) {

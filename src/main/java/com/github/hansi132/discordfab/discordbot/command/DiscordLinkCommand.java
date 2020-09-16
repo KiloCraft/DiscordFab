@@ -1,16 +1,18 @@
-package com.github.hansi132.discordfab.discordbot.commands;
+package com.github.hansi132.discordfab.discordbot.command;
 
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;
 import com.github.hansi132.discordfab.discordbot.util.LinkKeyCreator;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
-import org.kilocraft.essentials.api.command.EssentialCommand;
+import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.util.messages.nodes.ExceptionMessageNode;
 import org.kilocraft.essentials.util.text.Texter;
@@ -21,18 +23,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
 
-public class EssentialsDiscordLinkCommand extends EssentialCommand {
-    public EssentialsDiscordLinkCommand(String label, String[] alias) {
-        super(label, alias);
+public class DiscordLinkCommand {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("discord_link")
+                .executes(DiscordLinkCommand::execute);
+
+        dispatcher.register(builder);
+        dispatcher.register(CommandManager.literal("link").executes(DiscordLinkCommand::execute));
     }
 
-    @Override
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        this.argumentBuilder.executes(this::execute);
-    }
-
-    private int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        OnlineUser user = this.getOnlineUser(ctx);
+    private static int execute(final CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+        OnlineUser user = KiloServer.getServer().getOnlineUser(ctx.getSource().getPlayer());
         Random random = new Random();
         int testKey = random.nextInt(10000);
         int linkKey;
@@ -52,7 +53,7 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
                                 resultSet.getInt("LinkKey"))
                 );
 
-                return FAILED;
+                return -1;
             }
 
             user.sendMessage(getText(Texter.newText("Your link key is: "), linkKey));
@@ -68,13 +69,13 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
         } catch (SQLException e) {
             user.sendError(
                     Texter.newText("Unexpected database error.").styled((style) ->
-                            style.setHoverEvent(Texter.Events.onHover(Messages.getInnermostMessage(e))))
+                            style.withHoverEvent(Texter.Events.onHover(Messages.getInnermostMessage(e))))
             );
         } catch (ClassNotFoundException e) {
             user.sendError(ExceptionMessageNode.UNKNOWN_COMMAND_EXCEPTION);
         }
 
-        return SUCCESS;
+        return 1;
     }
 
     private static MutableText getText(MutableText text, final int linkKey) {
@@ -82,7 +83,7 @@ public class EssentialsDiscordLinkCommand extends EssentialCommand {
         return Texter.newText().append(
                 text.append(
                         Texter.newText(key).formatted(Formatting.AQUA).styled((style) ->
-                                style.setHoverEvent(Texter.Events.onHover("Click to Copy"))
+                                style.withHoverEvent(Texter.Events.onHover("Click to Copy"))
                                         .withClickEvent(
                                                 new ClickEvent(
                                                         ClickEvent.Action.COPY_TO_CLIPBOARD,

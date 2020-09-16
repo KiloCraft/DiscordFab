@@ -12,7 +12,7 @@ import java.util.Properties;
 
 public class DataConfig {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Properties PROPERTIES;
+    private Properties PROPERTIES;
     private final File FILE;
     private final Map<String, Object> DEFAULTS;
 
@@ -21,9 +21,13 @@ public class DataConfig {
     }
 
     public DataConfig(@NotNull final Map<String, Object> defaults) {
-        this.PROPERTIES = new Properties();
-        this.FILE = Constants.CONFIG_PATH.resolve("tokens.properties").toFile();
         this.DEFAULTS = defaults;
+        this.FILE = Constants.CONFIG_PATH.resolve("tokens.properties").toFile();
+        this.load();
+    }
+
+    public void load() {
+        this.PROPERTIES = new Properties();
 
         if (FILE.exists()) {
             try {
