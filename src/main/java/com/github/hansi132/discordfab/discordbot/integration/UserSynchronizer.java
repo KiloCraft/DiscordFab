@@ -52,8 +52,9 @@ public class UserSynchronizer {
             ResultSet resultSet = selectStatement.executeQuery();
 
             if (resultSet.next()) {
+                long discordID = resultSet.getLong("DiscordId");
                 conn.close();
-                return resultSet.getLong("DiscordId") != 0L;
+                return discordID != 0L;
             }
 
             conn.close();
@@ -74,7 +75,6 @@ public class UserSynchronizer {
             ResultSet resultSet = selectStatement.executeQuery();
 
             if (resultSet.next()) {
-                conn.close();
                 return resultSet.getString("McUUID") != null;
             }
 
@@ -107,6 +107,8 @@ public class UserSynchronizer {
         return 0L;
     }
 
+
+
     public static void sync(final PrivateChannel privateChannel, MessageChannel publicChannel, @NotNull final User user, final int linkKey) {
         String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ? AND DiscordID IS NULL";
         try {
@@ -136,7 +138,6 @@ public class UserSynchronizer {
                                     .replace("%player%", onlineUser == null ? mcUUID : onlineUser.getName())
                     ).queue();
                 }
-
 
                 if (onlineUser != null) {
                     KiloEssentials.getServer().execute(DISCORD_FAB.getConfig().userSync.command
