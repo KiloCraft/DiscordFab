@@ -1,10 +1,10 @@
-package com.github.hansi132.discordfab.discordbot.commands;
+package com.github.hansi132.discordfab.discordbot.command;
 
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
-import com.github.hansi132.discordfab.discordbot.commands.argument.AvatarRenderTypeArgument;
-import com.github.hansi132.discordfab.discordbot.commands.argument.MinecraftPlayerArgument;
+import com.github.hansi132.discordfab.discordbot.command.argument.AvatarRenderTypeArgument;
+import com.github.hansi132.discordfab.discordbot.command.argument.MinecraftPlayerArgument;
 import com.github.hansi132.discordfab.discordbot.util.FabUtil;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
 import com.mojang.authlib.GameProfile;

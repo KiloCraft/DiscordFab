@@ -1,7 +1,7 @@
-package com.github.hansi132.discordfab.discordbot.commands.argument;
+package com.github.hansi132.discordfab.discordbot.command.argument;
 
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
-import com.github.hansi132.discordfab.discordbot.api.command.exception.BotCommandException;
+import com.github.hansi132.discordfab.discordbot.util.FabUtil;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -33,7 +33,7 @@ public class OnlineStatusArgument implements ArgumentType<OnlineStatus> {
     @Override
     public OnlineStatus parse(StringReader reader) throws CommandSyntaxException {
         final String string = reader.readUnquotedString();
-        OnlineStatus status = OnlineStatus.fromKey(string);
+        OnlineStatus status = FabUtil.onlineStatusFromString(string);
         if (status == null) {
             throw INVALID_STATUS_EXCEPTION.create(string);
         }

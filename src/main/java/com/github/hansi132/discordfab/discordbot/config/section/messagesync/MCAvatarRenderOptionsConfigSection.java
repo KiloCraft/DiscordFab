@@ -1,4 +1,4 @@
-package com.github.hansi132.discordfab.discordbot.config.section.chatsync;
+package com.github.hansi132.discordfab.discordbot.config.section.messagesync;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;

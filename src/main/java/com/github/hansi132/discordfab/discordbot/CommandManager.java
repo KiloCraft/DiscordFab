@@ -6,7 +6,7 @@ import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.github.hansi132.discordfab.discordbot.api.command.exception.BotCommandException;
 import com.github.hansi132.discordfab.discordbot.api.text.Messages;
-import com.github.hansi132.discordfab.discordbot.commands.*;
+import com.github.hansi132.discordfab.discordbot.command.*;
 import com.github.hansi132.discordfab.discordbot.config.MainConfig;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
@@ -41,6 +41,9 @@ public class CommandManager {
         this.register(new HelpCommand(CommandCategory.HELP, "help"));
         this.register(new OnlinePlayersCommand(CommandCategory.UTILITY, "online", "players"));
         this.register(new MinecraftAvatarCommand(CommandCategory.UTILITY, "minecraftavatar", "mcavatar", "skin"));
+        this.register(new InvitesCommand(CommandCategory.UTILITY, "invites"));
+        this.register(new InvitesTopCommand(CommandCategory.UTILITY, "invitestop"));
+        this.register(new LinkCommand(CommandCategory.UTILITY, "link"));
 //        this.register(new AvatarCommand(CommandCategory.UTILITY, "avatar"));
     }
 
@@ -58,11 +61,13 @@ public class CommandManager {
     }
 
     public void execute(@NotNull final BotCommandSource src, @NotNull final String input) {
-        final String prefix = CONFIG.prefix;
+        final String prefix = CONFIG.prefix.toLowerCase(Locale.ROOT);
         final StringReader reader = new StringReader(input);
-        if (reader.canRead() && reader.getString().startsWith(prefix)) {
+        if (reader.canRead() && reader.getString().toLowerCase(Locale.ROOT).startsWith(prefix)) {
             reader.setCursor(prefix.length());
         }
+
+        reader.skipWhitespace();
 
         final String label = reader.getRemaining().split(" ")[0];
         final DiscordFabCommand command = DiscordFabCommand.getByLabel(label);

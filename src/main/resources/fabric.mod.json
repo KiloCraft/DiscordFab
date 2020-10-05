@@ -23,6 +23,10 @@
     ]
   },
 
+  "mixins": [
+    "discord_fab.mixins.json"
+  ],
+
   "depends": {
     "fabricloader": ">=0.7.2"
   },

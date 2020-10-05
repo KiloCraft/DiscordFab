@@ -1,10 +1,9 @@
-package com.github.hansi132.discordfab.discordbot.commands;
+package com.github.hansi132.discordfab.discordbot.command;
 
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.api.command.CommandCategory;
 import com.github.hansi132.discordfab.discordbot.api.command.DiscordFabCommand;
 import com.mojang.brigadier.context.CommandContext;
-import net.dv8tion.jda.api.MessageBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;

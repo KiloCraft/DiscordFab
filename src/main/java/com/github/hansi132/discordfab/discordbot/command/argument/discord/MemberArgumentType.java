@@ -1,4 +1,4 @@
-package com.github.hansi132.discordfab.discordbot.commands.argument.discord;
+package com.github.hansi132.discordfab.discordbot.command.argument.discord;
 
 import com.github.hansi132.discordfab.DiscordFab;
 import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
 
 public class MemberArgumentType implements ArgumentType<Member> {
     private static final Pattern USER_ID = Pattern.compile("\\d{17,21}");
-    private static final Pattern FULL_TAG = Pattern.compile("(.*)(( *#)|#|(# *))(\\d{4})");
-    private static final Pattern MENTION = Pattern.compile("<[@#][!&]?[0-9]+>");
+    private static final Pattern FULL_TAG = Pattern.compile("(.{2,32})#(\\d{4})");
+    private static final Pattern MENTION = Pattern.compile("@.+");
     private static final List<String> EXAMPLES = Lists.newArrayList("Wumpus", "123456789101112131");
     private static final SimpleCommandExceptionType INVALID_MEMBER = new SimpleCommandExceptionType(() -> "Member was not found!");
 
@@ -50,8 +50,24 @@ public class MemberArgumentType implements ArgumentType<Member> {
             member = guild.getMemberByTag(string);
         }
 
+        final Matcher mentionMatcher = MENTION.matcher(string);
+        if (mentionMatcher.matches()) {
+            List<Member> members = guild.getMembersByEffectiveName(string.substring(1), true);
+            if (members.size() > 0) member = members.get(0);
+        }
+
         if (member == null) {
-            throw INVALID_MEMBER.create();
+            List<Member> membersByEffectiveName = guild.getMembersByEffectiveName(string, true);
+            if (membersByEffectiveName.size() > 0) {
+                member = membersByEffectiveName.get(0);
+            } else {
+                List<Member> membersByName = guild.getMembersByName(string, true);
+                if (membersByName.size() > 0) {
+                    member = membersByName.get(0);
+                } else {
+                    throw INVALID_MEMBER.create();
+                }
+            }
         }
 
         return member;
