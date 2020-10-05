@@ -25,7 +25,6 @@ public class LinkCommand extends DiscordFabCommand {
         BotCommandSource src = ctx.getSource();
         int linkKey = IntegerArgumentType.getInteger(ctx, "linkKey");
         MessageChannel channel = src.getChannel();
-
         if (!UserSynchronizer.isLinkCode(String.valueOf(linkKey))) {
             channel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
             return 0;

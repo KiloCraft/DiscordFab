@@ -11,8 +11,6 @@ import net.luckperms.api.query.QueryOptions;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
-import org.kilocraft.essentials.api.KiloServer;
-import org.kilocraft.essentials.api.user.OnlineUser;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -108,7 +106,6 @@ public class UserSynchronizer {
     }
 
 
-
     public static void sync(final PrivateChannel privateChannel, MessageChannel publicChannel, @NotNull final User user, final int linkKey) {
         String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ? AND DiscordID IS NULL";
         try {
@@ -126,28 +123,39 @@ public class UserSynchronizer {
                 updateStatement.setInt(2, linkKey);
                 updateStatement.execute();
 
-                OnlineUser onlineUser = KiloServer.getServer().getOnlineUser(UUID.fromString(mcUUID));
-                if (privateChannel != null) {
-                    privateChannel.sendMessage(
-                            DISCORD_FAB.getConfig().messages.successfully_linked
-                                    .replace("%player%", onlineUser == null ? mcUUID : onlineUser.getName())
-                    ).queue();
-                } else if (publicChannel != null) {
-                    publicChannel.sendMessage(
-                            DISCORD_FAB.getConfig().messages.successfully_linked
-                                    .replace("%player%", onlineUser == null ? mcUUID : onlineUser.getName())
-                    ).queue();
-                }
+                KiloEssentials.getInstance().getUserThenAcceptAsync(UUID.fromString(mcUUID), (optional) -> {
+                    if (optional.isPresent()) {
+                        org.kilocraft.essentials.api.user.User playerUser = optional.get();
+                        if (privateChannel != null) {
+                            privateChannel.sendMessage(
+                                    DISCORD_FAB.getConfig().messages.successfully_linked
+                                            .replace("%player%", playerUser.getName())
+                            ).queue();
+                        } else if (publicChannel != null) {
+                            publicChannel.sendMessage(
+                                    DISCORD_FAB.getConfig().messages.successfully_linked
+                                            .replace("%player%", playerUser.getName())
+                            ).queue();
+                        }
 
-                if (onlineUser != null) {
-                    KiloEssentials.getServer().execute(DISCORD_FAB.getConfig().userSync.command
-                            .replace("%player%", onlineUser.getName()));
-                }
+                        KiloEssentials.getServer().execute(DISCORD_FAB.getConfig().userSync.command
+                                .replace("%player%", playerUser.getName()));
 
-                if (DISCORD_FAB.getConfig().userSync.syncDisplayName) {
-                    syncDisplayName(linkKey);
-                }
-                syncRoles(UUID.fromString(mcUUID));
+                        if (DISCORD_FAB.getConfig().userSync.syncDisplayName) {
+                            try {
+                                syncDisplayName(linkKey);
+                            } catch (SQLException | ClassNotFoundException e) {
+                                LOGGER.error("Unexpected error while trying to sync user", e);
+                            }
+                        }
+
+                        try {
+                            syncRoles(UUID.fromString(mcUUID));
+                        } catch (SQLException | ClassNotFoundException e) {
+                            LOGGER.error("Unexpected error while trying to sync user", e);
+                        }
+                    }
+                });
             } else {
                 if (privateChannel != null) {
                     privateChannel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
