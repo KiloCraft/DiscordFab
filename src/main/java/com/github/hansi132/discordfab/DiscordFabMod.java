@@ -1,6 +1,8 @@
 package com.github.hansi132.discordfab;
 
 import com.github.hansi132.discordfab.discordbot.ChatSynchronizer;
+import com.github.hansi132.discordfab.discordbot.api.event.CommandRegistrationCallback;
+import com.github.hansi132.discordfab.discordbot.api.event.ServerLifecycleEvents;
 import com.github.hansi132.discordfab.discordbot.command.DiscordLinkCommand;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.integration.*;
@@ -8,8 +10,6 @@ import com.github.hansi132.discordfab.discordbot.listener.ChatMessageListener;
 //import com.github.hansi132.discordfab.discordbot.listener.SocialSpyWarningListener;
 import com.github.hansi132.discordfab.discordbot.util.Constants;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.event.EventHandler;
@@ -56,6 +56,6 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
             fab.getChatSynchronizer().onServerEvent(ChatSynchronizer.ServerEvent.START);
         });
 
-        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> fab.shutdown());
+        ServerLifecycleEvents.SERVER_STOPPING.register((server) -> fab.shutdown());
     }
 }
