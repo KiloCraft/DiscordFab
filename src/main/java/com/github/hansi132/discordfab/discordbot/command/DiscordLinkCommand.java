@@ -48,7 +48,7 @@ public class DiscordLinkCommand {
             ResultSet resultSet = selectStatement.executeQuery();
 
             if (resultSet.next()) {
-                user.sendError(
+                user.sendMessage(
                         getText(Texter.newText("You are already linked!&r Your link is: "),
                                 resultSet.getInt("LinkKey"))
                 );
@@ -67,7 +67,7 @@ public class DiscordLinkCommand {
 
             connection.close();
         } catch (SQLException e) {
-            user.sendError(
+            user.sendMessage(
                     Texter.newText("Unexpected database error.").styled((style) ->
                             style.withHoverEvent(Texter.Events.onHover(Messages.getInnermostMessage(e))))
             );

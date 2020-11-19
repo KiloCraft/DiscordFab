@@ -41,11 +41,11 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:0.9.2+build.206"
 
     //Fabric api
-//    modImplementation "net.fabricmc.fabric-api:fabric-api:0.18.0+build.397-1.16"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.18.0+build.397-1.16"
     //Fabric base api
-    modImplementation("net.fabricmc.fabric-api:fabric-api-base:0.2.0+9f0fb4b895")
+//    modImplementation("net.fabricmc.fabric-api:fabric-api-base:0.2.0+9f0fb4b895")
 
-    modImplementation 'com.github.DrexHD:KiloEssentials:1.13.1'
+    modImplementation 'com.github.DrexHD:KiloEssentials:1.15.1'
     //include 'com.github.OnBlock:KiloEssentials:1.10'
 
     compile "net.luckperms:api:5.0"

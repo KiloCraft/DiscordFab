@@ -4,7 +4,6 @@
   "package": "com.github.hansi132.discordfab.discordbot.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "CommandManagerMixin"
   ],
   "server": [
     "ServerPlayerEntityMixin"

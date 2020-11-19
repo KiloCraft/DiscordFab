@@ -22,7 +22,9 @@ import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
 import org.kilocraft.essentials.api.text.TextMessage;
 import org.kilocraft.essentials.api.user.OnlineUser;
@@ -135,7 +137,7 @@ public class ChatSynchronizer {
         }
 
         final WebhookMessageBuilder builder = new WebhookMessageBuilder().setContent(
-                TextFormat.clearColorCodes(message.replaceAll("@", ""))
+            ComponentText.clearFormatting(message.replaceAll("@", ""))
         );
 
         setMetaFor(user, builder);
@@ -147,8 +149,8 @@ public class ChatSynchronizer {
             return;
         }
 
-        MutableText text = (MutableText) new TextMessage(mapped.config.prefix
-            .replace("%name%", member.getEffectiveName())).asText();
+        MutableText text = ComponentText.toText(mapped.config.prefix
+            .replace("%name%", member.getEffectiveName()));
         text.append(" ").append(content);
 
         mapped.channel.send(text);
@@ -183,7 +185,7 @@ public class ChatSynchronizer {
         }
 
         if (!message.getContentRaw().equals("")) {
-            sendToGame(mappedChannel, member, new TextMessage(message.getContentRaw()).asText());
+            sendToGame(mappedChannel, member, ComponentText.toText(message.getContentRaw()));
         }
     }
 
