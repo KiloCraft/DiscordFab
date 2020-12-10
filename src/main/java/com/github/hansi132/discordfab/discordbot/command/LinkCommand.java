@@ -16,7 +16,7 @@ public class LinkCommand extends DiscordFabCommand {
         super(category, label);
         this.withDescription("Links your account.");
 
-        final RequiredArgumentBuilder<BotCommandSource, Integer> linkKey = argument("linkKey", IntegerArgumentType.integer(1000, 9999))
+        final RequiredArgumentBuilder<BotCommandSource, Integer> linkKey = argument("linkKey", IntegerArgumentType.integer(0, 9999))
                 .executes(this::execute);
         this.argBuilder.then(linkKey);
     }

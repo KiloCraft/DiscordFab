@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.kyori.adventure.text.Component;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -21,12 +22,14 @@ import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
+import org.kilocraft.essentials.api.text.TextMessage;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
 import org.kilocraft.essentials.chat.ServerChat;
-import org.kilocraft.essentials.chat.TextMessage;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.util.text.Texter;
 
@@ -134,7 +137,7 @@ public class ChatSynchronizer {
         }
 
         final WebhookMessageBuilder builder = new WebhookMessageBuilder().setContent(
-                TextFormat.clearColorCodes(message.replaceAll("@", ""))
+            ComponentText.clearFormatting(message.replaceAll("@", ""))
         );
 
         setMetaFor(user, builder);
@@ -146,9 +149,9 @@ public class ChatSynchronizer {
             return;
         }
 
-        MutableText text = new TextMessage(mapped.config.prefix
-                .replace("%name%", member.getEffectiveName())).toText()
-                .append(" ").append(content);
+        MutableText text = ComponentText.toText(mapped.config.prefix
+            .replace("%name%", member.getEffectiveName()));
+        text.append(" ").append(content);
 
         mapped.channel.send(text);
     }
@@ -182,7 +185,7 @@ public class ChatSynchronizer {
         }
 
         if (!message.getContentRaw().equals("")) {
-            sendToGame(mappedChannel, member, new TextMessage(message.getContentRaw()).toText());
+            sendToGame(mappedChannel, member, ComponentText.toText(message.getContentRaw()));
         }
     }
 

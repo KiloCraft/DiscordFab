@@ -82,7 +82,7 @@ public class Listener extends ListenerAdapter {
             );
         } else if (!event.isWebhookMessage() && DISCORD_FAB.getConfig().chatSynchronizer.toMinecraft) {
             DISCORD_FAB.getChatSynchronizer().onDiscordChat(
-                    event.getChannel(), Objects.requireNonNull(event.getMember()), event.getMessage()
+                event.getChannel(), Objects.requireNonNull(event.getMember()), event.getMessage()
             );
         }
     }

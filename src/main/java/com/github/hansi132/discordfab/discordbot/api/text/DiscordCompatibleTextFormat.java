@@ -7,7 +7,7 @@ public enum DiscordCompatibleTextFormat {
     BOLD(TextFormat.BOLD, "**"),
     ITALIC(TextFormat.ITALIC, "*"),
     STRIKE_THROUGH(TextFormat.STRIKETHROUGH, "~~"),
-    UNDERLINE(TextFormat.UNDERLINE, "__");
+    UNDERLINE(TextFormat.UNDERLINED, "__");
 
     private final TextFormat minecraftFormat;
     private final String discordFormat;
