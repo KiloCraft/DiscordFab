@@ -7,13 +7,9 @@ import com.github.hansi132.discordfab.discordbot.config.section.messagesync.Chat
 import com.github.hansi132.discordfab.discordbot.config.section.messagesync.ChatSynchronizerConfigSection;
 import com.github.hansi132.discordfab.discordbot.integration.UserSynchronizer;
 import com.github.hansi132.discordfab.discordbot.util.MinecraftAvatar;
-import com.google.common.collect.Maps;
+import com.github.hansi132.discordfab.discordbot.util.user.LinkedUser;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.kyori.adventure.text.Component;
+import net.dv8tion.jda.api.entities.*;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -22,13 +18,12 @@ import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
-import org.kilocraft.essentials.api.text.TextMessage;
 import org.kilocraft.essentials.api.user.OnlineUser;
 import org.kilocraft.essentials.api.user.User;
+import org.kilocraft.essentials.api.util.EntityIdentifiable;
 import org.kilocraft.essentials.chat.ServerChat;
 import org.kilocraft.essentials.commands.CommandUtils;
 import org.kilocraft.essentials.util.text.Texter;
@@ -36,8 +31,7 @@ import org.kilocraft.essentials.util.text.Texter;
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +44,6 @@ public class ChatSynchronizer {
     private static final int LINK_MAX_LENGTH = 20;
     private static final String SOCIAL_SPY_ID = "social_spy";
     private final WebhookClientHolder webhookClientHolder;
-    private final Map<UUID, net.dv8tion.jda.api.entities.User> map = Maps.newHashMap();
 
     public ChatSynchronizer() {
         this.webhookClientHolder = new WebhookClientHolder();
@@ -137,7 +130,7 @@ public class ChatSynchronizer {
         }
 
         final WebhookMessageBuilder builder = new WebhookMessageBuilder().setContent(
-            ComponentText.clearFormatting(message.replaceAll("@", ""))
+                ComponentText.clearFormatting(message.replaceAll("@", ""))
         );
 
         setMetaFor(user, builder);
@@ -150,7 +143,7 @@ public class ChatSynchronizer {
         }
 
         MutableText text = ComponentText.toText(mapped.config.prefix
-            .replace("%name%", member.getEffectiveName()));
+                .replace("%name%", member.getEffectiveName()));
         text.append(" ").append(content);
 
         mapped.channel.send(text);
@@ -185,29 +178,23 @@ public class ChatSynchronizer {
         }
 
         if (!message.getContentRaw().equals("")) {
-            sendToGame(mappedChannel, member, ComponentText.toText(message.getContentRaw()));
+            sendToGame(mappedChannel, member, ComponentText.toText(ComponentText.clearFormatting(message.getContentRaw())));
         }
     }
 
     @Nullable
     private net.dv8tion.jda.api.entities.User getJDAUser(@NotNull final UUID uuid) {
-        if (this.map.containsKey(Objects.requireNonNull(uuid))) {
-            return this.map.get(uuid);
+        Optional<LinkedUser> optional = DiscordFab.getInstance().getUserCache().getByUUID(uuid);
+        if (optional.isPresent()) {
+            LinkedUser linkedUser = optional.get();
+            if (linkedUser.getDiscordID().isPresent()) {
+                long discordID = linkedUser.getDiscordID().get();
+                if (discordID != 0L) {
+                    return DiscordFab.getBot().getUserById(discordID);
+                }
+            }
         }
-
-        long discordId = UserSynchronizer.getSyncedUserId(uuid);
-        if (discordId == 0L) {
-            return null;
-        }
-
-        net.dv8tion.jda.api.entities.User user = DiscordFab.getBot().getUserById(discordId);
-
-        if (user == null) {
-            return null;
-        }
-
-        this.map.put(uuid, user);
-        return user;
+        return null;
     }
 
     public void onUserJoin(@NotNull final User user) {
@@ -223,13 +210,30 @@ public class ChatSynchronizer {
         this.webhookClientHolder.send(MappedChannel.PUBLIC.id, builder.build());
     }
 
+    public void onUserMute(@NotNull final EntityIdentifiable victim, OnlineUser source, String reason) {
+        WebhookMessageBuilder builder = new WebhookMessageBuilder();
+        setMetaFor(victim, builder);
+        builder.setContent(CONFIG.messages.userMuted.replace("%victim%", victim.getName()).replace("%source%", source.getName()).replace("%reason%", reason));
+        this.webhookClientHolder.send(MappedChannel.PUBLIC.id, builder.build());
+        net.dv8tion.jda.api.entities.User user = getJDAUser(victim.getId());
+        if (user != null) {
+            Guild guild = DISCORD_FAB.getGuild();
+            Member member = guild.getMember(user);
+            Role role = guild.getRoleById(DISCORD_FAB.getConfig().userSync.mutedRoleId);
+            if (role != null) {
+                if (member != null) {
+                    guild.addRoleToMember(member, role).queue();
+                }
+            }
+        }
+    }
+
     public void onUserLeave(@NotNull final User user) {
         WebhookMessageBuilder builder = new WebhookMessageBuilder();
         setMetaFor(user, builder);
         builder.setContent(CONFIG.messages.userLeave.replace("%name%", user.getName()));
 
         this.webhookClientHolder.send(MappedChannel.PUBLIC.id, builder.build());
-        this.map.remove(user.getId());
     }
 
     public void broadcast(@NotNull final String message) {
@@ -252,9 +256,9 @@ public class ChatSynchronizer {
         channel.sendMessage(message);
     }
 
-    public void setMetaFor(@NotNull final User user, @NotNull final WebhookMessageBuilder builder) {
-        builder.setAvatarUrl(getMCAvatarURL(user.getUuid()));
-        builder.setUsername(user.getUsername());
+    public void setMetaFor(@NotNull final EntityIdentifiable user, @NotNull final WebhookMessageBuilder builder) {
+        builder.setAvatarUrl(getMCAvatarURL(user.getId()));
+        builder.setUsername(user.getName());
     }
 
     public void setServerUserMeta(@NotNull final WebhookMessageBuilder builder) {

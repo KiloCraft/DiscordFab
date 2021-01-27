@@ -5,6 +5,8 @@ import com.github.hansi132.discordfab.discordbot.command.DiscordLinkCommand;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.integration.*;
 import com.github.hansi132.discordfab.discordbot.listener.ChatMessageListener;
+import com.github.hansi132.discordfab.discordbot.listener.MuteListener;
+import com.github.hansi132.discordfab.discordbot.listener.TickListener;
 import com.github.hansi132.discordfab.discordbot.util.Constants;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -45,11 +47,10 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
             KiloServer.getServer().registerEvent(new ChatMessageListener());
+            KiloServer.getServer().registerEvent(new MuteListener());
+            KiloServer.getServer().registerEvent(new TickListener());
             KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
             KiloServer.getServer().registerEvent(new PlayerLeaveBroadcaster());
-            KiloEssentials.getServer().getEventRegistry().register(
-                    (EventHandler<ServerReloadEvent>) event -> fab.onLoad()
-            );
 
             fab.getChatSynchronizer().onServerEvent(ChatSynchronizer.ServerEvent.START);
         });

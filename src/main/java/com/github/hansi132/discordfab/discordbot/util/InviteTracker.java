@@ -82,7 +82,7 @@ public class InviteTracker {
     public int getLinkedInvites(Guild guild, long inviter) {
         int size = 0;
         for (long invited : getInvitedIDs(inviter)) {
-            if (UserSynchronizer.isLinked(invited) && guild.getMemberById(invited) != null) size++;
+            if (DiscordFab.getInstance().getUserCache().getByDiscordID(invited).isPresent() && guild.getMemberById(invited) != null) size++;
         }
         return size;
     }
@@ -101,7 +101,7 @@ public class InviteTracker {
                 //Prevent duplicates
                 if (hashSet.add(invitedID)) list.add(invitedID);
             }
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             DiscordFab.LOGGER.error("Could not query the database!", e);
         }
         return list;
@@ -120,7 +120,7 @@ public class InviteTracker {
                 //Prevent duplicates
                 if (hashSet.add(inviterID)) list.add(inviterID);
             }
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             DiscordFab.LOGGER.error("Could not query the database!", e);
         }
         return list;
@@ -134,7 +134,7 @@ public class InviteTracker {
             insertStatement.setLong(1, inviter);
             insertStatement.setLong(2, invited);
             insertStatement.execute();
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             DiscordFab.LOGGER.error("Could not query the database!", e);
         }
     }

@@ -9,6 +9,9 @@ public class UserSyncConfigSection {
     @Setting(value = "linkedRoleName", comment = "Name of the Linked Role")
     public long linkedRoleId = 123456789101112131L;
 
+    @Setting(value = "mutedRoleId", comment = "Name of the Muted Role")
+    public long mutedRoleId = 123456789101112132L;
+
     @Setting(value = "command", comment = "Command that should get executed when a player links")
     public String command = "scoreboard players add %player% voted 3";
 

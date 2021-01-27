@@ -44,6 +44,7 @@ public class CommandManager {
         this.register(new InvitesCommand(CommandCategory.UTILITY, "invites"));
         this.register(new InvitesTopCommand(CommandCategory.UTILITY, "invitestop"));
         this.register(new LinkCommand(CommandCategory.UTILITY, "link"));
+        this.register(new UnlinkCommand(CommandCategory.UTILITY, "unlink"));
 //        this.register(new AvatarCommand(CommandCategory.UTILITY, "avatar"));
     }
 

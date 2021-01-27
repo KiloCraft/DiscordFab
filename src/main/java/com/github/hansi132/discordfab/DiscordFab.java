@@ -10,6 +10,8 @@ import com.github.hansi132.discordfab.discordbot.config.MainConfig;
 import com.github.hansi132.discordfab.discordbot.util.EmbedUtil;
 import com.github.hansi132.discordfab.discordbot.util.InviteTracker;
 import com.github.hansi132.discordfab.discordbot.util.OnlinePlayerUpdater;
+import com.github.hansi132.discordfab.discordbot.util.user.LinkedUser;
+import com.github.hansi132.discordfab.discordbot.util.user.LinkedUserCache;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -32,6 +34,7 @@ public class DiscordFab {
     private final EmbedUtil embedUtil;
     private final InviteTracker inviteTracker;
     private OnlinePlayerUpdater onlinePlayerUpdater;
+    private LinkedUserCache userCache;
 
     DiscordFab(@NotNull final DataConfig dataConfig) {
         INSTANCE = this;
@@ -59,6 +62,8 @@ public class DiscordFab {
         } catch (LoginException e) {
             LOGGER.fatal("Can not log into the bot!", e);
         }
+        this.userCache = new LinkedUserCache();
+        onLoad();
     }
 
     public void onLoad() {
@@ -70,7 +75,6 @@ public class DiscordFab {
         final String activityValue = config.get().activity.value;
         final OnlineStatus status = config.get().activity.getOnlineStatus();
         this.setActivity(activityType, activityValue);
-
         this.chatSynchronizer.load();
         SHARD_MANAGER.setStatus(status);
     }
@@ -142,5 +146,9 @@ public class DiscordFab {
         }
 
         SHARD_MANAGER.setActivity(Activity.of(type, value));
+    }
+
+    public LinkedUserCache getUserCache() {
+        return userCache;
     }
 }

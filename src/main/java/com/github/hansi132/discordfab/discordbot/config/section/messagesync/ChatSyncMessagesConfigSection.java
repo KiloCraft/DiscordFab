@@ -12,4 +12,7 @@ public class ChatSyncMessagesConfigSection {
     @Setting(comment = "Variables: %name%")
     public String userLeave = "%name% has left the game.";
 
+    @Setting(comment = "Variables: %victim%, %source%, %reason%")
+    public String userMuted = "%victim% was muted by %source%. Reason: %reason%";
+
 }
