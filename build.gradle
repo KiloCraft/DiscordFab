@@ -26,8 +26,6 @@ repositories {
         name = 'sponge'
         url = 'https://repo.spongepowered.org/maven'
     }
-
-    maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
 }
 
 shadowJar {
@@ -45,23 +43,13 @@ dependencies {
     //Fabric base api
 //    modImplementation("net.fabricmc.fabric-api:fabric-api-base:0.2.0+9f0fb4b895")
 
-    modImplementation "com.github.DrexHD:KiloEssentials:v1.15.4"
+    modImplementation group: 'com.github.DrexHD', name: 'KiloEssentials', version: 'v1.15.4'
 
     compile "net.luckperms:api:5.0"
 
-
-    compile group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
-    shadow group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
-    compile group: 'com.jagrosh', name: 'jda-utilities', version: '3.0.3'
-    shadow group: 'com.jagrosh', name: 'jda-utilities', version: '3.0.3'
-    implementation group: 'me.duncte123', name: 'botCommons', version: '1.0.83'
-    shadow group: 'me.duncte123', name: 'botCommons', version: '1.0.83'
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-    include group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
-    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
-    compile group: 'club.minnced', name: 'discord-webhooks', version: '0.3.0'
-    shadow group: 'club.minnced', name: 'discord-webhooks', version: '0.3.0'
+    implementation group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
+    implementation group: 'club.minnced', name: 'discord-webhooks', version: '0.3.0'
     compile 'org.spongepowered:configurate-hocon:3.6.1'
     shadow 'org.spongepowered:configurate-hocon:3.6.1'
 }

@@ -1,16 +1,15 @@
 package com.github.hansi132.discordfab;
 
+import com.github.hansi132.discordfab.discordbot.ChatSynchronizer;
 import com.github.hansi132.discordfab.discordbot.CommandManager;
 import com.github.hansi132.discordfab.discordbot.DiscordFabBot;
-import com.github.hansi132.discordfab.discordbot.ChatSynchronizer;
-import com.github.hansi132.discordfab.discordbot.listener.Listener;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.config.DiscordFabConfig;
 import com.github.hansi132.discordfab.discordbot.config.MainConfig;
+import com.github.hansi132.discordfab.discordbot.listener.Listener;
 import com.github.hansi132.discordfab.discordbot.util.EmbedUtil;
 import com.github.hansi132.discordfab.discordbot.util.InviteTracker;
 import com.github.hansi132.discordfab.discordbot.util.OnlinePlayerUpdater;
-import com.github.hansi132.discordfab.discordbot.util.user.LinkedUser;
 import com.github.hansi132.discordfab.discordbot.util.user.LinkedUserCache;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
