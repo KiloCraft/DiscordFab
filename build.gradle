@@ -36,8 +36,8 @@ shadowJar {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:20w45a"
-    mappings "net.fabricmc:yarn:20w45a+build.1:v2"
+    minecraft "com.mojang:minecraft:21w03a"
+    mappings "net.fabricmc:yarn:21w03a+build.24:v2"
     modImplementation "net.fabricmc:fabric-loader:0.9.2+build.206"
 
     //Fabric api
@@ -45,10 +45,10 @@ dependencies {
     //Fabric base api
 //    modImplementation("net.fabricmc.fabric-api:fabric-api-base:0.2.0+9f0fb4b895")
 
-    modImplementation 'com.github.DrexHD:KiloEssentials:1.15.1'
-    //include 'com.github.OnBlock:KiloEssentials:1.10'
+    modImplementation "com.github.DrexHD:KiloEssentials:v1.15.4"
 
     compile "net.luckperms:api:5.0"
+
 
     compile group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
     shadow group: 'net.dv8tion', name: 'JDA', version: '4.1.1_150'
