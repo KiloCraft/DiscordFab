@@ -6,7 +6,9 @@ import com.github.hansi132.discordfab.discordbot.api.command.BotCommandSource;
 import com.github.hansi132.discordfab.discordbot.integration.UserSynchronizer;
 import com.github.hansi132.discordfab.discordbot.util.Constants;
 import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
@@ -19,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -61,6 +64,7 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
         final User user = event.getAuthor();
+        final long suggestionChat = 829822701254082621L;
         if (user.isBot()) {
             return;
         }
@@ -80,7 +84,18 @@ public class Listener extends ListenerAdapter {
                     ),
                     raw
             );
-        } else if (!event.isWebhookMessage() && DISCORD_FAB.getConfig().chatSynchronizer.toMinecraft) {
+        } else if (event.getChannel().getIdLong() == suggestionChat) {
+            Member member = event.getMember();
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setColor(Color.green);
+            embedBuilder.setAuthor(Objects.requireNonNull(member).getEffectiveName());
+            embedBuilder.addField("Suggestion", raw, false);
+            event.getMessage().delete().queue();
+            event.getChannel().sendMessage(embedBuilder.build()).queue(message -> {
+                message.addReaction(":upvote:657228604312256521").queue();
+                message.addReaction(":downvote:657228570338394142").queue();
+            });
+        } else if (!event.isWebhookMessage() && DISCORD_FAB.getConfig().chatSynchronizer.toMinecraft && event.getChannel().getIdLong() != suggestionChat) {
             DISCORD_FAB.getChatSynchronizer().onDiscordChat(
                 event.getChannel(), Objects.requireNonNull(event.getMember()), event.getMessage()
             );
