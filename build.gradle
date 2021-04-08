@@ -41,7 +41,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     //Fabric api
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabricapi_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     modImplementation "com.github.DrexHD:KiloEssentials:${project.kiloessentials_version}"
 
