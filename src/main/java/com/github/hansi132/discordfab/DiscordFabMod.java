@@ -3,35 +3,26 @@ package com.github.hansi132.discordfab;
 import com.github.hansi132.discordfab.discordbot.ChatSynchronizer;
 import com.github.hansi132.discordfab.discordbot.command.DiscordLinkCommand;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
-import com.github.hansi132.discordfab.discordbot.integration.PlayerJoinBroadcaster;
-import com.github.hansi132.discordfab.discordbot.integration.PlayerLeaveBroadcaster;
+import com.github.hansi132.discordfab.discordbot.integration.*;
 import com.github.hansi132.discordfab.discordbot.listener.ChatMessageListener;
 import com.github.hansi132.discordfab.discordbot.listener.MuteListener;
 import com.github.hansi132.discordfab.discordbot.listener.TickListener;
 import com.github.hansi132.discordfab.discordbot.util.Constants;
-import com.github.hansi132.discordfab.discordbot.util.depencies.Dependency;
-import com.github.hansi132.discordfab.discordbot.util.depencies.DependencyManager;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
+import org.kilocraft.essentials.api.event.EventHandler;
+import org.kilocraft.essentials.api.event.server.lifecycle.ServerReloadEvent;
 
 import java.io.File;
 import java.util.HashMap;
 
 public class DiscordFabMod implements DedicatedServerModInitializer {
 
-    public static DiscordFabMod bootsTrap;
-    private DependencyManager dependencyManager;
-    public static final Logger LOGGER = LogManager.getLogger("DiscordFab");
-
     @Override
     public void onInitializeServer() {
-        bootsTrap = this;
-        this.dependencyManager = new DependencyManager();
-        this.dependencyManager.loadDependencies(Dependency.values());
         final File CONFIG_FILE = Constants.CONFIG_PATH.toFile();
         if (!CONFIG_FILE.exists()) {
             CONFIG_FILE.mkdirs();
