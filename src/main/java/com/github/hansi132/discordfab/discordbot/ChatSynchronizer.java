@@ -18,6 +18,7 @@ import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kilocraft.essentials.api.KiloEssentials;
 import org.kilocraft.essentials.api.KiloServer;
 import org.kilocraft.essentials.api.text.ComponentText;
 import org.kilocraft.essentials.api.text.TextFormat;
@@ -177,8 +178,19 @@ public class ChatSynchronizer {
             sendToGame(mappedChannel, member, text);
         }
 
-        if (!message.getContentRaw().equals("")) {
-            sendToGame(mappedChannel, member, ComponentText.toText(ComponentText.clearFormatting(message.getContentRaw())));
+        String msg = message.getContentRaw();
+        if (!msg.equals("")) {
+            msg = msg.replaceAll("\\n", "").replaceAll("\\\\n", "");
+            Optional<LinkedUser> optional = DiscordFab.getInstance().getUserCache().getByDiscordID(message.getAuthor().getIdLong());
+            boolean canUseColors = false;
+            if (optional.isPresent()) {
+                UUID uuid = optional.get().getMcUUID();
+                if (KiloEssentials.getInstance().getPermissionUtil().hasPermission(uuid, "discordfab.colors")) {
+                    canUseColors = true;
+                }
+            }
+            if (!canUseColors) msg = ComponentText.clearFormatting(msg);
+            sendToGame(mappedChannel, member, ComponentText.toText(msg));
         }
     }
 

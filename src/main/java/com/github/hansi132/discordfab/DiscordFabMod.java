@@ -4,6 +4,7 @@ import com.github.hansi132.discordfab.discordbot.ChatSynchronizer;
 import com.github.hansi132.discordfab.discordbot.command.DiscordLinkCommand;
 import com.github.hansi132.discordfab.discordbot.config.DataConfig;
 import com.github.hansi132.discordfab.discordbot.integration.*;
+import com.github.hansi132.discordfab.discordbot.listener.BanListener;
 import com.github.hansi132.discordfab.discordbot.listener.ChatMessageListener;
 import com.github.hansi132.discordfab.discordbot.listener.MuteListener;
 import com.github.hansi132.discordfab.discordbot.listener.TickListener;
@@ -47,6 +48,7 @@ public class DiscordFabMod implements DedicatedServerModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
             KiloServer.getServer().registerEvent(new ChatMessageListener());
+            KiloServer.getServer().registerEvent(new BanListener());
             KiloServer.getServer().registerEvent(new MuteListener());
             KiloServer.getServer().registerEvent(new TickListener());
             KiloServer.getServer().registerEvent(new PlayerJoinBroadcaster());
