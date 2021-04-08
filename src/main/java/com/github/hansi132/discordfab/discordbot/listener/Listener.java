@@ -40,7 +40,7 @@ public class Listener extends ListenerAdapter {
             if (DISCORD_FAB.isDevelopment()) {
                 LOGGER.info("First Database Connection successfully established");
             }
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             LOGGER.fatal("Could not connect to the Database!", e);
         }
     }

@@ -1,8 +1,10 @@
 package com.github.hansi132.discordfab.discordbot.integration;
 
 import com.github.hansi132.discordfab.DiscordFab;
-import com.github.hansi132.discordfab.discordbot.util.DatabaseConnection;
+import com.github.hansi132.discordfab.discordbot.util.user.LinkedUser;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.ContextException;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.luckperms.api.LuckPerms;
@@ -11,11 +13,10 @@ import net.luckperms.api.query.QueryOptions;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.kilocraft.essentials.api.KiloEssentials;
+import org.kilocraft.essentials.api.util.EntityIdentifiable;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,171 +37,89 @@ public class UserSynchronizer {
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(1));
         }
-
         return 0;
     }
 
-    public static boolean isLinked(@NotNull final UUID uuid) {
-        try {
-            Connection conn = DatabaseConnection.connect();
-
-            String selectSql = "SELECT McUUID, DiscordId FROM linkedaccounts WHERE McUUID = ?;";
-            PreparedStatement selectStatement = conn.prepareStatement(selectSql);
-            selectStatement.setString(1, uuid.toString());
-            ResultSet resultSet = selectStatement.executeQuery();
-
-            if (resultSet.next()) {
-                long discordID = resultSet.getLong("DiscordId");
-                conn.close();
-                return discordID != 0L;
-            }
-
-            conn.close();
-        } catch (ClassNotFoundException | SQLException e) {
-            DiscordFab.LOGGER.error("Could not query the database!", e);
-        }
-
-        return false;
-    }
-
-    public static boolean isLinked(final long discordId) {
-        try {
-            Connection conn = DatabaseConnection.connect();
-
-            String selectSql = "SELECT McUUID, DiscordId FROM linkedaccounts WHERE DiscordId = ?;";
-            PreparedStatement selectStatement = conn.prepareStatement(selectSql);
-            selectStatement.setLong(1, discordId);
-            ResultSet resultSet = selectStatement.executeQuery();
-
-            if (resultSet.next()) {
-                return resultSet.getString("McUUID") != null;
-            }
-
-            conn.close();
-        } catch (SQLException | ClassNotFoundException e) {
-            DiscordFab.LOGGER.error("Could not query the database!", e);
-        }
-
-        return false;
-    }
-
-    public static long getSyncedUserId(@NotNull final UUID uuid) {
-        try {
-            Connection conn = DatabaseConnection.connect();
-
-            String selectSql = "SELECT DiscordId FROM linkedaccounts WHERE McUUID = ?";
-            PreparedStatement selectStatement = conn.prepareStatement(selectSql);
-            selectStatement.setString(1, uuid.toString());
-            ResultSet resultSet = selectStatement.executeQuery();
-
-            if (resultSet.next()) {
-                return resultSet.getLong("DiscordId");
-            }
-
-            conn.close();
-        } catch (ClassNotFoundException | SQLException | NullPointerException e) {
-            DiscordFab.LOGGER.error("Could not query the database!", e);
-        }
-
-        return 0L;
-    }
-
-
     public static void sync(final PrivateChannel privateChannel, MessageChannel publicChannel, @NotNull final User user, final int linkKey) {
-        String selectSql = "SELECT McUUID FROM linkedaccounts WHERE LinkKey = ? AND DiscordID IS NULL";
-        try {
-            Connection connection = DatabaseConnection.connect();
+        Optional<LinkedUser> optional = DiscordFab.getInstance().getUserCache().getByKey(linkKey);
+        if (optional.isPresent()) {
+            LinkedUser linkedUser = optional.get();
+            UUID mcUUID = linkedUser.getMcUUID();
+            linkedUser.updateDiscordID(user.getIdLong());
+            KiloEssentials.getInstance().getUserThenAcceptAsync(mcUUID, (optionalUser) -> {
+                if (optionalUser.isPresent()) {
+                    org.kilocraft.essentials.api.user.User playerUser = optionalUser.get();
+                    if (privateChannel != null) {
+                        privateChannel.sendMessage(
+                                DISCORD_FAB.getConfig().messages.successfully_linked
+                                        .replace("%player%", playerUser.getName())
+                        ).queue();
+                    } else if (publicChannel != null) {
+                        publicChannel.sendMessage(
+                                DISCORD_FAB.getConfig().messages.successfully_linked
+                                        .replace("%player%", playerUser.getName())
+                        ).queue();
+                    }
 
-            PreparedStatement selectStatement = connection.prepareStatement(selectSql);
-            selectStatement.setInt(1, linkKey);
+                    KiloEssentials.getServer().execute(DISCORD_FAB.getConfig().userSync.command
+                            .replace("%player%", playerUser.getName()));
 
-            ResultSet resultSet = selectStatement.executeQuery();
-            if (resultSet.next()) {
-                String mcUUID = resultSet.getString("McUUID");
-                String updateSql = "UPDATE linkedaccounts SET DiscordId = ? WHERE LinkKey = ?;";
-                PreparedStatement updateStatement = connection.prepareStatement(updateSql);
-                updateStatement.setLong(1, user.getIdLong());
-                updateStatement.setInt(2, linkKey);
-                updateStatement.execute();
-
-                KiloEssentials.getInstance().getUserThenAcceptAsync(UUID.fromString(mcUUID), (optional) -> {
-                    if (optional.isPresent()) {
-                        org.kilocraft.essentials.api.user.User playerUser = optional.get();
-                        if (privateChannel != null) {
-                            privateChannel.sendMessage(
-                                    DISCORD_FAB.getConfig().messages.successfully_linked
-                                            .replace("%player%", playerUser.getName())
-                            ).queue();
-                        } else if (publicChannel != null) {
-                            publicChannel.sendMessage(
-                                    DISCORD_FAB.getConfig().messages.successfully_linked
-                                            .replace("%player%", playerUser.getName())
-                            ).queue();
-                        }
-
-                        KiloEssentials.getServer().execute(DISCORD_FAB.getConfig().userSync.command
-                                .replace("%player%", playerUser.getName()));
-
-                        if (DISCORD_FAB.getConfig().userSync.syncDisplayName) {
-                            try {
-                                syncDisplayName(linkKey);
-                            } catch (SQLException | ClassNotFoundException e) {
-                                LOGGER.error("Unexpected error while trying to sync user", e);
-                            }
-                        }
-
+                    if (DISCORD_FAB.getConfig().userSync.syncDisplayName) {
                         try {
-                            syncRoles(UUID.fromString(mcUUID));
+                            syncDisplayName(linkedUser);
                         } catch (SQLException | ClassNotFoundException e) {
                             LOGGER.error("Unexpected error while trying to sync user", e);
                         }
                     }
-                });
-            } else {
-                if (privateChannel != null) {
-                    privateChannel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
-                } else if (publicChannel != null) {
-                    publicChannel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
+                    syncRoles(user.getIdLong(), linkedUser.getMcUUID());
                 }
+            });
+        } else {
+            if (privateChannel != null) {
+                privateChannel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
+            } else if (publicChannel != null) {
+                publicChannel.sendMessage(DISCORD_FAB.getConfig().messages.invalid_link_key).queue();
             }
-
-            connection.close();
-        } catch (SQLException | ClassNotFoundException e) {
-            LOGGER.error("Unexpected error while trying to sync user", e);
         }
     }
 
-    @Deprecated
-    public static void syncRoles(final int linkKey) throws SQLException, ClassNotFoundException {
-        Connection conn = DatabaseConnection.connect();
-        String selectSql = "SELECT DiscordId, McUUID FROM linkedaccounts WHERE LinkKey = ?;";
-        PreparedStatement selectStmt = conn.prepareStatement(selectSql);
-        selectStmt.setInt(1, linkKey);
-        ResultSet resultSet = selectStmt.executeQuery();
-        resultSet.next();
-        final long discordId = resultSet.getLong("DiscordId");
-        final UUID mcUUID = UUID.fromString(resultSet.getString("McUUID"));
-        syncRoles(discordId, mcUUID);
+    public static void clearMuteRole() throws SQLException {
+        Guild guild = DISCORD_FAB.getGuild();
+        Role role = guild.getRoleById(DISCORD_FAB.getConfig().userSync.mutedRoleId);
+        if (role != null) {
+            for (Member member : guild.getMembersWithRoles(role)) {
+                Optional<LinkedUser> optional = DiscordFab.getInstance().getUserCache().getByDiscordID(member.getIdLong());
+                if (optional.isPresent()) {
+                    LinkedUser linkedUser = optional.get();
+                    boolean isMuted = KiloEssentials.getServer().getUserManager().getPunishmentManager().isMuted(new EntityIdentifiable() {
+                        public UUID getId() {
+                            return linkedUser.getMcUUID();
+                        }
+
+                        public String getName() {
+                            return linkedUser.getMcName();
+                        }
+                    });
+                    if (!isMuted) {
+                        guild.removeRoleFromMember(member, role).queue();
+                    }
+                }
+            }
+        }
     }
 
     public static void syncRoles(final UUID mcUUID) throws SQLException, ClassNotFoundException {
-        Connection conn = DatabaseConnection.connect();
-        String selectSql = "SELECT DiscordId FROM linkedaccounts WHERE McUUID = ?;";
-        PreparedStatement selectStmt = conn.prepareStatement(selectSql);
-        selectStmt.setString(1, mcUUID.toString());
-        ResultSet resultSet = selectStmt.executeQuery();
-        if (resultSet.next()) {
-            final long discordId = resultSet.getLong("DiscordId");
-            if (discordId != 0) {
-                syncRoles(discordId, mcUUID);
-            }
-        }
+        DiscordFab.getInstance().getUserCache().getByUUID(mcUUID).ifPresent(linkedUser -> linkedUser.getDiscordID().ifPresent(discordID -> syncRoles(discordID, linkedUser.getMcUUID())));
     }
 
     private static void syncRoles(final long discordID, final UUID mcUUID) {
         Guild guild = DISCORD_FAB.getGuild();
-        BOT.getRoles();
+        int highestRole = 0;
+        for (Role r : guild.getSelfMember().getRoles()) {
+            highestRole = Math.max(highestRole, r.getPosition());
+        }
         for (Role role : guild.getRoles()) {
+            if (role.getName().equals("@everyone") || role.getPosition() >= highestRole) continue;
             long roleID = role.getIdLong();
             if (shouldSync(mcUUID, roleID)) {
                 User user = BOT.getUserById(discordID);
@@ -208,8 +127,9 @@ public class UserSynchronizer {
                     Member member = guild.getMember(user);
                     if (member != null) {
                         try {
+                            DiscordFab.LOGGER.info("Trying to add " + role + " to " + user + " " + member);
                             guild.addRoleToMember(member, role).queue();
-                        } catch (HierarchyException ignored) {
+                        } catch (Exception ignored) {
                         }
                     }
                 }
@@ -228,18 +148,10 @@ public class UserSynchronizer {
         return false;
     }
 
-    private static void syncDisplayName(final int linkKey) throws SQLException, ClassNotFoundException {
-        Connection conn = DatabaseConnection.connect();
-        String selectSql = "SELECT DiscordId, McUsername FROM linkedaccounts WHERE LinkKey = ?;";
-        PreparedStatement selectStmt = conn.prepareStatement(selectSql);
-        selectStmt.setInt(1, linkKey);
-        ResultSet resultSet = selectStmt.executeQuery();
-        resultSet.next();
-        final long discordId = resultSet.getLong("DiscordId");
-        final String mcUsername = resultSet.getString("McUsername");
-
+    private static void syncDisplayName(final LinkedUser linkedUser) throws SQLException, ClassNotFoundException {
         Guild guild = DISCORD_FAB.getGuild();
-        User user = BOT.getUserById(discordId);
+        if (!linkedUser.getDiscordID().isPresent()) return;
+        User user = BOT.getUserById(linkedUser.getDiscordID().get());
         Role role = guild.getRoleById(DISCORD_FAB.getConfig().userSync.linkedRoleId);
 
         if (role == null) {
@@ -247,12 +159,14 @@ public class UserSynchronizer {
         } else if (user != null) {
             Member member = guild.getMember(user);
             if (member != null) {
-                member.modifyNickname(mcUsername).complete();
+                try {
+                    member.modifyNickname(linkedUser.getMcName()).complete();
+                } catch (HierarchyException | NullPointerException ignored) {
+                }
                 guild.addRoleToMember(member, role).queue();
             }
 
         }
 
-        conn.close();
     }
 }
