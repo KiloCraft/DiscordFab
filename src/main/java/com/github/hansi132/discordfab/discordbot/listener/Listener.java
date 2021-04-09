@@ -61,7 +61,7 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
         final User user = event.getAuthor();
-        final long suggestionChat = 829822701254082621L;
+        final long suggestionChat = 456904152279285760L;
         if (user.isBot()) {
             return;
         }
